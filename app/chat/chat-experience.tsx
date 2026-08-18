@@ -1,0 +1,63 @@
+"use client";
+
+import Link from "next/link";
+import { FormEvent, useRef, useState } from "react";
+
+type Message = { role: "assistant" | "user"; content: string };
+
+const starters = ["Help me plan my week", "I need a quick workout", "How do I build consistency?"];
+
+export function ChatExperience() {
+  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "Hey, I’m Fitbot. What do you want to move toward today?" }]);
+  const [input, setInput] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function sendMessage(event?: FormEvent, preset?: string) {
+    event?.preventDefault();
+    const message = (preset ?? input).trim();
+    if (!message || isSending) return;
+    setMessages((current) => [...current, { role: "user", content: message }]);
+    setInput("");
+    setIsSending(true);
+    try {
+      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) });
+      const data = await response.json();
+      setMessages((current) => [...current, { role: "assistant", content: data.reply ?? "I’m here. Let’s take the next step together." }]);
+    } catch {
+      setMessages((current) => [...current, { role: "assistant", content: "I hit a small snag. Try that again and we’ll keep moving." }]);
+    } finally {
+      setIsSending(false);
+      inputRef.current?.focus();
+    }
+  }
+
+  return <main className="chat-shell">
+    <header className="chat-header">
+      <Link className="brand" href="/"><span className="brand-mark">G</span><span>GitFit</span></Link>
+      <div className="bot-status"><span /> Fitbot <small>online</small></div>
+      <Link className="back-link" href="/">Exit chat <span aria-hidden="true">↗</span></Link>
+    </header>
+    <section className="chat-layout">
+      <aside className="chat-aside">
+        <p className="eyebrow"><span /> Your training space</p>
+        <h1>One message can start a real change.</h1>
+        <p>Fitbot is your first stop for turning a goal into a game plan.</p>
+        <div className="aside-note"><b>✦</b><span>Try a goal, a question, or just tell me how your week is going.</span></div>
+      </aside>
+      <section className="chat-panel" aria-label="Conversation with Fitbot">
+        <div className="message-list" aria-live="polite">
+          {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className="message-avatar">{message.role === "assistant" ? "F" : "You"}</div><p>{message.content}</p></div>)}
+          {isSending && <div className="message-row assistant"><div className="message-avatar">F</div><p className="typing"><i /><i /><i /></p></div>}
+        </div>
+        {messages.length === 1 && <div className="chat-starters">{starters.map((starter) => <button key={starter} onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}
+        <form className="chat-form" onSubmit={(event) => sendMessage(event)}>
+          <label className="sr-only" htmlFor="message">Message Fitbot</label>
+          <input ref={inputRef} id="message" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Tell Fitbot what’s on your mind..." disabled={isSending} />
+          <button aria-label="Send message" disabled={!input.trim() || isSending} type="submit">↑</button>
+        </form>
+        <p className="chat-disclaimer">Fitbot gives general fitness guidance, not medical advice.</p>
+      </section>
+    </section>
+  </main>;
+}
