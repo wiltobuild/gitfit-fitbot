@@ -172,3 +172,19 @@ hard stop before the LLM-integration phase and a structured adversarial
 check at the natural halfway point.
 
 **Approved by**: user
+
+## 2026-08-19 — Operations Dashboard (Product B) work happens on a feature branch, not main
+
+Work for the `operations-dashboard` task (role split into trainer/manager,
+request approval, class management, promotion/certs — see
+`docs/tasks/operations-dashboard/`) happens on a dedicated `operations-dashboard`
+branch, diverging from the earlier "main branch, no feature branches by
+default" git-strategy decision above for this task specifically.
+
+**Why**: User's explicit instruction. This task's owner (the user) is
+personally, individually graded on the Operations Dashboard piece within
+the shared suite repo — an isolated branch keeps that work reviewable and
+revertible independent of whatever else lands on `main` from the rest of
+the suite.
+
+**Approved by**: user
