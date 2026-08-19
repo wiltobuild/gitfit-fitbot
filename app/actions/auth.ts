@@ -14,9 +14,11 @@ export async function signUp(
   formData: FormData,
 ): Promise<AuthFormState> {
   const supabase = await createSupabaseServerClient();
+  const fullNameValue = String(formData.get("fullName") ?? "").trim();
   const { data, error } = await supabase.auth.signUp({
     email: String(formData.get("email") ?? ""),
     password: String(formData.get("password") ?? ""),
+    options: { data: { full_name: fullNameValue || undefined } },
   });
 
   if (error) {
