@@ -4,59 +4,80 @@ import Link from "next/link";
 import { useActionState } from "react";
 
 import { signUp, type AuthFormState } from "@/app/actions/auth";
+import { IconSpinner } from "@/app/components/icons";
 
 const initialAuthFormState: AuthFormState = { error: null };
 
 export function SignUpForm() {
-  const [state, formAction, isPending] = useActionState(signUp, initialAuthFormState);
+  const [state, formAction, isPending] = useActionState(
+    signUp,
+    initialAuthFormState
+  );
 
   return (
-    <form action={formAction} className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-900" htmlFor="fullName">
+    <form action={formAction} className="auth-form">
+      <div className="field">
+        <label className="field-label" htmlFor="fullName">
           Full name
         </label>
         <input
           autoComplete="name"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900"
+          className="field-input"
           id="fullName"
           name="fullName"
           type="text"
         />
       </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-900" htmlFor="email">
+      <div className="field">
+        <label className="field-label" htmlFor="email">
           Email
         </label>
         <input
           autoComplete="email"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900"
+          className="field-input"
           id="email"
           name="email"
           required
           type="email"
         />
       </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-900" htmlFor="password">
+      <div className="field">
+        <label className="field-label" htmlFor="password">
           Password
         </label>
         <input
           autoComplete="new-password"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900"
+          className="field-input"
           id="password"
           name="password"
           required
           type="password"
         />
       </div>
-      {state.error ? <p aria-live="polite" className="text-sm text-red-600">{state.error}</p> : null}
-      {state.message ? <p aria-live="polite" className="text-sm text-teal-700">{state.message}</p> : null}
-      <button className="w-full rounded-md bg-teal-600 px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60" disabled={isPending} type="submit">
-        {isPending ? "Creating account..." : "Create account"}
+      {state.error ? (
+        <p aria-live="polite" className="field-error">
+          {state.error}
+        </p>
+      ) : null}
+      {state.message ? (
+        <p aria-live="polite" className="form-success">
+          {state.message}
+        </p>
+      ) : null}
+      <button className="btn btn-primary" disabled={isPending} type="submit">
+        {isPending ? (
+          <>
+            <IconSpinner className="btn-spinner" /> Creating account...
+          </>
+        ) : (
+          "Create account"
+        )}
       </button>
-      <p className="text-center text-sm text-slate-600">
-        Already have an account? <Link className="font-medium text-teal-700 underline" href="/sign-in">Sign in</Link>
+      <p className="auth-form-footer">
+        Already have an account?{" "}
+        <Link className="auth-link" href="/sign-in">
+          Sign in
+        </Link>
       </p>
     </form>
   );

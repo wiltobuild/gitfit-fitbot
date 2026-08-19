@@ -4,46 +4,63 @@ import Link from "next/link";
 import { useActionState } from "react";
 
 import { signIn, type AuthFormState } from "@/app/actions/auth";
+import { IconSpinner } from "@/app/components/icons";
 
 const initialAuthFormState: AuthFormState = { error: null };
 
 export function SignInForm() {
-  const [state, formAction, isPending] = useActionState(signIn, initialAuthFormState);
+  const [state, formAction, isPending] = useActionState(
+    signIn,
+    initialAuthFormState
+  );
 
   return (
-    <form action={formAction} className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-900" htmlFor="email">
+    <form action={formAction} className="auth-form">
+      <div className="field">
+        <label className="field-label" htmlFor="email">
           Email
         </label>
         <input
           autoComplete="email"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900"
+          className="field-input"
           id="email"
           name="email"
           required
           type="email"
         />
       </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-slate-900" htmlFor="password">
+      <div className="field">
+        <label className="field-label" htmlFor="password">
           Password
         </label>
         <input
           autoComplete="current-password"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-900"
+          className="field-input"
           id="password"
           name="password"
           required
           type="password"
         />
       </div>
-      {state.error ? <p aria-live="polite" className="text-sm text-red-600">{state.error}</p> : null}
-      <button className="w-full rounded-md bg-teal-600 px-4 py-2 font-medium text-white disabled:cursor-not-allowed disabled:opacity-60" disabled={isPending} type="submit">
-        {isPending ? "Signing in..." : "Sign in"}
+      {state.error ? (
+        <p aria-live="polite" className="field-error">
+          {state.error}
+        </p>
+      ) : null}
+      <button className="btn btn-primary" disabled={isPending} type="submit">
+        {isPending ? (
+          <>
+            <IconSpinner className="btn-spinner" /> Signing in...
+          </>
+        ) : (
+          "Sign in"
+        )}
       </button>
-      <p className="text-center text-sm text-slate-600">
-        Need an account? <Link className="font-medium text-teal-700 underline" href="/sign-up">Sign up</Link>
+      <p className="auth-form-footer">
+        Need an account?{" "}
+        <Link className="auth-link" href="/sign-up">
+          Sign up
+        </Link>
       </p>
     </form>
   );

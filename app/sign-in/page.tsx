@@ -1,11 +1,21 @@
+import Link from "next/link";
+
 import { SignInForm } from "./sign-in-form";
 
 export default function SignInPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md items-center px-6 py-12">
-      <section className="w-full">
-        <h1 className="mb-2 text-3xl font-semibold text-slate-900">Welcome back</h1>
-        <p className="mb-6 text-slate-600">Sign in to continue with GitFit.</p>
+    <main className="auth-page">
+      <section className="surface-card auth-card animate-fade-up">
+        <Link className="auth-brand" href="/" aria-label="GitFit home">
+          <span className="wordmark">GitFit</span>
+        </Link>
+        <div className="auth-heading">
+          <p className="eyebrow">
+            <span /> Your routine awaits
+          </p>
+          <h1>Welcome back</h1>
+          <p>Sign in to continue building a routine that works for you.</p>
+        </div>
         <SignInForm />
       </section>
     </main>
