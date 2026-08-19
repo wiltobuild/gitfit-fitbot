@@ -248,6 +248,48 @@
   to { opacity: 1; transform: scale(1); }
 }
 .animate-scale-in { animation: scale-in .18s var(--ease-out) both; }
+
+/* Appointments — Stage 4 schedule experience. Specific selectors preserve these
+   token-based overrides while the legacy appointments rules remain below. */
+.appointments-shell .day-tabs { border-color:var(--color-border); border-radius:var(--radius-lg); box-shadow:var(--shadow-xs); }
+.appointments-shell .day-tab { position:relative; overflow:hidden; border-radius:var(--radius-sm); transition:background-color .2s var(--ease-out),color .2s var(--ease-out),transform .2s var(--ease-out); }
+.appointments-shell .day-tab:hover:not(.active) { background:var(--color-surface-subtle); color:var(--color-violet); }
+.appointments-shell .day-tab:hover:not(.active) span { color:var(--color-violet); }
+.appointments-shell .day-tab:focus-visible { outline:2px solid var(--color-violet); outline-offset:2px; }
+.appointments-shell .day-tab.active { background:var(--color-ink); box-shadow:var(--shadow-sm); }
+.appointments-shell .day-tab.active::after { position:absolute; right:22%; bottom:4px; left:22%; height:3px; border-radius:999px; background:var(--gradient-brand); content:""; }
+.appointments-shell .class-card { min-height:278px; padding:21px; }
+.appointments-shell .class-card.surface-card { border-color:var(--color-border); border-radius:var(--radius-lg); background:var(--color-surface); box-shadow:var(--shadow-sm); }
+.appointments-shell .class-card.surface-card:hover { box-shadow:var(--shadow-lg); border-color:var(--color-border-strong); }
+.appointments-shell .class-card-top { align-items:flex-start; }
+.appointments-shell .class-type,.appointments-shell .spots { border:0; }
+.appointments-shell .class-type.badge-success { background:var(--color-success-subtle); color:var(--color-success); }
+.appointments-shell .class-type.badge-brand { background:var(--color-violet-subtle); color:var(--color-violet-dark); }
+.appointments-shell .class-type.badge-warning { background:var(--color-warning-subtle); color:var(--color-warning); }
+.appointments-shell .class-type.badge-neutral { background:var(--color-surface-subtle); color:var(--color-muted); }
+.appointments-shell .class-type i { display:none; }
+.appointments-shell .class-card h3 { color:var(--color-ink); }
+.appointments-shell .class-instructor { color:var(--color-muted); }
+.appointments-shell .class-details { border-top-color:var(--color-border); color:var(--color-ink); }
+.appointments-shell .class-action { min-height:36px; }
+.appointments-shell .reserve-button,.appointments-shell .cancel-button { border-radius:var(--radius-sm); }
+.appointments-shell .reserved { margin:0; }
+.appointments-shell .full-action { color:var(--color-muted); }
+.appointments-shell .appointments-error { border-color:var(--color-danger-subtle); border-radius:var(--radius-md); background:var(--color-danger-subtle); color:var(--color-danger); }
+.appointments-shell .appointments-empty-state { margin-top:18px; border:1px dashed var(--color-border-strong); border-radius:var(--radius-lg); background:var(--color-surface); }
+.appointments-shell .appointments-empty-state .empty-state-icon { width:32px; height:32px; }
+.appointments-shell .class-grid-loading { pointer-events:none; }
+.appointments-shell .class-card-skeleton { min-height:278px; padding:21px; }
+.appointments-shell .class-card-skeleton .skeleton { display:block; }
+.appointments-shell .skeleton-badge { width:72px; height:27px; border-radius:var(--radius-sm); }
+.appointments-shell .skeleton-spots { width:78px; height:27px; border-radius:var(--radius-sm); }
+.appointments-shell .skeleton-title { width:63%; height:28px; margin-top:24px; }
+.appointments-shell .skeleton-instructor { width:43%; height:14px; margin-top:9px; }
+.appointments-shell .skeleton-detail { width:70px; height:14px; }
+.appointments-shell .skeleton-detail.short { width:45px; }
+.appointments-shell .skeleton-reserved { width:89px; height:23px; border-radius:var(--radius-sm); }
+.appointments-shell .skeleton-button { width:78px; height:36px; border-radius:var(--radius-sm); }
+.appointments-shell .confirm-panel { border-color:var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); box-shadow:var(--shadow-lg); animation:scale-in .18s var(--ease-out) both; }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body { margin:0; color:var(--ink); background:var(--paper); font-family:var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }

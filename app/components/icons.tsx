@@ -38,6 +38,15 @@ export function IconCalendar(props: IconProps) {
   );
 }
 
+export function IconCalendarX(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17M9 14l6 6M15 14l-6 6" />
+    </IconBase>
+  );
+}
+
 export function IconDashboard(props: IconProps) {
   return (
     <IconBase {...props}>
