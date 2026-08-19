@@ -37,6 +37,7 @@ export function ChatExperience() {
       <Link className="brand" href="/"><span className="brand-mark">G</span><span>GitFit</span></Link>
       <div className="bot-status"><span /> Fitbot <small>online</small></div>
       <Link className="back-link" href="/">Exit chat <span aria-hidden="true">↗</span></Link>
+      <Link className="text-link" href="/appointments">Book a class</Link>
     </header>
     <section className="chat-layout">
       <aside className="chat-aside">

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "member_001",
+    "name": "Ria Russo",
+    "email": "ria@example.com",
+    "tier": "8-Class Pass",
+    "monthlyCredits": 8,
+    "remainingCredits": 5,
+    "bookedClassIds": [
+      "class_001",
+      "class_006",
+      "class_010"
+    ]
+  },
+  {
+    "id": "member_002",
+    "name": "Maya Chen",
+    "email": "maya@example.com",
+    "tier": "Unlimited",
+    "monthlyCredits": null,
+    "remainingCredits": null,
+    "bookedClassIds": [
+      "class_002",
+      "class_008"
+    ]
+  },
+  {
+    "id": "member_003",
+    "name": "Jordan Williams",
+    "email": "jordan@example.com",
+    "tier": "8-Class Pass",
+    "monthlyCredits": 8,
+    "remainingCredits": 2,
+    "bookedClassIds": [
+      "class_003",
+      "class_004",
+      "class_009",
+      "class_011",
+      "class_014",
+      "class_017"
+    ]
+  }
+]

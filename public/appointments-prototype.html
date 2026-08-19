@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse Studio - Member Booking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-xl font-black text-white shadow-lg shadow-indigo-500/30">P</div>
+        <div>
+          <h1 class="font-bold text-lg leading-none">Pulse Studio</h1>
+          <p class="text-xs text-slate-400 mt-1">Boutique Fitness</p>
+        </div>
+      </div>
+      
+      <!-- Member Status Badge -->
+      <div class="flex items-center space-x-4 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700/50">
+        <span class="text-xs text-slate-400">Monthly Tier: <strong class="text-indigo-400 font-semibold">Unlimited</strong></span>
+        <div class="h-3 w-px bg-slate-700"></div>
+        <span class="text-xs text-slate-400">Credits Remaining: <strong id="creditsCount" class="text-emerald-400 font-semibold">8</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8">
+    
+    <!-- Hero / Intro -->
+    <div class="mb-8">
+      <h2 class="text-2xl sm:text-3xl font-bold">Class Schedule</h2>
+      <p class="text-slate-400 text-sm mt-1">Select a class to reserve your spot for the week.</p>
+    </div>
+
+    <!-- Date Navigation -->
+    <div class="flex space-x-2 overflow-x-auto pb-4 mb-6 scrollbar-none" id="dayTabs">
+      <!-- Generated dynamically -->
+    </div>
+
+    <!-- Class Grid -->
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" id="classGrid">
+      <!-- Classes dynamic insertion -->
+    </div>
+  </main>
+
+  <!-- Booking Confirmation Modal -->
+  <div id="bookingModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // Mock Schedule Data
+    const days = [
+      { day: 'Mon', date: 'Oct 14', active: true },
+      { day: 'Tue', date: 'Oct 15', active: false },
+      { day: 'Wed', date: 'Oct 16', active: false },
+      { day: 'Thu', date: 'Oct 17', active: false },
+      { day: 'Fri', date: 'Oct 18', active: false },
+      { day: 'Sat', date: 'Oct 19', active: false },
+      { day: 'Sun', date: 'Oct 20', active: false },
+    ];
+
+    let classes = [
+      { id: 1, day: 'Mon', time: '07:00 AM', name: 'Power HIIT', instructor: 'Alex M.', duration: '45 mins', type: 'HIIT', capacity: 16, booked: 14 },
+      { id: 2, day: 'Mon', time: '09:00 AM', name: 'Vinyasa Flow', instructor: 'Sarah K.', duration: '60 mins', type: 'Yoga', capacity: 20, booked: 20 },
+      { id: 3, day: 'Mon', time: '05:30 PM', name: 'Pulse Spin', instructor: 'Jordan T.', duration: '45 mins', type: 'Cycling', capacity: 15, booked: 9 },
+      { id: 4, day: 'Tue', time: '06:30 AM', name: 'Pulse Spin', instructor: 'Jordan T.', duration: '45 mins', type: 'Cycling', capacity: 15, booked: 8 },
+      { id: 5, day: 'Tue', time: '12:00 PM', name: 'Express HIIT', instructor: 'Alex M.', duration: '30 mins', type: 'HIIT', capacity: 16, booked: 16 },
+      { id: 6, day: 'Wed', time: '08:00 AM', name: 'Restorative Yoga', instructor: 'Sarah K.', duration: '60 mins', type: 'Yoga', capacity: 20, booked: 11 },
+    ];
+
+    let userBookedClassIds = new Set();
+    let credits = 8;
+    let selectedDay = 'Mon';
+
+    // Type Badge Style Mapper
+    const typeStyles = {
+      'Yoga': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+      'Cycling': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      'HIIT': 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+    };
+
+    function renderTabs() {
+      const container = document.getElementById('dayTabs');
+      container.innerHTML = days.map(d => `
+        <button onclick="selectDay('${d.day}')" class="flex-shrink-0 px-5 py-3 rounded-xl border font-medium text-sm transition-all text-center ${d.day === selectedDay ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:bg-slate-800 hover:text-slate-200'}">
+          <div class="text-xs uppercase tracking-wider opacity-75">${d.day}</div>
+          <div class="text-base font-bold mt-0.5">${d.date}</div>
+        </button>
+      `).join('');
+    }
+
+    function selectDay(day) {
+      selectedDay = day;
+      renderTabs();
+      renderClasses();
+    }
+
+    function renderClasses() {
+      const container = document.getElementById('classGrid');
+      const filtered = classes.filter(c => c.day === selectedDay);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500 bg-slate-800/20 rounded-2xl border border-slate-800">
+            No classes scheduled for this day yet.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const isFull = item.booked >= item.capacity;
+        const isBooked = userBookedClassIds.has(item.id);
+        const spotsLeft = item.capacity - item.booked;
+
+        return `
+          <div class="bg-slate-800/40 border ${isBooked ? 'border-emerald-500/50 bg-emerald-950/10' : 'border-slate-800'} hover:border-slate-700 rounded-2xl p-5 flex flex-col justify-between transition-all">
+            <div>
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full border ${typeStyles[item.type] || 'bg-slate-700 text-slate-300'}">
+                  ${item.type}
+                </span>
+                <span class="text-xs text-slate-400 font-medium">${item.duration}</span>
+              </div>
+              
+              <h3 class="font-bold text-lg text-slate-100">${item.name}</h3>
+              <p class="text-slate-400 text-xs mt-1">Instructor: <span class="text-slate-300">${item.instructor}</span></p>
+              
+              <div class="mt-4 flex items-center text-sm font-semibold text-slate-200">
+                <svg class="w-4 h-4 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                ${item.time}
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+              <div>
+                <span class="text-xs ${isFull && !isBooked ? 'text-rose-400 font-medium' : 'text-slate-400'}">
+                  ${isBooked ? 'Spot reserved' : isFull ? 'Class Full' : spotsLeft + ' spots left'}
+                </span>
+              </div>
+
+              ${isBooked ? `
+                <button onclick="cancelBooking(${item.id})" class="px-4 py-2 bg-slate-700/60 hover:bg-rose-900/40 hover:text-rose-300 text-slate-300 text-xs font-semibold rounded-lg transition-colors border border-slate-600/40">
+                  Cancel Spot
+                </button>
+              ` : `
+                <button onclick="openConfirmModal(${item.id})" ${isFull ? 'disabled' : ''} class="px-4 py-2 ${isFull ? 'bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-800' : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20'} text-xs font-semibold rounded-lg transition-colors">
+                  ${isFull ? 'Waitlist' : 'Reserve Spot'}
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openConfirmModal(id) {
+      const cls = classes.find(c => c.id === id);
+      const modal = document.getElementById('bookingModal');
+      const content = document.getElementById('modalContent');
+
+      content.innerHTML = `
+        <h3 class="text-xl font-bold text-slate-100">Confirm Reservation</h3>
+        <p class="text-slate-400 text-sm mt-1">Reserving 1 spot using your active membership.</p>
+        
+        <div class="my-5 bg-slate-900/60 border border-slate-700/50 rounded-xl p-4 space-y-2 text-sm">
+          <div class="flex justify-between"><span class="text-slate-400">Class:</span> <span class="font-semibold text-slate-200">${cls.name}</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Time:</span> <span class="font-semibold text-slate-200">${cls.time} (${cls.day})</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">Instructor:</span> <span class="font-semibold text-slate-200">${cls.instructor}</span></div>
+        </div>
+
+        <div class="flex space-x-3">
+          <button onclick="closeModal()" class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-xl transition">Cancel</button>
+          <button onclick="confirmBooking(${cls.id})" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition">Confirm Booking</button>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+    }
+
+    function confirmBooking(id) {
+      const cls = classes.find(c => c.id === id);
+      cls.booked += 1;
+      userBookedClassIds.add(id);
+      credits -= 1;
+
+      document.getElementById('creditsCount').textContent = credits;
+      closeModal();
+      renderClasses();
+    }
+
+    function cancelBooking(id) {
+      const cls = classes.find(c => c.id === id);
+      cls.booked -= 1;
+      userBookedClassIds.delete(id);
+      credits += 1;
+
+      document.getElementById('creditsCount').textContent = credits;
+      renderClasses();
+    }
+
+    function closeModal() {
+      document.getElementById('bookingModal').classList.add('hidden');
+    }
+
+    // Initialize
+    renderTabs();
+    renderClasses();
+  </script>
+</body>
+</html>

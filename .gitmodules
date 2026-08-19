@@ -1,0 +1,3 @@
+[submodule "pulse-studio-prototype"]
+	path = pulse-studio-prototype
+	url = https://github.com/riarusso/pulse-studio-prototype.git

@@ -11,6 +11,7 @@ export default function Home() {
           <span>GitFit</span>
         </Link>
         <Link className="text-link" href="/chat">Open Fitbot <span aria-hidden="true">↗</span></Link>
+        <Link className="text-link" href="/appointments">Book a class</Link>
       </nav>
 
       <section className="hero">

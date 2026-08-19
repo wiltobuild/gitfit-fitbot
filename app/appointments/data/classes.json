@@ -1,0 +1,248 @@
+[
+  {
+    "id": "class_001",
+    "name": "Morning Flow",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Monday",
+    "date": "2026-08-17",
+    "time": "7:00 AM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 14
+  },
+  {
+    "id": "class_002",
+    "name": "Power Cycle",
+    "type": "Cycling",
+    "instructor": "Marcus Lee",
+    "day": "Monday",
+    "date": "2026-08-17",
+    "time": "9:00 AM",
+    "duration": 45,
+    "capacity": 18,
+    "bookedCount": 18
+  },
+  {
+    "id": "class_003",
+    "name": "HIIT 45",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Monday",
+    "date": "2026-08-17",
+    "time": "6:00 PM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 12
+  },
+  {
+    "id": "class_004",
+    "name": "Sunset Yoga",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Monday",
+    "date": "2026-08-17",
+    "time": "7:30 PM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 9
+  },
+
+  {
+    "id": "class_005",
+    "name": "Rise & Ride",
+    "type": "Cycling",
+    "instructor": "Marcus Lee",
+    "day": "Tuesday",
+    "date": "2026-08-18",
+    "time": "7:00 AM",
+    "duration": 45,
+    "capacity": 18,
+    "bookedCount": 11
+  },
+  {
+    "id": "class_006",
+    "name": "Core & Sculpt",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Tuesday",
+    "date": "2026-08-18",
+    "time": "12:00 PM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 13
+  },
+  {
+    "id": "class_007",
+    "name": "Evening Flow",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Tuesday",
+    "date": "2026-08-18",
+    "time": "6:30 PM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 7
+  },
+
+  {
+    "id": "class_008",
+    "name": "Power Cycle",
+    "type": "Cycling",
+    "instructor": "Marcus Lee",
+    "day": "Wednesday",
+    "date": "2026-08-19",
+    "time": "7:00 AM",
+    "duration": 45,
+    "capacity": 18,
+    "bookedCount": 15
+  },
+  {
+    "id": "class_009",
+    "name": "Full Body HIIT",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Wednesday",
+    "date": "2026-08-19",
+    "time": "6:00 PM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 16
+  },
+  {
+    "id": "class_010",
+    "name": "Restorative Flow",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Wednesday",
+    "date": "2026-08-19",
+    "time": "7:30 PM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 10
+  },
+
+  {
+    "id": "class_011",
+    "name": "Morning HIIT",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Thursday",
+    "date": "2026-08-20",
+    "time": "7:00 AM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 13
+  },
+  {
+    "id": "class_012",
+    "name": "Midday Flow",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Thursday",
+    "date": "2026-08-20",
+    "time": "12:00 PM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 6
+  },
+  {
+    "id": "class_013",
+    "name": "Night Ride",
+    "type": "Cycling",
+    "instructor": "Marcus Lee",
+    "day": "Thursday",
+    "date": "2026-08-20",
+    "time": "6:30 PM",
+    "duration": 45,
+    "capacity": 18,
+    "bookedCount": 17
+  },
+
+  {
+    "id": "class_014",
+    "name": "Friday Flow",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Friday",
+    "date": "2026-08-21",
+    "time": "7:00 AM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 12
+  },
+  {
+    "id": "class_015",
+    "name": "Friday HIIT",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Friday",
+    "date": "2026-08-21",
+    "time": "5:30 PM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 14
+  },
+
+  {
+    "id": "class_016",
+    "name": "Weekend Cycle",
+    "type": "Cycling",
+    "instructor": "Marcus Lee",
+    "day": "Saturday",
+    "date": "2026-08-22",
+    "time": "9:00 AM",
+    "duration": 45,
+    "capacity": 18,
+    "bookedCount": 10
+  },
+  {
+    "id": "class_017",
+    "name": "Saturday Sculpt",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Saturday",
+    "date": "2026-08-22",
+    "time": "10:30 AM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 15
+  },
+  {
+    "id": "class_018",
+    "name": "Weekend Wind Down",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Saturday",
+    "date": "2026-08-22",
+    "time": "4:00 PM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 8
+  },
+
+  {
+    "id": "class_019",
+    "name": "Sunday Reset",
+    "type": "Yoga",
+    "instructor": "Sofia Martinez",
+    "day": "Sunday",
+    "date": "2026-08-23",
+    "time": "9:00 AM",
+    "duration": 60,
+    "capacity": 20,
+    "bookedCount": 13
+  },
+  {
+    "id": "class_020",
+    "name": "Sunday Sweat",
+    "type": "HIIT",
+    "instructor": "Avery Thompson",
+    "day": "Sunday",
+    "date": "2026-08-23",
+    "time": "10:30 AM",
+    "duration": 45,
+    "capacity": 16,
+    "bookedCount": 11
+  }
+]
