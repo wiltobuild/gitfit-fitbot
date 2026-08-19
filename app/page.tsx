@@ -1,10 +1,16 @@
 import Link from "next/link";
 
+import { IconCalendar, IconDashboard, IconShield, IconSparkle } from "@/app/components/icons";
 import ModuleCard from "@/app/components/module-card";
 import SiteNav from "@/app/components/site-nav";
 import { getSession } from "@/lib/auth/session";
 
 const quickStarts = ["Build a better routine", "Find my next workout", "Keep the momentum"];
+const modules = [
+  { href: "/chat", title: "Fitbot", description: "Get a plan that keeps you moving.", icon: IconSparkle },
+  { href: "/appointments", title: "Book a Class", description: "Find a class that fits your routine.", icon: IconCalendar },
+  { href: "/dashboard", title: "Your Dashboard", description: "Check in on your progress and plan.", icon: IconDashboard },
+];
 
 export default async function Home() {
   const session = await getSession();
@@ -21,11 +27,11 @@ export default async function Home() {
             <p>Choose where you want to begin today.</p>
           </div>
           <div className="module-grid">
-            <ModuleCard href="/chat" title="Fitbot" description="Get a plan that keeps you moving." icon="✦" />
-            <ModuleCard href="/appointments" title="Book a Class" description="Find a class that fits your routine." icon="◌" />
-            <ModuleCard href="/dashboard" title="Your Dashboard" description="Check in on your progress and plan." icon="↗" />
+            {modules.map((module, index) => (
+              <ModuleCard {...module} animationDelay={`${index * 60}ms`} key={module.href} />
+            ))}
             {session.role === "staff" && (
-              <ModuleCard href="/staff" title="Staff Console" description="Support your members and manage the day." icon="◆" />
+              <ModuleCard href="/staff" title="Staff Console" description="Support your members and manage the day." icon={IconShield} animationDelay="180ms" />
             )}
           </div>
         </section>
@@ -37,8 +43,8 @@ export default async function Home() {
               <h1>Make your next move your strongest one.</h1>
               <p className="hero-description">Fitbot turns &ldquo;I should probably&rdquo; into a real plan. Tell it what you need, and it will help your fitness team get you moving.</p>
               <div className="hero-actions">
-                <Link className="button button-primary" href="/chat">Talk to Fitbot <span aria-hidden="true">→</span></Link>
-                <a className="button button-quiet" href="#how-it-works">How it works</a>
+                <Link className="btn btn-primary" href="/chat">Talk to Fitbot <span aria-hidden="true">→</span></Link>
+                <a className="btn btn-outline" href="#how-it-works">How it works</a>
               </div>
             </div>
 
