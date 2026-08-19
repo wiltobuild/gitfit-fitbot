@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
 
+import { IconUser, MomentumArc } from "@/app/components/icons";
+
 type Message = { role: "assistant" | "user"; content: string };
 
 const starters = ["Help me plan my week", "I need a quick workout", "How do I build consistency?"];
@@ -35,7 +37,7 @@ export function ChatExperience() {
   return <main className="chat-shell">
     <header className="chat-header">
       <Link className="brand" href="/" aria-label="GitFit home"><span className="wordmark">GitFit</span></Link>
-      <div className="bot-status"><span /> Fitbot <small>online</small></div>
+      <div className="bot-status"><span /><b className="bot-status-name">Fitbot</b><small>online</small></div>
       <Link className="back-link" href="/">Exit chat <span aria-hidden="true">↗</span></Link>
       <Link className="text-link" href="/appointments">Book a class</Link>
     </header>
@@ -48,8 +50,8 @@ export function ChatExperience() {
       </aside>
       <section className="chat-panel" aria-label="Conversation with Fitbot">
         <div className="message-list" aria-live="polite">
-          {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className="message-avatar">{message.role === "assistant" ? "F" : "You"}</div><p>{message.content}</p></div>)}
-          {isSending && <div className="message-row assistant"><div className="message-avatar">F</div><p className="typing"><i /><i /><i /></p></div>}
+          {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p>{message.content}</p></div>)}
+          {isSending && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><MomentumArc /></div><p className="typing"><i /><i /><i /></p></div>}
         </div>
         {messages.length === 1 && <div className="chat-starters">{starters.map((starter) => <button key={starter} onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}
         <form className="chat-form" onSubmit={(event) => sendMessage(event)}>

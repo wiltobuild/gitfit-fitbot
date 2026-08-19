@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { IconClose, IconSparkle, MomentumArc } from "@/app/components/icons";
+import { IconClose, IconSparkle, IconUser, MomentumArc } from "@/app/components/icons";
 
 type Message = { role: "assistant" | "user"; content: string };
 
@@ -70,12 +70,12 @@ export function ChatbotOverlay() {
   return (
     <section className="chatbot-overlay animate-scale-in" aria-label="Conversation with Fitbot">
       <header className="chatbot-overlay-header">
-        <div><span className="message-avatar">F</span><span className="wordmark">Fitbot</span></div>
+        <div><span className="message-avatar assistant-avatar"><MomentumArc /></span><span className="wordmark">Fitbot</span></div>
         <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Fitbot chat"><IconClose /></button>
       </header>
       <div className="message-list chatbot-message-list" ref={messageListRef} aria-live="polite">
-        {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className="message-avatar">{message.role === "assistant" ? "F" : "You"}</div><p>{message.content}</p></div>)}
-        {isSending && <div className="message-row assistant"><div className="message-avatar">F</div><p className="typing"><i /><i /><i /></p></div>}
+        {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p>{message.content}</p></div>)}
+        {isSending && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><MomentumArc /></div><p className="typing"><i /><i /><i /></p></div>}
       </div>
       {messages.length === 1 && <div className="chat-starters chatbot-starters">{starters.map((starter) => <button key={starter} type="button" onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}
       <form className="chat-form chatbot-form" onSubmit={sendMessage}>

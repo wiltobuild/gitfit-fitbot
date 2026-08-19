@@ -83,6 +83,15 @@ export function IconClose(props: IconProps) {
   );
 }
 
+export function IconUser(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="8" r="3.25" />
+      <path d="M5.5 20c.65-3.45 3.05-5.25 6.5-5.25s5.85 1.8 6.5 5.25" />
+    </IconBase>
+  );
+}
+
 export function MomentumArc({ className, ...props }: IconProps) {
   return (
     <svg aria-hidden="true" className={className} viewBox="0 0 120 120" fill="none" {...props}>

@@ -1,10 +1,12 @@
 import Link from "next/link";
 
+import { MomentumArc } from "@/app/components/icons";
 import { SignUpForm } from "./sign-up-form";
 
 export default function SignUpPage() {
   return (
     <main className="auth-page">
+      <MomentumArc className="auth-momentum-arc" />
       <section className="surface-card auth-card animate-fade-up">
         <Link className="auth-brand" href="/" aria-label="GitFit home">
           <span className="wordmark">GitFit</span>
