@@ -1,9 +1,8 @@
-export default function AppointmentsPage() {
-  return (
-    <iframe
-      src="/appointments-prototype.html"
-      title="Membership booking"
-      className="h-screen w-full border-0"
-    />
-  );
+import { requireUserOrRedirect } from "@/lib/auth/session";
+
+import { AppointmentsExperience } from "./appointments-experience";
+
+export default async function AppointmentsPage() {
+  await requireUserOrRedirect();
+  return <AppointmentsExperience />;
 }

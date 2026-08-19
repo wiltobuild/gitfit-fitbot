@@ -1,23 +1,32 @@
 import { NextResponse } from "next/server";
-import { reserve } from "@/lib/appointments-store";
+
+import { UnauthorizedError, requireUserOrThrow } from "@/lib/auth/session";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+const errorResponse = (code: string, message: string, status: number) =>
+  NextResponse.json({ error: { code, message, retryable: false } }, { status });
+
 export async function POST(request: Request) {
+  let session;
+  try {
+    session = await requireUserOrThrow();
+  } catch (error) {
+    if (error instanceof UnauthorizedError) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    throw error;
+  }
+
   const body = await request.json().catch(() => null);
   const classId = typeof body?.classId === "string" ? body.classId.trim() : "";
-  if (!classId)
-    return NextResponse.json(
-      {
-        error: {
-          code: "invalid_request",
-          message: "A classId is required.",
-          retryable: false
-        }
-      },
-      { status: 400 }
-    );
-  const result = reserve(classId);
-  if (result.ok) return NextResponse.json(result.state);
-  return NextResponse.json(
-    { error: { code: result.code, message: result.message, retryable: false } },
-    { status: result.code === "class_not_found" ? 404 : 409 }
-  );
+  if (!classId) return errorResponse("invalid_request", "A classId is required.", 400);
+
+  const supabase = await createSupabaseServerClient();
+  const { data: classRow, error: classError } = await supabase.from("classes").select("id").eq("id", classId).maybeSingle();
+  if (classError) throw classError;
+  if (!classRow) return errorResponse("class_not_found", "That class could not be found.", 404);
+
+  const { error } = await supabase.from("bookings").insert({ class_id: classId, user_id: session.user.id });
+  if (!error) return NextResponse.json({ ok: true });
+  if (error.message.toLowerCase().includes("class is full")) return errorResponse("class_full", "That class is full.", 409);
+  if (error.code === "23505") return errorResponse("already_booked", "You’re already booked into that class.", 409);
+  throw error;
 }
