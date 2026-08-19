@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     throw assistantMessageError;
   }
 
-  return Response.json({ reply: result.reply });
+  return Response.json({ reply: result.reply, card: result.card });
 }
 
 export async function GET() {

@@ -4,8 +4,10 @@ import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
 
 import { IconUser, MomentumArc } from "@/app/components/icons";
+import { ChatCard } from "@/app/components/chat-cards";
+import type { RichCard } from "@/lib/chatbot/types";
 
-type Message = { role: "assistant" | "user"; content: string };
+type Message = { role: "assistant" | "user"; content: string; card?: RichCard };
 
 const starters = ["Help me plan my week", "I need a quick workout", "How do I build consistency?"];
 
@@ -25,7 +27,7 @@ export function ChatExperience() {
     try {
       const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) });
       const data = await response.json();
-      setMessages((current) => [...current, { role: "assistant", content: data.reply ?? "I’m here. Let’s take the next step together." }]);
+      setMessages((current) => [...current, { role: "assistant", content: data.reply ?? "I’m here. Let’s take the next step together.", card: data.card }]);
     } catch {
       setMessages((current) => [...current, { role: "assistant", content: "I hit a small snag. Try that again and we’ll keep moving." }]);
     } finally {
@@ -49,8 +51,8 @@ export function ChatExperience() {
         <div className="aside-note"><b>✦</b><span>Try a goal, a question, or just tell me how your week is going.</span></div>
       </aside>
       <section className="chat-panel" aria-label="Conversation with Fitbot">
-        <div className="message-list" aria-live="polite">
-          {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p>{message.content}</p></div>)}
+        <div className="message-list">
+          {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
           {isSending && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><MomentumArc /></div><p className="typing"><i /><i /><i /></p></div>}
         </div>
         {messages.length === 1 && <div className="chat-starters">{starters.map((starter) => <button key={starter} onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}

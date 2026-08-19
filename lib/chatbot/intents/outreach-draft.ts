@@ -63,6 +63,9 @@ export const outreachDraftIntent: Intent = {
       return { reply: "I couldn’t create that outreach draft right now. Please try again shortly." };
     }
 
-    return { reply: `Subject: ${subject}\n\n${body}\n\nThis is only a draft — nothing has been sent. Say 'send outreach to ${name}' to send it.` };
+    return {
+      reply: `Subject: ${subject}\n\n${body}\n\nThis is only a draft — nothing has been sent. Say 'send outreach to ${name}' to send it.`,
+      card: { kind: "outreach", memberName: name, message: `${subject}\n\n${body}`, sent: false },
+    };
   },
 };

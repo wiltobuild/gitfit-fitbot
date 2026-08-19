@@ -3,8 +3,10 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { IconClose, IconSparkle, IconUser, MomentumArc } from "@/app/components/icons";
+import { ChatCard } from "@/app/components/chat-cards";
+import type { RichCard } from "@/lib/chatbot/types";
 
-type Message = { role: "assistant" | "user"; content: string };
+type Message = { role: "assistant" | "user"; content: string; card?: RichCard };
 
 const greeting: Message = {
   role: "assistant",
@@ -53,8 +55,8 @@ export function ChatbotOverlay() {
     try {
       const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message }) });
       if (!response.ok) throw new Error("Unable to send message");
-      const data = (await response.json()) as { reply?: string };
-      setMessages((current) => [...current, { role: "assistant", content: data.reply ?? "I’m here. Let’s take the next step together." }]);
+      const data = (await response.json()) as { reply?: string; card?: RichCard };
+      setMessages((current) => [...current, { role: "assistant", content: data.reply ?? "I’m here. Let’s take the next step together.", card: data.card }]);
     } catch {
       setMessages((current) => [...current, { role: "assistant", content: "I hit a small snag. Try that again and we’ll keep moving." }]);
     } finally {
@@ -73,8 +75,8 @@ export function ChatbotOverlay() {
         <div><span className="message-avatar assistant-avatar"><MomentumArc /></span><span className="wordmark">Fitbot</span></div>
         <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Fitbot chat"><IconClose /></button>
       </header>
-      <div className="message-list chatbot-message-list" ref={messageListRef} aria-live="polite">
-        {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p>{message.content}</p></div>)}
+      <div className="message-list chatbot-message-list" ref={messageListRef}>
+        {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
         {isSending && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><MomentumArc /></div><p className="typing"><i /><i /><i /></p></div>}
       </div>
       {messages.length === 1 && <div className="chat-starters chatbot-starters">{starters.map((starter) => <button key={starter} type="button" onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}

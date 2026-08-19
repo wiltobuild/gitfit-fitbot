@@ -73,6 +73,7 @@ export const memberLookupIntent: Intent = {
         reply: `I found multiple members matching '${searchTerm}'. Please narrow the search:\n${members
           .map((member) => `${member.full_name || member.email} — ${member.email} — ${member.role}`)
           .join("\n")}`,
+        card: { kind: "members", members: members.map((member) => ({ name: member.full_name || member.email, email: member.email, status: member.role })) },
       };
     }
 
@@ -99,6 +100,7 @@ export const memberLookupIntent: Intent = {
 
     return {
       reply: `${member.full_name || "no name on file"}\n${member.email}\nRole: ${member.role}\nMember since: ${formatDate(member.created_at)}\n${bookingsReply}`,
+      card: { kind: "members", members: [{ name: member.full_name || member.email, email: member.email, status: `${member.role} · ${classes.length} upcoming booking${classes.length === 1 ? "" : "s"}` }] },
     };
   },
 };

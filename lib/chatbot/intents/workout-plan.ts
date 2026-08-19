@@ -158,6 +158,10 @@ export const workoutPlanIntent: Intent = {
       "This is a template plan, not personalized coaching—check with a qualified professional for guidance beyond general fitness.",
     ].join("\n\n");
 
-    return { reply, data: { durationMinutes, goal, equipment, level, blocks } };
+    return {
+      reply,
+      data: { durationMinutes, goal, equipment, level, blocks },
+      card: { kind: "workout", title: `${durationMinutes}-minute ${goal} workout`, blocks: blocks.flatMap((block) => block.exercises.map((exercise) => ({ name: `${block.label} · ${exercise.name}`, detail: `${exercise.durationMinutes} min${exercise.notes ? ` · ${exercise.notes}` : ""}` }))) },
+    };
   },
 };

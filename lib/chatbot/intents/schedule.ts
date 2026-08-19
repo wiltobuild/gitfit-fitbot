@@ -179,6 +179,9 @@ export const scheduleIntent: Intent = {
     const remainingNote = classes.length > visibleClasses.length ? ` Showing the first ${visibleClasses.length} of ${classes.length} classes.` : "";
     const introduction = isAvailabilityQuery ? "Here’s the current availability:" : "Here’s the matching schedule:";
 
-    return { reply: `${introduction}\n${listings.join("\n")}${remainingNote}` };
+    return {
+      reply: `${introduction}\n${listings.join("\n")}${remainingNote}`,
+      card: { kind: "schedule", classes: classes.map((classRow) => ({ title: classRow.name, type: classRow.type, instructor: classRow.instructor, date: classRow.class_date, time: classRow.start_time, capacity: classRow.capacity, bookedCount: classRow.booked_count })) },
+    };
   },
 };

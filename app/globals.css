@@ -378,6 +378,29 @@ h1,h2 { font-family:var(--font-baloo-2), ui-rounded, sans-serif; letter-spacing:
 .appointments-shell .spots.badge-success { background:var(--color-success-subtle); color:var(--color-ink); }
 .appointments-shell .class-type.badge-success,.appointments-shell .class-type.badge-warning { color:var(--color-ink); }
 .appointments-shell .reserved.badge-success { color:var(--color-ink); }
+
+/* Iteration 4 — instructor identity and compact in-chat result cards. */
+.instructor-avatar { display:grid; flex:0 0 var(--instructor-avatar-size); width:var(--instructor-avatar-size); height:var(--instructor-avatar-size); place-items:center; overflow:hidden; border-radius:50%; background:var(--color-violet-subtle); color:var(--color-violet-dark); box-shadow:0 0 0 2px var(--color-surface),0 0 0 3px var(--color-border); font:700 calc(var(--instructor-avatar-size) * .36)/1 var(--font-display); }
+.instructor-avatar img { display:block; width:100%; height:100%; object-fit:cover; }
+.class-instructor-unit,.skeleton-instructor-unit { display:flex; align-items:center; gap:11px; margin-top:15px; }
+.class-instructor-unit > span { color:var(--color-ink); font-size:14px; font-weight:700; }
+.appointments-shell .class-card:hover.class-type-yoga .instructor-avatar { box-shadow:0 0 0 2px var(--color-surface),0 0 0 3px var(--color-teal); }
+.appointments-shell .class-card:hover.class-type-cycling .instructor-avatar { box-shadow:0 0 0 2px var(--color-surface),0 0 0 3px var(--color-violet); }
+.appointments-shell .class-card:hover.class-type-hiit .instructor-avatar { box-shadow:0 0 0 2px var(--color-surface),0 0 0 3px var(--color-warning); }
+.appointments-shell .class-card-skeleton .skeleton-instructor-avatar { width:40px; height:40px; flex:0 0 40px; border-radius:50%; }
+.appointments-shell .class-card-skeleton .skeleton-instructor { width:43%; height:14px; margin-top:0; }
+.appointments-shell .class-card h3 { margin-top:18px; }
+
+.message-stack { display:flex; flex-direction:column; gap:8px; }
+.chat-card { width:calc(100% - 40px); max-width:calc(88% - 40px); margin-left:40px; border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); box-shadow:var(--shadow-xs); color:var(--color-ink); }
+.chat-schedule-card { overflow:hidden; }
+.chat-schedule-row { display:flex; align-items:center; gap:9px; min-height:54px; padding:9px 10px; border-bottom:1px solid var(--color-border); border-left:3px solid var(--color-border-strong); }
+.chat-schedule-row.class-type-yoga { border-left-color:var(--color-teal); }.chat-schedule-row.class-type-cycling { border-left-color:var(--color-violet); }.chat-schedule-row.class-type-hiit { border-left-color:var(--color-warning); }
+.chat-schedule-summary { display:grid; min-width:0; flex:1; gap:2px; }.chat-schedule-summary strong,.chat-member-row strong { overflow:hidden; color:var(--color-ink); font-size:12px; line-height:1.2; text-overflow:ellipsis; white-space:nowrap; }.chat-schedule-summary strong { display:flex; align-items:baseline; justify-content:space-between; gap:6px; }.chat-schedule-summary strong small { flex:0 0 auto; color:var(--color-muted); font:600 10px/1 var(--font-body); }.chat-schedule-summary span,.chat-member-row div span { overflow:hidden; color:var(--color-muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }.chat-card .badge { flex:0 0 auto; padding:4px 7px; font-size:10px; }.chat-card-link { display:block; padding:10px; color:var(--color-violet-dark); font-size:12px; font-weight:700; text-decoration:underline; text-underline-offset:3px; }
+.chat-members-card { padding:5px 10px; }.chat-member-row { display:flex; align-items:center; gap:9px; padding:7px 0; border-bottom:1px solid var(--color-border); }.chat-member-row:last-child { border-bottom:0; }.chat-member-row > div { display:grid; min-width:0; flex:1; gap:2px; }.member-initials { display:grid; width:30px; height:30px; flex:0 0 30px; place-items:center; border-radius:50%; background:var(--color-violet-subtle); color:var(--color-violet-dark); font:700 11px/1 var(--font-display); }
+.chat-workout-card { padding:13px; }.chat-workout-card h2,.chat-outreach-card h2 { margin:0 0 10px; color:var(--color-ink); font:700 17px/1.15 var(--font-display); }.chat-workout-card ol { display:grid; gap:7px; margin:0; padding-left:22px; }.chat-workout-card li { padding-left:2px; color:var(--color-violet-dark); }.chat-workout-card li strong { color:var(--color-ink); font-size:12px; }.chat-workout-card li span { display:block; color:var(--color-muted); font-size:11px; line-height:1.35; }
+.chat-outreach-card { border:1px dashed var(--color-warning); padding:13px; background:var(--color-warning-subtle); }.chat-outreach-card p { margin:0; white-space:pre-line; color:var(--color-ink-soft); font-size:12px; line-height:1.45; }.chat-outreach-card small { display:block; margin-top:10px; color:var(--color-warning); font-weight:700; }.chat-outreach-card > div { display:flex; flex-wrap:wrap; gap:8px; margin-top:11px; }.chat-outreach-card .btn { min-height:34px; padding-inline:11px; font-size:11px; }
+.chatbot-overlay .chat-card { max-width:calc(100% - 40px); }
 .booking-confirmed { animation:booking-confirmed .35s var(--ease-spring) both; }
 @keyframes booking-confirmed { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:scale(1); } }
 
