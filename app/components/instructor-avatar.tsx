@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-type InstructorAvatarProps = { name: string; size: 32 | 40; loading?: "eager" | "lazy" };
+type InstructorAvatarProps = { name: string; size: 32 | 40 | 64; loading?: "eager" | "lazy" };
 
 const instructorPhotoNames = new Set(["sofia martinez", "marcus lee", "avery thompson"]);
 
