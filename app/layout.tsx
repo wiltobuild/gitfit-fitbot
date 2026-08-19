@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import { ChatbotOverlay } from "@/app/components/chatbot-overlay";
+import RouteProgress from "@/app/components/route-progress";
 import { getSession } from "@/lib/auth/session";
 import "./globals.css";
 
@@ -26,7 +27,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang="en" className={`${baloo2.variable} ${inter.variable}`}>
-      <body>{children}{session && <ChatbotOverlay />}</body>
+      <body><RouteProgress />{children}{session && <ChatbotOverlay />}</body>
     </html>
   );
 }

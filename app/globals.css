@@ -309,6 +309,8 @@ button,input { font:inherit; }
 .text-link,.back-link { font-size:14px; font-weight:700; }
 .text-link span,.back-link span { color:var(--violet); font-size:19px; margin-left:4px; }
 .nav-actions { display:flex; align-items:center; gap:18px; }.nav-email { color:var(--muted); font-size:13px; font-weight:700; }.nav-actions form { margin:0; }.nav-sign-out { cursor:pointer; border:0; background:transparent; color:var(--ink); padding:0; }.nav-sign-up { min-height:38px; padding:0 16px; }
+.nav-links { display:flex; align-items:stretch; align-self:stretch; gap:4px; margin-inline:auto; }.nav-link { position:relative; display:inline-flex; align-items:center; gap:7px; padding:0 10px; color:var(--color-muted); font-size:13px; font-weight:700; transition:color .15s var(--ease-out); }.nav-link svg { width:17px; height:17px; }.nav-link:hover,.nav-link.active { color:var(--color-ink); }.nav-link.active::after { position:absolute; right:18%; bottom:4px; left:18%; height:2px; border-radius:999px; background:var(--gradient-brand); content:""; }.nav-link:focus-visible,.nav-sign-out:focus-visible,.brand:focus-visible,.text-link:focus-visible { outline:2px solid var(--color-violet); outline-offset:3px; }
+.route-progress { position:fixed; z-index:100; top:0; left:0; width:100%; height:2px; background:var(--gradient-brand); opacity:0; pointer-events:none; transform:scaleX(0); transform-origin:left; }.route-progress-loading { opacity:1; transform:scaleX(.9); transition:transform .6s var(--ease-out),opacity .1s linear; }.route-progress-complete { opacity:1; transform:scaleX(1); transition:transform .1s var(--ease-out),opacity .1s linear; }.route-progress-fading { opacity:0; transform:scaleX(1); transition:opacity .2s linear; }
 .hero { position:relative; isolation:isolate; min-height:560px; margin-top:32px; overflow:hidden; padding:88px 7% 72px; display:grid; grid-template-columns:1.1fr .9fr; align-items:center; gap:24px; border-radius:var(--radius-xl); background:var(--color-ink-deep); box-shadow:var(--shadow-lg); }
 .hero::before { position:absolute; z-index:-1; inset:-35%; background:radial-gradient(circle at 30% 54%,rgba(31,194,174,.36),transparent 24%),radial-gradient(circle at 71% 40%,rgba(110,63,224,.4),transparent 28%),radial-gradient(circle at 69% 74%,rgba(196,63,214,.3),transparent 23%); content:""; filter:blur(44px); pointer-events:none; }
 .hero-copy { position:relative; z-index:1; }.hero .eyebrow { color:rgba(255,255,255,.8); }.hero .eyebrow span { box-shadow:0 0 0 5px rgba(31,194,174,.16); }.hero h1 { color:var(--color-paper); }.hero-description { color:rgba(255,255,255,.76); }
@@ -354,8 +356,8 @@ h1,h2 { font-family:var(--font-baloo-2), ui-rounded, sans-serif; letter-spacing:
 .momentum-ring svg { width:100%; height:100%; overflow:visible; transform:rotate(-90deg); }
 .momentum-ring-track,.momentum-ring-progress { fill:none; stroke-width:10; }
 .momentum-ring-track { stroke:var(--color-violet-subtle); }
-.momentum-ring-progress { stroke-linecap:round; transition:stroke-dashoffset .35s var(--ease-spring); }
-.momentum-ring-value { position:absolute; color:var(--color-ink); font:700 clamp(52px,8vw,72px)/.8 var(--font-display); letter-spacing:-3px; }
+.momentum-ring-progress { stroke-linecap:round; transition:stroke-dashoffset .7s var(--ease-spring); }
+.momentum-ring-value { position:absolute; display:grid; width:1.35em; height:.85em; place-items:center; color:var(--color-ink); font:700 clamp(52px,8vw,72px)/.8 var(--font-display); font-variant-numeric:tabular-nums; letter-spacing:-3px; }
 .dashboard-momentum { display:flex; align-items:center; gap:28px; margin:26px 0 4px; padding:22px 0; border-bottom:1px solid var(--color-border); }
 .dashboard-momentum h3 { margin:0; color:var(--color-ink); font:700 24px/1.05 var(--font-display); letter-spacing:-.8px; }
 .dashboard-momentum p { margin:8px 0 0; color:var(--color-muted); font-size:14px; line-height:1.5; }
@@ -409,3 +411,4 @@ h1,h2 { font-family:var(--font-baloo-2), ui-rounded, sans-serif; letter-spacing:
 footer span { color:var(--color-violet-dark); }
 .chat-starters button span { color:var(--color-violet-dark); }
 @media (max-width:640px) { .dashboard-momentum { align-items:flex-start; gap:18px; }.momentum-ring { width:144px !important; height:144px !important; }.momentum-ring-value { font-size:54px; }.dashboard-momentum h3 { font-size:21px; } }
+@media (max-width:760px) { .nav { flex-wrap:wrap; gap:10px; }.nav-links { order:3; width:100%; overflow-x:auto; margin:0; }.nav-link { flex:0 0 auto; padding-block:8px; }.nav-actions { margin-left:auto; }.nav-email { display:none; }.appointments-header { padding-inline:26px; } }

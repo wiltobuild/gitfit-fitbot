@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { signOut } from "@/app/actions/auth";
+import NavLinks from "@/app/components/nav-links";
 import { getSession } from "@/lib/auth/session";
 
 export default async function SiteNav() {
@@ -11,6 +12,7 @@ export default async function SiteNav() {
       <Link className="brand" href="/" aria-label="GitFit home">
         <span className="wordmark">GitFit</span>
       </Link>
+      {session ? <NavLinks role={session.role} /> : null}
       <div className="nav-actions">
         {session ? (
           <>
