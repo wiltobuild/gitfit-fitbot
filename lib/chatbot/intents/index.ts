@@ -4,6 +4,7 @@ import { myAppointmentsIntent } from "@/lib/chatbot/intents/my-appointments";
 import { bookClassIntent } from "@/lib/chatbot/intents/book-class";
 import { whoIsBookedIntent } from "@/lib/chatbot/intents/who-is-booked";
 import { memberLookupIntent } from "@/lib/chatbot/intents/member-lookup";
+import { workoutPlanIntent } from "@/lib/chatbot/intents/workout-plan";
 import type { Intent } from "@/lib/chatbot/types";
 
-export const intents: Intent[] = [helpIntent, myAppointmentsIntent, bookClassIntent, whoIsBookedIntent, scheduleIntent, memberLookupIntent];
+export const intents: Intent[] = [helpIntent, myAppointmentsIntent, bookClassIntent, whoIsBookedIntent, scheduleIntent, memberLookupIntent, workoutPlanIntent];

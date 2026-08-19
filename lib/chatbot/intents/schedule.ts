@@ -11,7 +11,13 @@ const weekdayNames = [
   "saturday",
 ];
 
-const scheduleKeywords = [
+// "Strong" keywords are schedule-specific enough to match on their own.
+// "Weak" keywords are bare date/time words that other intents legitimately
+// use too (e.g. "build me a 45-minute workout for today") — matching on
+// these alone caused schedule to shadow workout-plan requests that merely
+// mention "today". Require a strong keyword OR (a weak keyword AND the
+// message doesn't look like a workout/exercise-planning request instead).
+const strongScheduleKeywords = [
   "schedule",
   "class",
   "classes",
@@ -22,11 +28,6 @@ const scheduleKeywords = [
   "spot",
   "full",
   "booked",
-  "today",
-  "tomorrow",
-  "tonight",
-  "this week",
-  ...weekdayNames,
   "sofia",
   "martinez",
   "marcus",
@@ -34,6 +35,10 @@ const scheduleKeywords = [
   "avery",
   "thompson",
 ];
+
+const weakDateKeywords = ["today", "tomorrow", "tonight", "this week", ...weekdayNames];
+
+const workoutPlanShaped = /\b(workout|exercise|training)\b/i;
 
 const instructorTerms = ["sofia", "martinez", "marcus", "lee", "avery", "thompson"];
 
@@ -106,7 +111,13 @@ export const scheduleIntent: Intent = {
   roles: ["client", "staff"],
   match: (message) => {
     const normalizedMessage = message.toLowerCase();
-    return scheduleKeywords.some((keyword) => normalizedMessage.includes(keyword));
+    if (strongScheduleKeywords.some((keyword) => normalizedMessage.includes(keyword))) {
+      return true;
+    }
+    if (workoutPlanShaped.test(normalizedMessage)) {
+      return false;
+    }
+    return weakDateKeywords.some((keyword) => normalizedMessage.includes(keyword));
   },
   handle: async (message) => {
     const normalizedMessage = message.toLowerCase();
