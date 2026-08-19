@@ -137,3 +137,38 @@ the approval itself, not just the reasoning, is durably recorded per the
 project's Standard documentation level.
 
 **Approved by**: user
+
+## 2026-08-19 — `pulse-studio-prototype` embed left in place for Phase 2
+
+Phase 2 (suite landing page) links to `/appointments` unchanged rather
+than resolving its `pulse-studio-prototype` iframe embed vs. a native
+implementation. Deferred to Phase 6 (native Supabase-backed appointments),
+which is where this actually needs to be decided.
+
+**Why**: Phase 2's scope is the landing page and shared nav, not
+appointments' implementation; forcing that decision here would be scope
+creep into Phase 6's job. Partially addresses the open flag left by the
+2026-08-18 architecture-pivot decision above — that flag itself isn't
+fully resolved (still "still a 4-person team" vs. "full pivot" tension),
+just deferred to the phase that actually owns the appointments decision.
+
+**Approved by**: Claude (autonomous execution mode — user explicitly
+authorized running phases through Phase 10 without per-decision
+check-ins, "I will intervene if you go astray")
+
+## 2026-08-19 — Phases 2-10 run autonomously, adversarial review at Phase 10
+
+User authorized running Phases 2 through 10 of the gitfit-suite-buildout
+without per-phase plan-approval check-ins ("I want you to run this on
+your own. I will intervene if you go astray."), with two standing
+conditions: commit as each phase completes, and run an adversarial review
+once Phase 10 lands, then stop before Phase 11 (LLM integration) for a
+user check-in.
+
+**Why**: User's explicit instruction, given after Phase 1's plan-approval
+cycle demonstrated the workflow works end-to-end; removes per-decision
+approval gates for the remaining deterministic-phase work while keeping a
+hard stop before the LLM-integration phase and a structured adversarial
+check at the natural halfway point.
+
+**Approved by**: user
