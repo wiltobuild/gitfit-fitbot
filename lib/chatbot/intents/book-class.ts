@@ -53,9 +53,17 @@ function bookingError(error: { code?: string; message?: string }) {
   return "I couldn’t update your booking right now. Please try again shortly.";
 }
 
+// "cancel my day off"/"cancel my time off" belongs to the time-off intent, not
+// this one — found via adversarial review: the bare "cancel my" trigger below
+// had no guard against time-off-shaped phrasing, so it was winning (registered
+// first) and replying with a confusing "no matching booking" instead of ever
+// reaching time-off's (currently nonexistent) cancel handling. Same class of
+// fix as schedule.ts's otherIntentShaped exclusion.
+const timeOffShaped = /\b(day off|days off|time off|off work|pto)\b/i;
+
 export const bookClassIntent: Intent = {
   id: "book-class", description: "Books or cancels the current member's class booking.", roles: ["client", "staff"],
-  match: (message) => /\b(book me (into|a)|reserve|sign me up for|cancel my)\b/i.test(message),
+  match: (message) => !timeOffShaped.test(message) && /\b(book me (into|a)|reserve|sign me up for|cancel my)\b/i.test(message),
   handle: async (message, session) => {
     const cancelling = /\bcancel\b/i.test(message); const resolved = await findClasses(message, cancelling ? session.user.id : undefined);
     if (resolved.error) return { reply: "I couldn’t retrieve classes right now. Please try again shortly." };
@@ -65,6 +73,18 @@ export const bookClassIntent: Intent = {
       const { error } = await supabase.from("bookings").delete().eq("class_id", classRow.id).eq("user_id", session.user.id);
       return error ? { reply: "I couldn’t cancel that booking right now. Please try again shortly." } : { reply: `Your booking for ${classLabel(classRow)} has been cancelled.` };
     }
+    // Check for an existing booking first so a full-but-already-booked class
+    // reports "already booked" rather than "full" — found via adversarial
+    // review: the capacity trigger fires before Postgres checks the unique
+    // constraint, so bookingError() below never got the chance to see the
+    // duplicate-booking case for a class that also happens to be full.
+    const { data: existing } = await supabase
+      .from("bookings")
+      .select("class_id")
+      .eq("class_id", classRow.id)
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+    if (existing) return { reply: `You’re already booked into ${classLabel(classRow)}.` };
     const { error } = await supabase.from("bookings").insert({ class_id: classRow.id, user_id: session.user.id });
     return error ? { reply: bookingError(error) } : { reply: `You’re booked for ${classLabel(classRow)}.` };
   },
