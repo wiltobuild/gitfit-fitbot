@@ -22,6 +22,7 @@ export function ChatbotOverlay() {
   const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -43,6 +44,28 @@ export function ChatbotOverlay() {
 
   useEffect(() => { if (isOpen) inputRef.current?.focus(); }, [isOpen]);
   useEffect(() => { messageListRef.current?.scrollTo({ top: messageListRef.current.scrollHeight }); }, [isOpen, messages, isSending]);
+
+  useEffect(() => {
+    function openFromLauncher(event: Event) {
+      const detail = (event as CustomEvent<{ preset?: string }>).detail;
+      openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      if (detail?.preset) setInput(detail.preset);
+      setIsOpen(true);
+    }
+
+    window.addEventListener("fitbot:open", openFromLauncher);
+    return () => window.removeEventListener("fitbot:open", openFromLauncher);
+  }, []);
+
+  function openFromFloatingLauncher(event: React.MouseEvent<HTMLButtonElement>) {
+    openerRef.current = event.currentTarget;
+    setIsOpen(true);
+  }
+
+  function closeOverlay() {
+    setIsOpen(false);
+    window.setTimeout(() => openerRef.current?.focus(), 0);
+  }
 
   async function sendMessage(event?: FormEvent<HTMLFormElement>, preset?: string) {
     event?.preventDefault();
@@ -66,14 +89,14 @@ export function ChatbotOverlay() {
   }
 
   if (!isOpen) {
-    return <button className="chatbot-launcher" type="button" onClick={() => setIsOpen(true)} aria-label="Open Fitbot chat"><MomentumArc className="chatbot-launcher-arc" /><IconSparkle /><span>Fitbot</span></button>;
+    return <button className="chatbot-launcher" type="button" onClick={openFromFloatingLauncher} aria-label="Open Fitbot chat"><MomentumArc className="chatbot-launcher-arc" /><IconSparkle /><span>Fitbot</span></button>;
   }
 
   return (
     <section className="chatbot-overlay animate-scale-in" aria-label="Conversation with Fitbot">
       <header className="chatbot-overlay-header">
         <div><span className="message-avatar assistant-avatar"><MomentumArc /></span><span className="wordmark">Fitbot</span></div>
-        <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Fitbot chat"><IconClose /></button>
+        <button type="button" onClick={closeOverlay} aria-label="Close Fitbot chat"><IconClose /></button>
       </header>
       <div className="message-list chatbot-message-list" ref={messageListRef}>
         {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
