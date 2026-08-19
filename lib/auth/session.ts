@@ -39,7 +39,11 @@ export async function getSession(): Promise<SessionUser | null> {
     throw error;
   }
 
-  // The signup trigger normally creates this row; default safely during a race or legacy gap.
+  // The signup trigger normally creates this row; default safely during a race or legacy gap,
+  // but log it — a missing profile row usually means the trigger failed, not a benign race.
+  if (!profile) {
+    console.error(`No profiles row for authenticated user ${user.id} (${user.email}) — signup trigger may have failed.`);
+  }
   const role: UserRole = profile?.role === "staff" ? "staff" : "client";
 
   return { user, role };
