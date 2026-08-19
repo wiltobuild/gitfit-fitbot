@@ -82,3 +82,19 @@ export function IconClose(props: IconProps) {
     </IconBase>
   );
 }
+
+export function MomentumArc({ className, ...props }: IconProps) {
+  return (
+    <svg aria-hidden="true" className={className} viewBox="0 0 120 120" fill="none" {...props}>
+      <defs>
+        <linearGradient id="momentum-arc-gradient" x1="18" y1="95" x2="104" y2="26" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#1FC2AE" />
+          <stop offset=".52" stopColor="#6E3FE0" />
+          <stop offset="1" stopColor="#C43FD6" />
+        </linearGradient>
+      </defs>
+      <path d="M24 86.5A45 45 0 1 1 96 38" stroke="url(#momentum-arc-gradient)" strokeWidth="10" strokeLinecap="round" />
+      <path d="M96 38 100 26" stroke="#C43FD6" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}

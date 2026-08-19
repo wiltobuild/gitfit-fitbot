@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { IconCalendar, IconDashboard, IconShield, IconSparkle } from "@/app/components/icons";
+import { IconCalendar, IconDashboard, IconShield, IconSparkle, MomentumArc } from "@/app/components/icons";
 import ModuleCard from "@/app/components/module-card";
 import SiteNav from "@/app/components/site-nav";
 import { getSession } from "@/lib/auth/session";
@@ -43,20 +43,14 @@ export default async function Home() {
               <h1>Make your next move your strongest one.</h1>
               <p className="hero-description">Fitbot turns &ldquo;I should probably&rdquo; into a real plan. Tell it what you need, and it will help your fitness team get you moving.</p>
               <div className="hero-actions">
-                <Link className="btn btn-primary" href="/chat">Talk to Fitbot <span aria-hidden="true">→</span></Link>
-                <a className="btn btn-outline" href="#how-it-works">How it works</a>
+                <Link className="btn btn-primary" href="/chat">Talk to Fitbot <span aria-hidden="true">&rarr;</span></Link>
+                <a className="btn btn-outline-on-dark" href="#how-it-works">How it works</a>
               </div>
             </div>
 
-            <div className="hero-orbit" aria-label="Fitness planning made simple">
-              <div className="orbit-glow" />
-              <div className="orbit-core"><span>FIT</span><strong>BOT</strong><i>✦</i></div>
-              <div className="orbit-tag tag-top">YOUR GOALS</div>
-              <div className="orbit-tag tag-right">YOUR PLAN</div>
-              <div className="orbit-tag tag-bottom">YOUR WIN</div>
-              <div className="orbit-dot dot-one" />
-              <div className="orbit-dot dot-two" />
-              <div className="orbit-dot dot-three" />
+            <div className="hero-momentum" aria-label="Fitness planning momentum">
+              <MomentumArc />
+              <span>Move forward</span>
             </div>
           </section>
 
@@ -70,7 +64,7 @@ export default async function Home() {
                 <Link href="/chat" className="starter-card" key={item}>
                   <span>0{index + 1}</span>
                   {item}
-                  <b>→</b>
+                  <b>&rarr;</b>
                 </Link>
               ))}
             </div>
@@ -78,7 +72,7 @@ export default async function Home() {
         </>
       )}
 
-      <footer>GitFit <span>•</span> Move with purpose.</footer>
+      <footer>GitFit <span>&bull;</span> Move with purpose.</footer>
     </main>
   );
 }

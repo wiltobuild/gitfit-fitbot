@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 
-import { IconClose, IconSparkle } from "@/app/components/icons";
+import { IconClose, IconSparkle, MomentumArc } from "@/app/components/icons";
 
 type Message = { role: "assistant" | "user"; content: string };
 
@@ -64,7 +64,7 @@ export function ChatbotOverlay() {
   }
 
   if (!isOpen) {
-    return <button className="chatbot-launcher" type="button" onClick={() => setIsOpen(true)} aria-label="Open Fitbot chat"><IconSparkle /><span>Fitbot</span></button>;
+    return <button className="chatbot-launcher" type="button" onClick={() => setIsOpen(true)} aria-label="Open Fitbot chat"><MomentumArc className="chatbot-launcher-arc" /><IconSparkle /><span>Fitbot</span></button>;
   }
 
   return (
