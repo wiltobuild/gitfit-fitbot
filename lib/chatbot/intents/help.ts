@@ -15,13 +15,13 @@ export const helpIntent: Intent = {
     if (session.role === "staff") {
       return {
         reply:
-          "I’m here to help you stay connected to your fitness routine. Right now, I can chat through your fitness goals, point you to the Book a Class module to reserve a class, and help you check your dashboard. Staff-specific tools like schedule queries and member lookup are coming soon.",
+          "I’m here to help you stay connected to your fitness routine. Right now, I can chat through your fitness goals, point you to the Book a Class module to reserve a class, help you check your dashboard, and answer schedule questions — ask about a day, an instructor, a class type, or how full a class is. Member lookup and more staff tools are coming soon.",
       };
     }
 
     return {
       reply:
-        "I’m here to help you keep moving. Right now, we can talk through your fitness goals, I can point you to the Book a Class module to reserve a class, and help you check your dashboard. Let’s make this week count.",
+        "I’m here to help you keep moving. Right now, we can talk through your fitness goals, I can point you to the Book a Class module to reserve a class, help you check your dashboard, and answer schedule questions — ask about a day, an instructor, a class type, or how full a class is. Let’s make this week count.",
     };
   },
 };
