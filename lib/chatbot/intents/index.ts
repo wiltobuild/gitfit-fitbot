@@ -5,6 +5,11 @@ import { bookClassIntent } from "@/lib/chatbot/intents/book-class";
 import { whoIsBookedIntent } from "@/lib/chatbot/intents/who-is-booked";
 import { memberLookupIntent } from "@/lib/chatbot/intents/member-lookup";
 import { workoutPlanIntent } from "@/lib/chatbot/intents/workout-plan";
+import { timeOffIntent } from "@/lib/chatbot/intents/time-off";
 import type { Intent } from "@/lib/chatbot/types";
 
-export const intents: Intent[] = [helpIntent, myAppointmentsIntent, bookClassIntent, whoIsBookedIntent, scheduleIntent, memberLookupIntent, workoutPlanIntent];
+// More specific intents are ordered before `scheduleIntent`, whose weak
+// (bare date-word) matcher fallback is intentionally broad and otherwise
+// wins by registration order — see schedule.ts's `otherIntentShaped`
+// exclusion for the belt-and-suspenders half of this fix.
+export const intents: Intent[] = [helpIntent, myAppointmentsIntent, bookClassIntent, whoIsBookedIntent, memberLookupIntent, workoutPlanIntent, timeOffIntent, scheduleIntent];

@@ -38,7 +38,14 @@ const strongScheduleKeywords = [
 
 const weakDateKeywords = ["today", "tomorrow", "tonight", "this week", ...weekdayNames];
 
-const workoutPlanShaped = /\b(workout|exercise|training)\b/i;
+// Messages shaped like a request for a DIFFERENT intent that also happens to
+// mention a bare date word (a weekday, "today", etc.) should not be
+// swallowed by schedule's weak-keyword fallback. Each addition here is a
+// real collision found via live testing, not speculative — see Phase 8
+// (workout-plan) and Phase 9 (time-off) commit messages. This list is
+// expected to grow; a bare date word is inherently ambiguous and this is
+// the cheapest correct fix without coupling intents to each other's code.
+const otherIntentShaped = /\b(workout|exercise|training|off|pto)\b/i;
 
 const instructorTerms = ["sofia", "martinez", "marcus", "lee", "avery", "thompson"];
 
@@ -114,7 +121,7 @@ export const scheduleIntent: Intent = {
     if (strongScheduleKeywords.some((keyword) => normalizedMessage.includes(keyword))) {
       return true;
     }
-    if (workoutPlanShaped.test(normalizedMessage)) {
+    if (otherIntentShaped.test(normalizedMessage)) {
       return false;
     }
     return weakDateKeywords.some((keyword) => normalizedMessage.includes(keyword));
