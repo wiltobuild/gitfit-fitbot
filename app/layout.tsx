@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Baloo_2, Inter } from "next/font/google";
+import { ChatbotOverlay } from "@/app/components/chatbot-overlay";
+import { getSession } from "@/lib/auth/session";
 import "./globals.css";
 
 const baloo2 = Baloo_2({
@@ -19,10 +21,12 @@ export const metadata: Metadata = {
   description: "GitFit helps you turn fitness intentions into your next move."
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const session = await getSession();
+
   return (
     <html lang="en" className={`${baloo2.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>{children}{session && <ChatbotOverlay />}</body>
     </html>
   );
 }
