@@ -6,7 +6,7 @@ type Member = {
   id: string;
   email: string;
   full_name: string | null;
-  role: string;
+  is_staff: boolean;
   created_at: string;
 };
 
@@ -90,7 +90,7 @@ export function MemberSearch() {
           {members.map((member) => <li className="staff-member-row" key={member.id}>
             <span className="staff-member-initials" aria-hidden="true">{initials(member.full_name, member.email)}</span>
             <div className="staff-member-identity"><strong>{member.full_name || "Unnamed member"}</strong><span>{member.email}</span></div>
-            <span className="badge badge-neutral">{member.role}</span>
+            <span className="badge badge-neutral">{member.is_staff ? "staff" : "member"}</span>
             <span className="staff-member-since">Member since {formatMemberSince(member.created_at)}</span>
             <button className="btn btn-outline btn-sm" type="button" onClick={openFitBot}>Ask FitBot about {member.full_name || "member"}</button>
           </li>)}

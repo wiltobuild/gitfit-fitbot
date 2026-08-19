@@ -1,0 +1,301 @@
+preview_id,email,first_name,last_name,full_name,birthdate,phone,has_account,join_date,membership_tier,membership_status,last_visit_date,lifecycle_status,goals,preferred_class_types,fitness_level,staff_notes,is_instructor
+mem_0001,sofia.martinez@gitfit.demo,Sofia,Martinez,Sofia Martinez,1960-10-02,(555) 675-5525,true,2025-04-15,basic,active,2026-08-16,active,Build endurance; Improve flexibility,Yoga; Cycling,intermediate,,true
+mem_0002,marcus.lee@gitfit.demo,Marcus,Lee,Marcus Lee,1996-02-16,(555) 889-7138,true,2025-02-05,premium,active,2026-08-14,active,Stress relief,Yoga,beginner,,true
+mem_0003,avery.thompson@gitfit.demo,Avery,Thompson,Avery Thompson,1984-07-23,(555) 848-2590,true,2026-02-02,premium,active,2026-08-06,active,Build endurance,HIIT; Yoga,beginner,,true
+mem_0004,jacky.ohara@gitfit.demo,Jacky,O'Hara,Jacky O'Hara,1968-02-07,(555) 881-2699,false,2025-11-17,basic,active,2026-08-13,active,Build endurance,Cycling,intermediate,,false
+mem_0005,alba.heaney@gitfit.demo,Alba,Heaney,Alba Heaney,1969-04-28,(555) 881-5551,false,2025-08-01,basic,active,2026-08-17,active,Train for an event,HIIT; Yoga,advanced,,false
+mem_0006,antonetta.ebert@gitfit.demo,Antonetta,Ebert,Antonetta Ebert,1957-11-23,(555) 420-2859,false,2025-11-17,basic,active,2026-08-07,active,Improve flexibility,Cycling; Yoga,advanced,,false
+mem_0007,margret.jenkins@gitfit.demo,Margret,Jenkins,Margret Jenkins,1961-04-07,(555) 969-1658,false,2024-09-12,premium,active,2026-08-13,active,Train for an event,Cycling; HIIT,beginner,,false
+mem_0008,grant.hackett@gitfit.demo,Grant,Hackett,Grant Hackett,1986-11-10,(555) 458-8647,false,2024-10-11,basic,active,2026-08-10,active,Train for an event; General fitness,HIIT,intermediate,Very engaged — potential class ambassador.,false
+mem_0009,monique.homenick@gitfit.demo,Monique,Homenick,Monique Homenick,1984-10-06,(555) 383-9077,false,2026-01-22,premium,active,2026-08-14,active,Train for an event; General fitness,Yoga; HIIT,intermediate,Prefers morning classes.,false
+mem_0010,justyn.anderson@gitfit.demo,Justyn,Anderson,Justyn Anderson,1971-01-07,(555) 997-1842,false,2025-12-06,premium,active,2026-08-13,active,Improve flexibility; Build strength,Yoga,beginner,,false
+mem_0011,abner.ohara@gitfit.demo,Abner,O'Hara,Abner O'Hara,1971-01-07,(555) 901-5788,false,2025-11-22,basic,active,2026-08-16,active,Lose weight,HIIT,beginner,,false
+mem_0012,fred.collier@gitfit.demo,Fred,Collier,Fred Collier,1993-10-14,(555) 362-8352,false,2025-05-07,basic,active,2026-08-08,active,Build endurance,Yoga,advanced,,false
+mem_0013,angeline.oberbrunner@gitfit.demo,Angeline,Oberbrunner,Angeline Oberbrunner,1975-02-19,(555) 640-7223,true,2024-10-10,basic,active,2026-08-06,active,Improve flexibility; Build strength,Yoga; HIIT,beginner,,false
+mem_0014,demarco.oberbrunner@gitfit.demo,Demarco,Oberbrunner,Demarco Oberbrunner,1987-01-19,(555) 293-7388,false,2025-05-18,basic,active,2026-08-12,active,Improve flexibility,Cycling; Yoga,beginner,,false
+mem_0015,daphnee.faheyconsidine@gitfit.demo,Daphnee,Fahey-Considine,Daphnee Fahey-Considine,2005-02-13,(555) 906-5400,false,2026-03-29,basic,active,2026-08-09,active,Improve flexibility; Train for an event,HIIT,advanced,,false
+mem_0016,sharon.boehm@gitfit.demo,Sharon,Boehm,Sharon Boehm,1967-10-31,(555) 699-8591,false,2025-05-20,premium,active,2026-08-15,active,Lose weight,Yoga,advanced,,false
+mem_0017,dewey.keeling@gitfit.demo,Dewey,Keeling,Dewey Keeling,1969-01-13,(555) 493-5780,false,2025-12-17,basic,active,2026-08-11,active,Build endurance; General fitness,Yoga; Cycling,intermediate,,false
+mem_0018,deshaun.skiles@gitfit.demo,Deshaun,Skiles,Deshaun Skiles,2005-12-18,(555) 470-5213,false,2024-09-02,basic,active,2026-08-19,active,General fitness; Improve flexibility,HIIT,beginner,,false
+mem_0019,hailey.thompson@gitfit.demo,Hailey,Thompson,Hailey Thompson,1979-12-11,(555) 491-0176,false,2026-07-04,premium,active,2026-08-16,active,Stress relief; Lose weight,Cycling,advanced,,false
+mem_0020,trevion.russelflatley@gitfit.demo,Trevion,Russel-Flatley,Trevion Russel-Flatley,1996-01-02,(555) 335-7779,false,2025-01-20,premium,active,2026-08-15,active,Improve flexibility,HIIT; Yoga,beginner,,false
+mem_0021,sammy.cremin@gitfit.demo,Sammy,Cremin,Sammy Cremin,1978-07-31,(555) 688-9464,false,2026-02-28,premium,active,2026-08-16,active,Build endurance,Yoga,beginner,,false
+mem_0022,arvid.hartmann@gitfit.demo,Arvid,Hartmann,Arvid Hartmann,1967-02-12,(555) 362-2140,false,2024-10-07,basic,active,2026-08-11,active,Build endurance; Build strength,Yoga,intermediate,,false
+mem_0023,jordane.cronin@gitfit.demo,Jordane,Cronin,Jordane Cronin,1969-03-23,(555) 451-4373,false,2025-04-16,premium,active,2026-08-09,active,Improve flexibility; Lose weight,Yoga; Cycling,beginner,,false
+mem_0024,ryan.kemmer@gitfit.demo,Ryan,Kemmer,Ryan Kemmer,1966-08-04,(555) 206-0107,false,2025-01-14,premium,active,2026-08-10,active,Train for an event; General fitness,Cycling; HIIT,beginner,,false
+mem_0025,dora.ledner@gitfit.demo,Dora,Ledner,Dora Ledner,2001-05-21,(555) 408-2823,true,2025-02-10,basic,active,2026-08-07,active,Build endurance; Build strength,Yoga,advanced,,false
+mem_0026,mamie.jacobs@gitfit.demo,Mamie,Jacobs,Mamie Jacobs,1977-11-17,(555) 864-2032,false,2025-04-09,premium,active,2026-08-19,active,Train for an event,Cycling; HIIT,beginner,,false
+mem_0027,kenton.pagac@gitfit.demo,Kenton,Pagac,Kenton Pagac,2005-02-15,(555) 813-2805,false,2026-07-09,basic,active,2026-08-11,active,Stress relief; Build endurance,Yoga,intermediate,,false
+mem_0028,buck.hermann@gitfit.demo,Buck,Hermann,Buck Hermann,1974-10-08,(555) 294-4469,false,2025-03-01,basic,active,2026-08-18,active,Build strength,Yoga; Cycling,intermediate,,false
+mem_0029,natasha.reichel@gitfit.demo,Natasha,Reichel,Natasha Reichel,1973-02-26,(555) 772-5997,false,2025-07-29,basic,active,2026-08-14,active,General fitness,Cycling; HIIT,beginner,Prefers morning classes.,false
+mem_0030,savannah.moen@gitfit.demo,Savannah,Moen,Savannah Moen,1997-12-03,(555) 368-7382,false,2025-04-02,premium,active,2026-08-12,active,Lose weight,Yoga,beginner,,false
+mem_0031,margarette.fadel@gitfit.demo,Margarette,Fadel,Margarette Fadel,1961-11-29,(555) 476-0297,false,2025-02-06,premium,active,2026-08-12,active,Train for an event; Stress relief,Yoga,advanced,,false
+mem_0032,justice.weber@gitfit.demo,Justice,Weber,Justice Weber,1966-12-12,(555) 542-4513,false,2025-12-09,basic,active,2026-08-06,active,Lose weight; Train for an event,Cycling,intermediate,,false
+mem_0033,florida.davis@gitfit.demo,Florida,Davis,Florida Davis,1981-10-28,(555) 576-0350,false,2026-06-07,premium,active,2026-08-07,active,Build strength,Cycling,beginner,Asked about switching to premium tier.,false
+mem_0034,garland.abbott@gitfit.demo,Garland,Abbott,Garland Abbott,1960-03-16,(555) 761-2852,false,2025-04-10,basic,active,2026-08-06,active,Stress relief,HIIT,intermediate,"Travels frequently, bookings are irregular.",false
+mem_0035,jonatan.kutch@gitfit.demo,Jonatan,Kutch,Jonatan Kutch,1979-01-18,(555) 322-9101,false,2025-06-01,premium,active,2026-08-06,active,Train for an event,Cycling,intermediate,,false
+mem_0036,dannie.wisoky@gitfit.demo,Dannie,Wisoky,Dannie Wisoky,1965-06-01,(555) 907-3567,false,2025-02-26,premium,active,2026-08-06,active,Improve flexibility,HIIT; Yoga,intermediate,,false
+mem_0037,vincenzo.rathgibson@gitfit.demo,Vincenzo,Rath-Gibson,Vincenzo Rath-Gibson,1978-11-22,(555) 569-1101,true,2025-05-05,premium,active,2026-08-17,active,Improve flexibility; Train for an event,HIIT; Cycling,beginner,,false
+mem_0038,justice.balistreri@gitfit.demo,Justice,Balistreri,Justice Balistreri,1983-02-21,(555) 430-5422,false,2025-01-10,premium,active,2026-08-11,active,Lose weight; Improve flexibility,Cycling,beginner,,false
+mem_0039,megane.predovic@gitfit.demo,Megane,Predovic,Megane Predovic,1973-12-10,(555) 814-6086,false,2025-07-07,premium,active,2026-08-07,active,General fitness; Build endurance,Yoga,beginner,,false
+mem_0040,freddie.pouros@gitfit.demo,Freddie,Pouros,Freddie Pouros,1977-07-08,(555) 601-7739,false,2026-01-15,premium,active,2026-08-15,active,General fitness; Improve flexibility,Cycling; HIIT,beginner,,false
+mem_0041,ubaldo.leannon@gitfit.demo,Ubaldo,Leannon,Ubaldo Leannon,1976-06-16,(555) 734-7109,false,2025-12-14,premium,active,2026-08-06,active,Build strength; Stress relief,HIIT,beginner,,false
+mem_0042,dixie.dubuque@gitfit.demo,Dixie,DuBuque,Dixie DuBuque,1966-12-22,(555) 326-8450,false,2025-02-10,premium,active,2026-08-10,active,Train for an event,HIIT,intermediate,,false
+mem_0043,fletcher.swaniawski@gitfit.demo,Fletcher,Swaniawski,Fletcher Swaniawski,1966-11-19,(555) 522-2985,false,2026-04-14,premium,active,2026-08-13,active,Stress relief,HIIT; Cycling,beginner,,false
+mem_0044,ronaldo.cassin@gitfit.demo,Ronaldo,Cassin,Ronaldo Cassin,1988-11-24,(555) 618-4317,false,2026-04-09,premium,active,2026-08-12,active,Stress relief,HIIT,beginner,,false
+mem_0045,theodore.jast@gitfit.demo,Theodore,Jast,Theodore Jast,1985-08-15,(555) 208-2128,false,2025-12-19,premium,active,2026-08-16,active,Lose weight; General fitness,Cycling,beginner,,false
+mem_0046,amanda.ankunding@gitfit.demo,Amanda,Ankunding,Amanda Ankunding,1958-08-16,(555) 848-5757,false,2026-05-15,basic,active,2026-08-07,active,General fitness; Train for an event,HIIT,intermediate,,false
+mem_0047,kayleigh.gerhold@gitfit.demo,Kayleigh,Gerhold,Kayleigh Gerhold,1962-03-24,(555) 239-9589,false,2025-10-28,premium,active,2026-08-13,active,Train for an event; Build strength,Yoga,advanced,Prefers morning classes.,false
+mem_0048,jarod.reichert@gitfit.demo,Jarod,Reichert,Jarod Reichert,2007-08-20,(555) 334-7642,false,2024-08-22,premium,active,2026-08-07,active,General fitness; Lose weight,Cycling,intermediate,,false
+mem_0049,madisyn.bernier@gitfit.demo,Madisyn,Bernier,Madisyn Bernier,1963-06-02,(555) 587-9582,true,2024-10-08,basic,active,2026-08-16,active,Improve flexibility,Cycling,advanced,,false
+mem_0050,jaycee.king@gitfit.demo,Jaycee,King,Jaycee King,1978-10-29,(555) 422-0044,false,2026-04-03,premium,active,2026-08-10,active,Build strength,HIIT,advanced,,false
+mem_0051,gage.mcclure@gitfit.demo,Gage,McClure,Gage McClure,1998-07-03,(555) 451-2833,false,2024-10-09,basic,active,2026-08-16,active,Build endurance; Lose weight,HIIT,advanced,,false
+mem_0052,nina.jones@gitfit.demo,Nina,Jones,Nina Jones,2008-05-01,(555) 761-8049,false,2025-10-14,basic,active,2026-08-12,active,General fitness,Cycling,beginner,Prefers morning classes.,false
+mem_0053,alex.mueller@gitfit.demo,Alex,Mueller,Alex Mueller,1996-05-09,(555) 980-8679,false,2026-02-01,premium,active,2026-08-14,active,Lose weight; Build endurance,Yoga; HIIT,beginner,,false
+mem_0054,robert.aufderhar@gitfit.demo,Robert,Aufderhar,Robert Aufderhar,1977-07-30,(555) 748-5674,false,2025-10-24,premium,active,2026-08-09,active,Train for an event,Yoga,advanced,,false
+mem_0055,glenn.fadelpfeffer@gitfit.demo,Glenn,Fadel-Pfeffer,Glenn Fadel-Pfeffer,1993-10-22,(555) 391-6379,false,2026-07-14,premium,active,2026-08-08,active,Lose weight; Improve flexibility,Yoga; Cycling,advanced,Prefers morning classes.,false
+mem_0056,jamar.dare@gitfit.demo,Jamar,Dare,Jamar Dare,1958-12-16,(555) 768-9825,false,2026-07-14,basic,active,2026-08-11,active,Build strength,Cycling,intermediate,,false
+mem_0057,rubie.wehner@gitfit.demo,Rubie,Wehner,Rubie Wehner,1985-02-09,(555) 471-2339,false,2025-01-24,basic,active,2026-08-16,active,Stress relief,Cycling; HIIT,beginner,,false
+mem_0058,katherine.fadel@gitfit.demo,Katherine,Fadel,Katherine Fadel,2000-05-30,(555) 535-4725,false,2025-03-21,premium,active,2026-08-16,active,Train for an event,HIIT,beginner,,false
+mem_0059,alfredo.kulas@gitfit.demo,Alfredo,Kulas,Alfredo Kulas,1985-03-07,(555) 508-1416,false,2025-02-15,basic,active,2026-08-11,active,Train for an event; Lose weight,Yoga,advanced,,false
+mem_0060,jeanette.glover@gitfit.demo,Jeanette,Glover,Jeanette Glover,1986-10-17,(555) 335-6580,false,2024-09-12,premium,active,2026-08-17,active,Lose weight,HIIT; Cycling,intermediate,Prefers morning classes.,false
+mem_0061,ana.ferry@gitfit.demo,Ana,Ferry,Ana Ferry,1992-12-30,(555) 481-1399,true,2026-03-20,premium,active,2026-08-15,active,Train for an event,Cycling,advanced,,false
+mem_0062,kaci.bergnaum@gitfit.demo,Kaci,Bergnaum,Kaci Bergnaum,1992-08-27,(555) 993-1946,false,2024-09-02,basic,active,2026-08-11,active,Train for an event; Lose weight,Yoga; HIIT,beginner,,false
+mem_0063,carlie.little@gitfit.demo,Carlie,Little,Carlie Little,1987-05-09,(555) 479-6795,false,2024-08-22,basic,active,2026-08-14,active,Train for an event; Stress relief,HIIT; Cycling,advanced,Training for a half-marathon this fall.,false
+mem_0064,eldred.breitenberg@gitfit.demo,Eldred,Breitenberg,Eldred Breitenberg,2003-05-20,(555) 606-5504,false,2026-07-22,basic,active,2026-08-14,active,General fitness,Cycling; HIIT,beginner,,false
+mem_0065,vallie.jacobi@gitfit.demo,Vallie,Jacobi,Vallie Jacobi,1986-10-06,(555) 725-6536,false,2025-11-09,basic,active,2026-08-11,active,General fitness,HIIT,intermediate,,false
+mem_0066,rex.casper@gitfit.demo,Rex,Casper,Rex Casper,1998-02-01,(555) 657-4452,false,2026-05-11,premium,active,2026-08-15,active,Improve flexibility,Yoga; Cycling,advanced,,false
+mem_0067,rosalie.heller@gitfit.demo,Rosalie,Heller,Rosalie Heller,2006-05-23,(555) 356-4814,false,2026-01-24,basic,active,2026-08-15,active,Stress relief; Lose weight,HIIT,intermediate,,false
+mem_0068,idella.yost@gitfit.demo,Idella,Yost,Idella Yost,1961-04-03,(555) 929-0407,false,2025-12-02,basic,active,2026-08-10,active,Train for an event,Yoga; Cycling,beginner,,false
+mem_0069,judd.blick@gitfit.demo,Judd,Blick,Judd Blick,1995-06-28,(555) 797-8940,false,2025-11-09,basic,active,2026-08-11,active,General fitness,Cycling; Yoga,intermediate,,false
+mem_0070,laisha.jenkins@gitfit.demo,Laisha,Jenkins,Laisha Jenkins,2007-03-14,(555) 488-2807,false,2024-11-05,premium,active,2026-08-10,active,General fitness,Yoga,advanced,,false
+mem_0071,dwayne.skiles@gitfit.demo,Dwayne,Skiles,Dwayne Skiles,1990-12-31,(555) 732-2626,false,2024-08-30,premium,active,2026-08-11,active,Stress relief,Cycling; HIIT,beginner,,false
+mem_0072,kobe.turner@gitfit.demo,Kobe,Turner,Kobe Turner,1983-04-27,(555) 462-0406,false,2024-12-27,basic,active,2026-08-10,active,Improve flexibility,Yoga; HIIT,intermediate,,false
+mem_0073,esther.reichel@gitfit.demo,Esther,Reichel,Esther Reichel,1971-09-19,(555) 614-4253,true,2025-11-08,premium,active,2026-08-10,active,Build strength; Build endurance,HIIT,advanced,Very engaged — potential class ambassador.,false
+mem_0074,jacques.lebsack@gitfit.demo,Jacques,Lebsack,Jacques Lebsack,1987-01-21,(555) 890-2650,false,2026-02-26,premium,active,2026-08-11,active,Build endurance,Yoga; Cycling,intermediate,,false
+mem_0075,haley.okuneva@gitfit.demo,Haley,Okuneva,Haley Okuneva,1975-11-07,(555) 877-2676,false,2025-06-06,premium,active,2026-08-07,active,Build strength,Yoga,intermediate,,false
+mem_0076,wilmer.hickle@gitfit.demo,Wilmer,Hickle,Wilmer Hickle,1962-08-09,(555) 611-0811,false,2025-08-18,basic,active,2026-08-19,active,General fitness,Cycling; Yoga,advanced,Prefers morning classes.,false
+mem_0077,dwayne.heathcote@gitfit.demo,Dwayne,Heathcote,Dwayne Heathcote,1996-01-12,(555) 304-3284,false,2026-01-21,basic,active,2026-08-08,active,Stress relief,Yoga,advanced,,false
+mem_0078,danny.streich@gitfit.demo,Danny,Streich,Danny Streich,1962-08-01,(555) 816-8219,false,2025-11-06,premium,active,2026-08-09,active,Improve flexibility,HIIT; Cycling,intermediate,,false
+mem_0079,jalen.feil@gitfit.demo,Jalen,Feil,Jalen Feil,1999-10-28,(555) 912-1373,false,2024-11-14,basic,active,2026-08-15,active,Build endurance; Build strength,Yoga,beginner,,false
+mem_0080,estel.schultz@gitfit.demo,Estel,Schultz,Estel Schultz,1992-05-19,(555) 503-6020,false,2024-09-19,basic,active,2026-08-11,active,Lose weight; Build endurance,HIIT,beginner,Prefers morning classes.,false
+mem_0081,candido.grimes@gitfit.demo,Candido,Grimes,Candido Grimes,1967-10-05,(555) 388-2122,false,2025-12-08,premium,active,2026-08-16,active,General fitness; Build endurance,HIIT; Yoga,intermediate,,false
+mem_0082,luke.quitzon@gitfit.demo,Luke,Quitzon,Luke Quitzon,1967-07-10,(555) 439-8172,false,2026-05-22,premium,active,2026-08-19,active,Train for an event; Build strength,Cycling,intermediate,,false
+mem_0083,samuel.hudson@gitfit.demo,Samuel,Hudson,Samuel Hudson,1958-03-21,(555) 377-3969,false,2025-05-21,basic,active,2026-08-17,active,Build endurance; Stress relief,HIIT,intermediate,,false
+mem_0084,german.graham@gitfit.demo,German,Graham,German Graham,1968-06-26,(555) 630-6687,false,2025-07-12,premium,active,2026-08-15,active,General fitness; Lose weight,HIIT,intermediate,,false
+mem_0085,ova.becker@gitfit.demo,Ova,Becker,Ova Becker,1960-05-18,(555) 917-1744,true,2026-03-10,basic,active,2026-08-19,active,Build strength; Build endurance,HIIT; Yoga,intermediate,Asked about switching to premium tier.,false
+mem_0086,kyla.boyer@gitfit.demo,Kyla,Boyer,Kyla Boyer,1977-12-26,(555) 598-7360,false,2024-11-04,premium,active,2026-08-08,active,Build strength; Stress relief,Yoga,advanced,,false
+mem_0087,bradley.tillmanhermiston@gitfit.demo,Bradley,Tillman-Hermiston,Bradley Tillman-Hermiston,1993-04-09,(555) 595-3675,false,2025-03-05,premium,active,2026-08-09,active,Build strength; Stress relief,HIIT; Yoga,beginner,,false
+mem_0088,victor.wisozk@gitfit.demo,Victor,Wisozk,Victor Wisozk,1958-09-09,(555) 493-4678,false,2025-03-09,premium,active,2026-08-10,active,Stress relief,Cycling; Yoga,advanced,,false
+mem_0089,torey.parker@gitfit.demo,Torey,Parker,Torey Parker,2004-06-03,(555) 292-8325,false,2025-11-29,basic,active,2026-08-12,active,Train for an event,Yoga; HIIT,advanced,,false
+mem_0090,casimir.blanda@gitfit.demo,Casimir,Blanda,Casimir Blanda,1986-11-17,(555) 368-3317,false,2024-11-17,basic,active,2026-08-15,active,Train for an event; Lose weight,Cycling; HIIT,advanced,,false
+mem_0091,lee.dicki@gitfit.demo,Lee,Dicki,Lee Dicki,1964-02-02,(555) 342-9409,false,2026-02-14,basic,active,2026-08-17,active,General fitness; Build strength,Cycling,beginner,,false
+mem_0092,ellis.grady@gitfit.demo,Ellis,Grady,Ellis Grady,1967-03-29,(555) 874-6133,false,2026-01-21,premium,active,2026-08-19,active,Build endurance,HIIT,intermediate,,false
+mem_0093,valentine.hane@gitfit.demo,Valentine,Hane,Valentine Hane,1959-03-12,(555) 835-9003,false,2026-06-16,basic,active,2026-08-07,active,Improve flexibility,Cycling,advanced,,false
+mem_0094,ethan.goyettekling@gitfit.demo,Ethan,Goyette-Kling,Ethan Goyette-Kling,1997-05-25,(555) 715-7436,false,2025-07-28,basic,active,2026-08-12,active,Build strength,Cycling,beginner,,false
+mem_0095,tommie.altenwerth@gitfit.demo,Tommie,Altenwerth,Tommie Altenwerth,1962-10-08,(555) 249-1459,false,2026-03-01,premium,active,2026-08-06,active,Train for an event; Build strength,Cycling,beginner,Prefers morning classes.,false
+mem_0096,jermey.douglas@gitfit.demo,Jermey,Douglas,Jermey Douglas,1957-08-31,(555) 630-2696,false,2026-07-23,basic,active,2026-08-16,active,Train for an event; Build strength,Yoga; Cycling,advanced,,false
+mem_0097,casimir.hilpert@gitfit.demo,Casimir,Hilpert,Casimir Hilpert,1968-01-03,(555) 277-8917,true,2025-10-21,basic,active,2026-08-09,active,Lose weight; Build strength,Cycling,intermediate,,false
+mem_0098,katharina.rau@gitfit.demo,Katharina,Rau,Katharina Rau,1974-01-03,(555) 631-9292,false,2025-05-10,premium,active,2026-08-10,active,Build strength; General fitness,Cycling,advanced,,false
+mem_0099,guadalupe.fisher@gitfit.demo,Guadalupe,Fisher,Guadalupe Fisher,2002-02-05,(555) 358-6021,false,2024-12-26,basic,active,2026-08-16,active,Stress relief,Yoga,intermediate,,false
+mem_0100,herminio.considine@gitfit.demo,Herminio,Considine,Herminio Considine,2000-04-01,(555) 793-7421,false,2025-07-08,basic,active,2026-08-16,active,Lose weight,Yoga; HIIT,beginner,,false
+mem_0101,rashad.moore@gitfit.demo,Rashad,Moore,Rashad Moore,2003-01-20,(555) 741-8913,false,2026-01-21,premium,active,2026-08-07,active,Improve flexibility,HIIT; Yoga,intermediate,,false
+mem_0102,jamie.bergnaum@gitfit.demo,Jamie,Bergnaum,Jamie Bergnaum,1966-05-27,(555) 566-2573,false,2025-10-18,basic,active,2026-08-16,active,Improve flexibility,Yoga; HIIT,intermediate,,false
+mem_0103,kariane.schuppe@gitfit.demo,Kariane,Schuppe,Kariane Schuppe,1988-05-14,(555) 461-3528,false,2025-02-25,premium,active,2026-08-17,active,Build endurance; Build strength,Yoga; Cycling,advanced,,false
+mem_0104,brady.gorczany@gitfit.demo,Brady,Gorczany,Brady Gorczany,2006-07-22,(555) 605-4016,false,2026-04-02,premium,active,2026-08-07,active,Stress relief; Build strength,Cycling,intermediate,,false
+mem_0105,alessia.gibson@gitfit.demo,Alessia,Gibson,Alessia Gibson,1993-05-23,(555) 476-1274,false,2025-02-25,premium,active,2026-08-07,active,Lose weight; Stress relief,Yoga,intermediate,Asked about switching to premium tier.,false
+mem_0106,lilian.hand@gitfit.demo,Lilian,Hand,Lilian Hand,2008-04-29,(555) 400-2137,false,2025-02-05,premium,active,2026-08-13,active,Train for an event,Cycling,advanced,,false
+mem_0107,price.hessel@gitfit.demo,Price,Hessel,Price Hessel,1957-10-13,(555) 294-5373,false,2025-04-27,basic,active,2026-08-09,active,Build endurance,HIIT; Yoga,advanced,Asked about switching to premium tier.,false
+mem_0108,demetris.sanford@gitfit.demo,Demetris,Sanford,Demetris Sanford,1968-04-27,(555) 922-1830,false,2026-04-20,basic,active,2026-08-09,active,Improve flexibility,Cycling,beginner,,false
+mem_0109,nelda.fisher@gitfit.demo,Nelda,Fisher,Nelda Fisher,1979-02-01,(555) 871-6776,true,2026-02-02,premium,active,2026-08-14,active,Stress relief,Yoga; HIIT,intermediate,,false
+mem_0110,essie.schusterkassulke@gitfit.demo,Essie,Schuster-Kassulke,Essie Schuster-Kassulke,1990-12-30,(555) 597-5084,false,2025-06-07,premium,active,2026-08-18,active,Improve flexibility; Stress relief,HIIT; Yoga,intermediate,,false
+mem_0111,kenneth.stamm@gitfit.demo,Kenneth,Stamm,Kenneth Stamm,1992-08-02,(555) 979-7363,false,2025-03-22,premium,active,2026-08-16,active,Train for an event,Yoga; Cycling,advanced,,false
+mem_0112,jules.wiegand@gitfit.demo,Jules,Wiegand,Jules Wiegand,1979-06-03,(555) 730-3069,false,2024-10-24,basic,active,2026-08-11,active,Build endurance,Yoga; HIIT,intermediate,,false
+mem_0113,addie.gislasonfahey@gitfit.demo,Addie,Gislason-Fahey,Addie Gislason-Fahey,1988-08-27,(555) 852-8207,false,2024-09-25,premium,active,2026-08-08,active,Improve flexibility; Train for an event,Cycling; HIIT,beginner,,false
+mem_0114,antwan.bednar@gitfit.demo,Antwan,Bednar,Antwan Bednar,1997-12-07,(555) 705-7204,false,2024-09-23,basic,active,2026-08-17,active,Improve flexibility; Build strength,HIIT,beginner,,false
+mem_0115,durward.yost@gitfit.demo,Durward,Yost,Durward Yost,1998-12-01,(555) 512-6068,false,2024-12-10,premium,active,2026-08-16,active,Lose weight,Cycling; Yoga,intermediate,,false
+mem_0116,tiara.mraz@gitfit.demo,Tiara,Mraz,Tiara Mraz,1980-04-10,(555) 559-0527,false,2026-03-10,basic,active,2026-08-11,active,Train for an event,Cycling,advanced,,false
+mem_0117,sonny.kling@gitfit.demo,Sonny,Kling,Sonny Kling,1964-11-27,(555) 816-2185,false,2025-03-19,premium,active,2026-08-18,active,General fitness; Stress relief,Cycling,intermediate,,false
+mem_0118,sigmund.koelpin@gitfit.demo,Sigmund,Koelpin,Sigmund Koelpin,1980-10-09,(555) 560-0017,false,2025-04-25,basic,active,2026-08-16,active,General fitness; Stress relief,Yoga; HIIT,intermediate,,false
+mem_0119,walter.osinski@gitfit.demo,Walter,Osinski,Walter Osinski,1973-04-11,(555) 883-3018,false,2026-04-27,basic,active,2026-08-07,active,Train for an event,Cycling,intermediate,,false
+mem_0120,tricia.littel@gitfit.demo,Tricia,Littel,Tricia Littel,1990-04-13,(555) 978-6099,false,2025-10-21,premium,active,2026-08-10,active,Build endurance; Stress relief,HIIT,intermediate,,false
+mem_0121,royce.jenkins@gitfit.demo,Royce,Jenkins,Royce Jenkins,1986-06-25,(555) 614-1695,true,2026-01-14,basic,active,2026-08-19,active,Build strength; Improve flexibility,HIIT,advanced,,false
+mem_0122,alexandrine.boehm@gitfit.demo,Alexandrine,Boehm,Alexandrine Boehm,1970-11-11,(555) 246-0459,false,2024-08-26,basic,active,2026-08-15,active,Stress relief,Cycling,intermediate,,false
+mem_0123,kareem.swift@gitfit.demo,Kareem,Swift,Kareem Swift,1979-12-24,(555) 508-5000,false,2025-12-17,premium,active,2026-08-09,active,General fitness,Yoga,intermediate,Asked about switching to premium tier.,false
+mem_0124,carrie.hickle@gitfit.demo,Carrie,Hickle,Carrie Hickle,1988-04-25,(555) 887-5293,false,2026-03-18,basic,active,2026-08-15,active,Lose weight; Train for an event,Yoga,intermediate,,false
+mem_0125,steve.lind@gitfit.demo,Steve,Lind,Steve Lind,1964-12-31,(555) 293-6266,false,2026-05-24,basic,active,2026-08-17,active,Train for an event; Stress relief,Cycling; HIIT,advanced,,false
+mem_0126,robin.emard@gitfit.demo,Robin,Emard,Robin Emard,1959-06-08,(555) 866-9871,false,2025-05-09,basic,active,2026-08-12,active,Lose weight; Improve flexibility,Cycling,intermediate,,false
+mem_0127,laurence.lynch@gitfit.demo,Laurence,Lynch,Laurence Lynch,1984-04-23,(555) 238-0367,false,2024-09-13,premium,active,2026-08-15,active,Build endurance,Yoga,advanced,,false
+mem_0128,sigmund.weissnat@gitfit.demo,Sigmund,Weissnat,Sigmund Weissnat,1993-08-15,(555) 437-8464,false,2024-09-10,basic,active,2026-08-07,active,Improve flexibility; Build strength,Cycling; Yoga,intermediate,,false
+mem_0129,elva.parker@gitfit.demo,Elva,Parker,Elva Parker,1958-10-15,(555) 596-7939,false,2025-09-14,basic,active,2026-08-09,active,Stress relief,HIIT; Yoga,intermediate,Very engaged — potential class ambassador.,false
+mem_0130,omer.schulist@gitfit.demo,Omer,Schulist,Omer Schulist,1962-03-16,(555) 928-8043,false,2024-09-08,premium,active,2026-08-19,active,Improve flexibility,Cycling; Yoga,intermediate,,false
+mem_0131,raquel.gusikowski@gitfit.demo,Raquel,Gusikowski,Raquel Gusikowski,2002-03-04,(555) 578-4714,false,2024-11-29,premium,active,2026-08-19,active,Improve flexibility,Yoga; Cycling,intermediate,,false
+mem_0132,wilbur.mayer@gitfit.demo,Wilbur,Mayer,Wilbur Mayer,1991-04-26,(555) 885-6410,false,2025-10-30,basic,active,2026-08-18,active,General fitness; Lose weight,Cycling,beginner,,false
+mem_0133,stuart.kutch@gitfit.demo,Stuart,Kutch,Stuart Kutch,1960-09-01,(555) 780-9027,true,2025-03-03,premium,active,2026-08-07,active,General fitness; Improve flexibility,Yoga,beginner,,false
+mem_0134,favian.schoen@gitfit.demo,Favian,Schoen,Favian Schoen,1974-06-26,(555) 341-7980,false,2024-10-13,premium,active,2026-08-18,active,Improve flexibility; General fitness,Cycling,intermediate,,false
+mem_0135,mckenna.osinski@gitfit.demo,Mckenna,Osinski,Mckenna Osinski,1974-03-10,(555) 466-6621,false,2024-10-07,premium,active,2026-08-16,active,Stress relief,HIIT; Cycling,intermediate,,false
+mem_0136,rowena.luettgen@gitfit.demo,Rowena,Luettgen,Rowena Luettgen,1967-09-05,(555) 586-6840,false,2025-01-12,basic,active,2026-08-09,active,Stress relief,Yoga; HIIT,beginner,Prefers morning classes.,false
+mem_0137,elwyn.maggio@gitfit.demo,Elwyn,Maggio,Elwyn Maggio,1964-10-03,(555) 563-8527,false,2026-02-14,basic,active,2026-08-15,active,Build endurance,HIIT,advanced,,false
+mem_0138,lauryn.wolf@gitfit.demo,Lauryn,Wolf,Lauryn Wolf,2004-04-04,(555) 697-6366,false,2025-11-21,basic,active,2026-08-17,active,Lose weight; Build strength,HIIT; Cycling,intermediate,,false
+mem_0139,haskell.mitchell@gitfit.demo,Haskell,Mitchell,Haskell Mitchell,1986-06-13,(555) 935-5634,false,2024-11-19,premium,active,2026-08-13,active,Stress relief,HIIT,advanced,,false
+mem_0140,ernie.paucek@gitfit.demo,Ernie,Paucek,Ernie Paucek,1993-12-24,(555) 738-2727,false,2025-02-22,premium,active,2026-08-14,active,Improve flexibility; Lose weight,Yoga; HIIT,advanced,,false
+mem_0141,armando.muller@gitfit.demo,Armando,Muller,Armando Muller,1961-11-19,(555) 303-5058,false,2024-11-30,basic,active,2026-08-16,active,General fitness; Lose weight,HIIT,beginner,,false
+mem_0142,solon.marquardt@gitfit.demo,Solon,Marquardt,Solon Marquardt,1963-09-15,(555) 819-8503,false,2025-07-02,basic,active,2026-08-16,active,General fitness; Train for an event,HIIT; Yoga,intermediate,Asked about switching to premium tier.,false
+mem_0143,eli.koch@gitfit.demo,Eli,Koch,Eli Koch,1994-10-08,(555) 326-4432,false,2024-12-01,premium,active,2026-08-08,active,Lose weight,Cycling; Yoga,beginner,Asked about switching to premium tier.,false
+mem_0144,ward.ernser@gitfit.demo,Ward,Ernser,Ward Ernser,2006-02-03,(555) 876-5970,false,2026-01-20,premium,active,2026-08-19,active,General fitness,Yoga; HIIT,intermediate,Training for a half-marathon this fall.,false
+mem_0145,isac.lynch@gitfit.demo,Isac,Lynch,Isac Lynch,1961-07-22,(555) 788-4501,true,2025-03-01,basic,active,2026-08-13,active,Lose weight; Improve flexibility,HIIT,intermediate,,false
+mem_0146,verner.mertz@gitfit.demo,Verner,Mertz,Verner Mertz,1960-08-30,(555) 544-4564,false,2025-12-07,premium,active,2026-08-14,active,Lose weight,Cycling; HIIT,intermediate,,false
+mem_0147,olga.doyle@gitfit.demo,Olga,Doyle,Olga Doyle,1993-10-24,(555) 397-1784,false,2026-05-19,premium,active,2026-08-12,active,General fitness; Improve flexibility,Yoga; Cycling,advanced,,false
+mem_0148,shaniya.senger@gitfit.demo,Shaniya,Senger,Shaniya Senger,1984-11-28,(555) 260-7380,false,2026-07-29,basic,active,2026-08-11,active,General fitness; Train for an event,HIIT,beginner,,false
+mem_0149,debra.schmidt@gitfit.demo,Debra,Schmidt,Debra Schmidt,1978-10-12,(555) 240-0797,false,2025-10-08,premium,active,2026-08-09,active,Build strength; Stress relief,HIIT,intermediate,,false
+mem_0150,adah.quigley@gitfit.demo,Adah,Quigley,Adah Quigley,1964-02-12,(555) 424-2212,false,2026-05-03,basic,active,2026-08-09,active,Improve flexibility; Lose weight,HIIT,advanced,Prefers morning classes.,false
+mem_0151,gloria.kautzer@gitfit.demo,Gloria,Kautzer,Gloria Kautzer,1989-09-22,(555) 778-3844,false,2025-11-01,premium,active,2026-08-15,active,Build strength; General fitness,Yoga,intermediate,,false
+mem_0152,reginald.brown@gitfit.demo,Reginald,Brown,Reginald Brown,2000-02-07,(555) 300-3174,false,2025-10-16,premium,active,2026-08-10,active,Train for an event; Build endurance,Cycling,advanced,,false
+mem_0153,alyce.hills@gitfit.demo,Alyce,Hills,Alyce Hills,2008-04-03,(555) 664-4282,false,2026-01-19,premium,active,2026-08-14,active,Stress relief; Build strength,Cycling; HIIT,intermediate,,false
+mem_0154,boyd.collins@gitfit.demo,Boyd,Collins,Boyd Collins,2005-10-16,(555) 614-1277,false,2025-02-05,premium,active,2026-08-19,active,Train for an event,Yoga; Cycling,intermediate,,false
+mem_0155,mallie.moore@gitfit.demo,Mallie,Moore,Mallie Moore,1965-02-11,(555) 666-3318,false,2026-05-15,basic,active,2026-08-08,active,Train for an event; General fitness,Yoga; HIIT,beginner,,false
+mem_0156,sunny.wiza@gitfit.demo,Sunny,Wiza,Sunny Wiza,1960-08-24,(555) 740-5145,false,2026-06-21,premium,active,2026-08-16,active,Stress relief,HIIT,intermediate,,false
+mem_0157,marley.lind@gitfit.demo,Marley,Lind,Marley Lind,1976-12-25,(555) 330-2317,true,2026-07-25,premium,active,2026-08-16,active,Improve flexibility; General fitness,Cycling; Yoga,advanced,,false
+mem_0158,lane.swift@gitfit.demo,Lane,Swift,Lane Swift,2002-10-23,(555) 506-8618,false,2024-12-17,premium,active,2026-08-19,active,Build strength; Build endurance,Cycling,beginner,,false
+mem_0159,carlos.jakubowski@gitfit.demo,Carlos,Jakubowski,Carlos Jakubowski,1980-07-30,(555) 677-7418,false,2026-03-04,basic,active,2026-08-07,active,Build strength; Build endurance,Yoga,intermediate,,false
+mem_0160,gladyce.oreillyprosacco@gitfit.demo,Gladyce,O'Reilly-Prosacco,Gladyce O'Reilly-Prosacco,1972-12-03,(555) 749-0454,false,2026-05-09,premium,active,2026-08-12,active,Lose weight,Cycling; HIIT,intermediate,Prefers morning classes.,false
+mem_0161,kellie.ziemann@gitfit.demo,Kellie,Ziemann,Kellie Ziemann,1983-12-12,(555) 924-8559,false,2026-07-26,premium,active,2026-08-06,active,Lose weight,Yoga,intermediate,,false
+mem_0162,boyd.cassin@gitfit.demo,Boyd,Cassin,Boyd Cassin,1962-07-24,(555) 876-8753,false,2025-04-14,premium,active,2026-08-16,active,Improve flexibility; Build strength,Cycling,intermediate,,false
+mem_0163,amely.littel@gitfit.demo,Amely,Littel,Amely Littel,1978-09-15,(555) 643-4633,false,2025-02-12,premium,active,2026-08-12,active,Improve flexibility,Cycling,advanced,Prefers morning classes.,false
+mem_0164,rebeka.stamm@gitfit.demo,Rebeka,Stamm,Rebeka Stamm,1962-06-16,(555) 206-8567,false,2025-05-15,premium,active,2026-08-09,active,Build strength,HIIT,intermediate,,false
+mem_0165,bradford.bechtelar@gitfit.demo,Bradford,Bechtelar,Bradford Bechtelar,1965-11-17,(555) 563-9426,false,2025-12-14,premium,active,2026-08-10,active,Build strength,HIIT; Cycling,intermediate,,false
+mem_0166,kenyon.lehner@gitfit.demo,Kenyon,Lehner,Kenyon Lehner,1971-07-09,(555) 552-4609,false,2025-01-25,premium,active,2026-08-16,active,Improve flexibility,Yoga,advanced,,false
+mem_0167,casimer.kovacek@gitfit.demo,Casimer,Kovacek,Casimer Kovacek,2008-04-18,(555) 694-9594,false,2025-07-05,basic,active,2026-08-16,active,Train for an event; Stress relief,Cycling; Yoga,advanced,,false
+mem_0168,clare.hamill@gitfit.demo,Clare,Hamill,Clare Hamill,1979-12-22,(555) 293-5238,false,2025-08-08,basic,active,2026-08-16,active,Stress relief; Build strength,Cycling,advanced,,false
+mem_0169,elyssa.jenkins@gitfit.demo,Elyssa,Jenkins,Elyssa Jenkins,1993-11-12,(555) 223-2776,true,2026-05-16,basic,active,2026-06-25,at_risk,Build endurance,Yoga,advanced,Prefers morning classes.,false
+mem_0170,geovanny.reichel@gitfit.demo,Geovanny,Reichel,Geovanny Reichel,2001-12-17,(555) 700-4028,false,2026-01-25,premium,paused,2026-07-06,at_risk,Build endurance; Lose weight,HIIT,beginner,,false
+mem_0171,kaley.erdman@gitfit.demo,Kaley,Erdman,Kaley Erdman,1984-01-21,(555) 717-0155,false,2026-04-23,basic,active,2026-07-01,at_risk,Build strength,Yoga,beginner,,false
+mem_0172,gregorio.cummings@gitfit.demo,Gregorio,Cummings,Gregorio Cummings,1974-11-28,(555) 722-6573,false,2024-10-11,premium,active,2026-06-23,at_risk,Stress relief; Train for an event,Cycling; HIIT,intermediate,,false
+mem_0173,vidal.kozey@gitfit.demo,Vidal,Kozey,Vidal Kozey,1958-09-17,(555) 984-6292,false,2025-03-02,basic,active,2026-07-20,at_risk,Train for an event,Cycling,beginner,,false
+mem_0174,asia.luettgen@gitfit.demo,Asia,Luettgen,Asia Luettgen,1958-05-17,(555) 331-1159,false,2024-12-04,premium,active,2026-06-27,at_risk,Build strength; Train for an event,Yoga; HIIT,beginner,,false
+mem_0175,earnest.rowe@gitfit.demo,Earnest,Rowe,Earnest Rowe,1992-06-16,(555) 993-7868,false,2025-11-26,basic,active,2026-07-10,at_risk,Improve flexibility; General fitness,Cycling; Yoga,beginner,,false
+mem_0176,oren.swift@gitfit.demo,Oren,Swift,Oren Swift,1986-10-29,(555) 220-7191,false,2024-11-10,premium,active,2026-06-22,at_risk,Train for an event; Lose weight,HIIT,advanced,,false
+mem_0177,alfredo.jones@gitfit.demo,Alfredo,Jones,Alfredo Jones,1981-05-11,(555) 970-0294,false,2026-02-09,basic,active,2026-07-12,at_risk,Stress relief,HIIT; Cycling,beginner,,false
+mem_0178,gregory.lynch@gitfit.demo,Gregory,Lynch,Gregory Lynch,1975-04-08,(555) 413-1905,false,2025-10-24,basic,active,2026-07-06,at_risk,Train for an event; Lose weight,HIIT,advanced,Training for a half-marathon this fall.,false
+mem_0179,bruce.ryan@gitfit.demo,Bruce,Ryan,Bruce Ryan,1987-03-09,(555) 934-2889,false,2026-03-01,premium,active,2026-07-06,at_risk,Lose weight,Yoga,advanced,,false
+mem_0180,jarred.funk@gitfit.demo,Jarred,Funk,Jarred Funk,1988-11-23,(555) 589-4985,false,2025-04-18,premium,active,2026-07-06,at_risk,Build strength,Cycling; Yoga,beginner,,false
+mem_0181,sandra.gottlieb@gitfit.demo,Sandra,Gottlieb,Sandra Gottlieb,1977-02-18,(555) 796-1558,true,2025-08-17,premium,active,2026-06-29,at_risk,Lose weight; Build strength,Yoga,beginner,Prefers morning classes.,false
+mem_0182,marlin.walsh@gitfit.demo,Marlin,Walsh,Marlin Walsh,1958-01-23,(555) 806-9277,false,2025-11-15,premium,active,2026-06-28,at_risk,Train for an event,HIIT,advanced,,false
+mem_0183,laurine.stokes@gitfit.demo,Laurine,Stokes,Laurine Stokes,1985-04-20,(555) 884-6469,false,2025-09-23,basic,active,2026-06-25,at_risk,General fitness,Cycling; Yoga,advanced,,false
+mem_0184,devyn.mann@gitfit.demo,Devyn,Mann,Devyn Mann,2001-05-03,(555) 230-7493,false,2025-06-18,basic,paused,2026-07-14,at_risk,Build endurance,Yoga,beginner,Asked about switching to premium tier.,false
+mem_0185,clyde.daniel@gitfit.demo,Clyde,Daniel,Clyde Daniel,1967-09-04,(555) 892-5445,false,2026-05-09,basic,paused,2026-07-15,at_risk,Lose weight,HIIT,advanced,,false
+mem_0186,reece.davis@gitfit.demo,Reece,Davis,Reece Davis,1989-12-25,(555) 300-9697,false,2025-05-03,basic,active,2026-07-10,at_risk,Build endurance; Improve flexibility,Cycling,intermediate,,false
+mem_0187,cecelia.braun@gitfit.demo,Cecelia,Braun,Cecelia Braun,1980-12-08,(555) 494-6201,false,2025-03-06,premium,paused,2026-06-21,at_risk,Lose weight; Improve flexibility,Yoga,advanced,Prefers morning classes.,false
+mem_0188,arch.johns@gitfit.demo,Arch,Johns,Arch Johns,2000-12-09,(555) 461-1155,false,2025-01-06,premium,active,2026-07-02,at_risk,Improve flexibility; Train for an event,Yoga,beginner,,false
+mem_0189,vicki.hickle@gitfit.demo,Vicki,Hickle,Vicki Hickle,1968-04-01,(555) 445-8287,false,2024-12-22,premium,active,2026-06-22,at_risk,General fitness,Yoga; Cycling,intermediate,Prefers morning classes.,false
+mem_0190,isabell.hilpert@gitfit.demo,Isabell,Hilpert,Isabell Hilpert,1987-03-11,(555) 947-3539,false,2025-01-22,basic,active,2026-07-03,at_risk,Build strength,Yoga; Cycling,beginner,,false
+mem_0191,buddy.dooley@gitfit.demo,Buddy,Dooley,Buddy Dooley,1994-07-21,(555) 629-3254,false,2025-02-09,premium,paused,2026-07-11,at_risk,Build endurance; Train for an event,Yoga; Cycling,advanced,,false
+mem_0192,jalon.muller@gitfit.demo,Jalon,Muller,Jalon Muller,1979-06-18,(555) 743-6285,false,2025-04-11,basic,active,2026-07-18,at_risk,Lose weight; General fitness,Yoga,intermediate,,false
+mem_0193,jana.walsh@gitfit.demo,Jana,Walsh,Jana Walsh,1988-10-08,(555) 406-4048,true,2025-04-11,basic,active,2026-06-26,at_risk,Train for an event; Improve flexibility,HIIT; Cycling,advanced,,false
+mem_0194,omar.littel@gitfit.demo,Omar,Littel,Omar Littel,2005-09-13,(555) 559-2956,false,2026-05-28,premium,active,2026-07-14,at_risk,General fitness; Lose weight,HIIT,beginner,,false
+mem_0195,wayne.dubuque@gitfit.demo,Wayne,DuBuque,Wayne DuBuque,1988-07-06,(555) 901-1090,false,2026-06-10,basic,active,2026-07-13,at_risk,Lose weight,HIIT; Cycling,intermediate,,false
+mem_0196,kasey.hansen@gitfit.demo,Kasey,Hansen,Kasey Hansen,1963-05-22,(555) 298-3061,false,2024-09-29,premium,active,2026-07-13,at_risk,Stress relief; General fitness,Yoga,intermediate,,false
+mem_0197,arvilla.roob@gitfit.demo,Arvilla,Roob,Arvilla Roob,1958-11-19,(555) 605-4439,false,2026-03-20,basic,active,2026-07-08,at_risk,Improve flexibility,HIIT,beginner,,false
+mem_0198,robyn.tillman@gitfit.demo,Robyn,Tillman,Robyn Tillman,1994-08-30,(555) 780-9897,false,2024-08-25,premium,active,2026-07-19,at_risk,Improve flexibility; Build endurance,Cycling,intermediate,,false
+mem_0199,bobbie.vandervort@gitfit.demo,Bobbie,Vandervort,Bobbie Vandervort,1964-02-29,(555) 601-1933,false,2026-03-07,basic,active,2026-06-29,at_risk,Improve flexibility; Train for an event,Yoga; HIIT,advanced,,false
+mem_0200,braden.doyle@gitfit.demo,Braden,Doyle,Braden Doyle,1985-04-11,(555) 969-7508,false,2025-09-25,basic,active,2026-07-13,at_risk,Improve flexibility,Cycling,intermediate,,false
+mem_0201,amira.altenwerth@gitfit.demo,Amira,Altenwerth,Amira Altenwerth,1969-11-05,(555) 978-7430,false,2025-04-11,basic,active,2026-07-13,at_risk,Lose weight,Yoga,beginner,,false
+mem_0202,meghan.stroman@gitfit.demo,Meghan,Stroman,Meghan Stroman,1998-07-22,(555) 480-9908,false,2025-12-12,premium,active,2026-06-20,at_risk,Stress relief; Train for an event,HIIT; Cycling,intermediate,,false
+mem_0203,roman.oconnell@gitfit.demo,Roman,O'Connell,Roman O'Connell,1961-09-18,(555) 925-3319,false,2026-04-25,premium,paused,2026-07-09,at_risk,Build strength,Yoga; Cycling,intermediate,,false
+mem_0204,jaylon.brakus@gitfit.demo,Jaylon,Brakus,Jaylon Brakus,1985-09-09,(555) 343-9992,false,2026-07-09,premium,active,2026-07-06,at_risk,Train for an event,Cycling; HIIT,beginner,,false
+mem_0205,michelle.lehner@gitfit.demo,Michelle,Lehner,Michelle Lehner,1976-05-12,(555) 947-9209,true,2024-10-29,basic,active,2026-06-20,at_risk,General fitness,Yoga; HIIT,beginner,,false
+mem_0206,itzel.satterfield@gitfit.demo,Itzel,Satterfield,Itzel Satterfield,1999-03-05,(555) 204-8197,false,2025-01-29,premium,paused,2026-07-03,at_risk,Stress relief; Train for an event,Cycling; Yoga,intermediate,Recovering from a knee injury — low impact only for now.,false
+mem_0207,lewis.sporer@gitfit.demo,Lewis,Sporer,Lewis Sporer,1959-05-02,(555) 539-8550,false,2026-06-05,basic,active,2026-07-02,at_risk,Improve flexibility,HIIT; Yoga,beginner,,false
+mem_0208,korbin.hane@gitfit.demo,Korbin,Hane,Korbin Hane,1963-11-04,(555) 895-9287,false,2024-12-29,basic,active,2026-06-27,at_risk,Build endurance; General fitness,Cycling; Yoga,intermediate,,false
+mem_0209,everett.kertzmann@gitfit.demo,Everett,Kertzmann,Everett Kertzmann,1997-08-21,(555) 204-8652,false,2025-09-30,premium,active,2026-07-11,at_risk,Build endurance,Yoga,intermediate,,false
+mem_0210,mckenna.durgan@gitfit.demo,Mckenna,Durgan,Mckenna Durgan,1963-10-15,(555) 431-9848,false,2026-07-17,basic,active,2026-07-09,at_risk,Lose weight,Cycling; Yoga,beginner,Recovering from a knee injury — low impact only for now.,false
+mem_0211,kiara.walker@gitfit.demo,Kiara,Walker,Kiara Walker,2003-03-06,(555) 563-5184,false,2024-12-07,premium,active,2026-06-23,at_risk,Build endurance; Improve flexibility,HIIT; Cycling,intermediate,,false
+mem_0212,chance.berge@gitfit.demo,Chance,Berge,Chance Berge,1958-10-21,(555) 543-3170,false,2025-06-21,premium,active,2026-07-08,at_risk,Train for an event; Stress relief,HIIT,advanced,,false
+mem_0213,jonathon.bernier@gitfit.demo,Jonathon,Bernier,Jonathon Bernier,1989-01-20,(555) 415-2192,false,2024-09-23,premium,active,2026-07-12,at_risk,Build endurance; Improve flexibility,HIIT,intermediate,,false
+mem_0214,josianne.dickens@gitfit.demo,Josianne,Dickens,Josianne Dickens,1988-07-23,(555) 456-3988,false,2026-06-22,basic,active,2026-07-01,at_risk,Train for an event,Cycling; Yoga,beginner,,false
+mem_0215,clare.schaden@gitfit.demo,Clare,Schaden,Clare Schaden,1985-06-05,(555) 938-7924,false,2025-04-03,basic,paused,2026-06-24,at_risk,Stress relief; Improve flexibility,Yoga; HIIT,advanced,,false
+mem_0216,derrick.hoeger@gitfit.demo,Derrick,Hoeger,Derrick Hoeger,1998-09-05,(555) 420-7716,false,2026-07-11,premium,active,2026-07-06,at_risk,Lose weight,Cycling; Yoga,advanced,,false
+mem_0217,ned.sawayn@gitfit.demo,Ned,Sawayn,Ned Sawayn,1975-12-25,(555) 869-8247,true,2025-04-18,premium,active,2026-07-13,at_risk,Build endurance; Improve flexibility,Cycling,beginner,,false
+mem_0218,aaliyah.harris@gitfit.demo,Aaliyah,Harris,Aaliyah Harris,1982-12-25,(555) 297-8415,false,2025-10-01,basic,paused,2026-06-22,at_risk,Build strength; General fitness,HIIT,advanced,,false
+mem_0219,virginie.willms@gitfit.demo,Virginie,Willms,Virginie Willms,1971-06-19,(555) 986-0766,false,2025-02-06,premium,active,2026-07-09,at_risk,Build strength,HIIT; Cycling,intermediate,Asked about switching to premium tier.,false
+mem_0220,jazmin.jones@gitfit.demo,Jazmin,Jones,Jazmin Jones,2006-05-13,(555) 669-0853,false,2025-09-14,premium,active,2026-07-13,at_risk,Stress relief,Yoga; Cycling,advanced,,false
+mem_0221,rafael.lakin@gitfit.demo,Rafael,Lakin,Rafael Lakin,1982-06-06,(555) 625-9750,false,2026-07-13,premium,active,2026-06-27,at_risk,Lose weight,Cycling; HIIT,intermediate,Prefers morning classes.,false
+mem_0222,presley.mayer@gitfit.demo,Presley,Mayer,Presley Mayer,1988-01-14,(555) 363-0510,false,2025-08-01,basic,active,2026-06-29,at_risk,Lose weight; Build strength,Yoga; HIIT,intermediate,,false
+mem_0223,jordan.gutmann@gitfit.demo,Jordan,Gutmann,Jordan Gutmann,1962-05-23,(555) 513-8969,false,2025-04-05,basic,active,2026-07-07,at_risk,Train for an event; Lose weight,Yoga,beginner,,false
+mem_0224,oren.kunze@gitfit.demo,Oren,Kunze,Oren Kunze,1970-02-23,(555) 953-6822,false,2025-03-13,basic,active,2026-07-15,at_risk,Build strength; Stress relief,Cycling; Yoga,intermediate,,false
+mem_0225,audie.lueilwitz@gitfit.demo,Audie,Lueilwitz,Audie Lueilwitz,1960-12-17,(555) 234-5252,false,2025-07-08,premium,active,2026-07-12,at_risk,Stress relief; Build strength,HIIT,beginner,,false
+mem_0226,romaine.schaefer@gitfit.demo,Romaine,Schaefer,Romaine Schaefer,1968-11-23,(555) 509-6225,false,2025-07-24,basic,active,2026-07-06,at_risk,General fitness; Train for an event,Yoga; HIIT,beginner,,false
+mem_0227,hugo.feest@gitfit.demo,Hugo,Feest,Hugo Feest,1998-01-18,(555) 343-8355,false,2024-09-29,basic,active,2026-06-24,at_risk,General fitness; Improve flexibility,Yoga; Cycling,advanced,,false
+mem_0228,salvatore.steuber@gitfit.demo,Salvatore,Steuber,Salvatore Steuber,2005-04-06,(555) 548-2665,false,2025-07-02,premium,active,2026-07-06,at_risk,Stress relief,Yoga,advanced,,false
+mem_0229,deondre.rolfson@gitfit.demo,Deondre,Rolfson,Deondre Rolfson,1963-07-04,(555) 839-6976,true,2025-06-08,premium,active,2026-06-30,at_risk,Train for an event; General fitness,HIIT; Cycling,advanced,,false
+mem_0230,christiana.breitenberg@gitfit.demo,Christiana,Breitenberg,Christiana Breitenberg,1982-10-27,(555) 363-3268,false,2024-09-26,basic,active,2026-07-03,at_risk,Improve flexibility; Stress relief,Cycling,advanced,Prefers morning classes.,false
+mem_0231,nettie.torphy@gitfit.demo,Nettie,Torphy,Nettie Torphy,1958-10-10,(555) 468-8859,false,2025-01-12,basic,active,2026-07-11,at_risk,General fitness,Yoga,advanced,"Travels frequently, bookings are irregular.",false
+mem_0232,al.kertzmannbrakus@gitfit.demo,Al,Kertzmann-Brakus,Al Kertzmann-Brakus,1999-05-05,(555) 671-3770,false,2025-12-09,premium,active,2026-07-19,at_risk,Build endurance,Cycling,intermediate,,false
+mem_0233,dana.heaney@gitfit.demo,Dana,Heaney,Dana Heaney,1965-05-25,(555) 884-0313,false,2025-11-30,premium,active,2026-07-02,at_risk,Train for an event; Build endurance,Cycling; HIIT,intermediate,,false
+mem_0234,shanna.aufderhar@gitfit.demo,Shanna,Aufderhar,Shanna Aufderhar,2005-02-10,(555) 357-1737,false,2024-08-24,premium,active,2026-07-20,at_risk,Build endurance; Build strength,Cycling; Yoga,intermediate,,false
+mem_0235,dario.rowe@gitfit.demo,Dario,Rowe,Dario Rowe,2007-02-24,(555) 865-9621,false,2024-11-22,basic,active,2026-06-23,at_risk,Train for an event; Lose weight,Cycling,intermediate,,false
+mem_0236,erik.jacobi@gitfit.demo,Erik,Jacobi,Erik Jacobi,2005-07-08,(555) 822-1649,false,2026-04-10,premium,active,2026-07-17,at_risk,Stress relief; Train for an event,Cycling; HIIT,intermediate,,false
+mem_0237,jaylen.daniel@gitfit.demo,Jaylen,Daniel,Jaylen Daniel,1968-09-01,(555) 660-6626,false,2025-08-15,premium,active,2026-06-25,at_risk,Build endurance,Yoga,intermediate,,false
+mem_0238,ian.prosacco@gitfit.demo,Ian,Prosacco,Ian Prosacco,1997-03-23,(555) 539-8974,false,2025-04-06,basic,active,2026-06-26,at_risk,Build endurance; General fitness,Cycling,beginner,,false
+mem_0239,ali.satterfield@gitfit.demo,Ali,Satterfield,Ali Satterfield,1980-01-21,(555) 654-1322,false,2025-06-22,basic,active,2026-07-19,at_risk,Build endurance,HIIT; Cycling,beginner,Prefers morning classes.,false
+mem_0240,larue.boehmohara@gitfit.demo,Larue,Boehm-O'Hara,Larue Boehm-O'Hara,2006-11-23,(555) 255-8910,false,2026-02-04,premium,active,2026-06-28,at_risk,Train for an event; Build strength,HIIT; Yoga,intermediate,,false
+mem_0241,reyes.muller@gitfit.demo,Reyes,Muller,Reyes Muller,1984-09-14,(555) 691-6453,true,2024-09-15,basic,paused,2026-07-16,at_risk,General fitness; Build endurance,Yoga; HIIT,beginner,Asked about switching to premium tier.,false
+mem_0242,rhea.wilderman@gitfit.demo,Rhea,Wilderman,Rhea Wilderman,1975-11-11,(555) 250-4007,false,2025-02-11,premium,active,2026-07-12,at_risk,Stress relief,HIIT,beginner,,false
+mem_0243,lynne.prohaska@gitfit.demo,Lynne,Prohaska,Lynne Prohaska,1963-03-25,(555) 512-0744,false,2025-05-22,premium,active,2026-07-11,at_risk,Improve flexibility; Build endurance,Cycling; HIIT,intermediate,,false
+mem_0244,layne.gerhold@gitfit.demo,Layne,Gerhold,Layne Gerhold,1981-12-15,(555) 904-7690,false,2026-06-22,basic,cancelled,2026-01-12,lapsed,Stress relief; Build endurance,Cycling,advanced,,false
+mem_0245,noemi.ferry@gitfit.demo,Noemi,Ferry,Noemi Ferry,1969-05-12,(555) 607-6428,false,2026-05-08,basic,active,2026-04-25,lapsed,Stress relief,Yoga; Cycling,beginner,Training for a half-marathon this fall.,false
+mem_0246,kenton.schmeler@gitfit.demo,Kenton,Schmeler,Kenton Schmeler,1991-06-16,(555) 620-8299,false,2026-02-12,premium,active,2026-04-11,lapsed,Build endurance,Cycling,intermediate,,false
+mem_0247,fannie.collins@gitfit.demo,Fannie,Collins,Fannie Collins,1989-01-05,(555) 766-2339,false,2025-01-08,premium,paused,2026-05-03,lapsed,General fitness,Cycling; HIIT,intermediate,,false
+mem_0248,candido.hermann@gitfit.demo,Candido,Hermann,Candido Hermann,1975-02-26,(555) 807-2366,false,2025-10-04,premium,active,2026-02-28,lapsed,Improve flexibility,Cycling,intermediate,"Travels frequently, bookings are irregular.",false
+mem_0249,minerva.muller@gitfit.demo,Minerva,Muller,Minerva Muller,1972-04-13,(555) 727-7084,false,2025-05-23,basic,active,2026-02-23,lapsed,Lose weight,HIIT; Cycling,intermediate,,false
+mem_0250,adrien.champlin@gitfit.demo,Adrien,Champlin,Adrien Champlin,1982-08-25,(555) 927-9591,false,2025-10-11,basic,active,2026-01-25,lapsed,Lose weight; Improve flexibility,Cycling; Yoga,beginner,,false
+mem_0251,clair.will@gitfit.demo,Clair,Will,Clair Will,1994-05-24,(555) 266-4373,false,2026-05-03,basic,paused,2026-04-20,lapsed,Stress relief,HIIT; Cycling,intermediate,"Travels frequently, bookings are irregular.",false
+mem_0252,alanna.farrell@gitfit.demo,Alanna,Farrell,Alanna Farrell,2002-11-17,(555) 399-1637,false,2024-09-19,premium,paused,2026-03-10,lapsed,Improve flexibility; Train for an event,Yoga,advanced,,false
+mem_0253,cleveland.boyle@gitfit.demo,Cleveland,Boyle,Cleveland Boyle,1978-02-02,(555) 521-9654,true,2026-07-12,premium,cancelled,2026-04-22,lapsed,Build strength,Yoga,beginner,,false
+mem_0254,leroy.borer@gitfit.demo,Leroy,Borer,Leroy Borer,1963-03-20,(555) 854-3878,false,2024-12-23,basic,cancelled,2026-05-12,lapsed,Build endurance; Lose weight,Cycling,advanced,,false
+mem_0255,alexane.rolfsonkessler@gitfit.demo,Alexane,Rolfson-Kessler,Alexane Rolfson-Kessler,2004-02-03,(555) 729-6146,false,2025-10-07,basic,cancelled,2026-05-08,lapsed,General fitness; Lose weight,HIIT,intermediate,,false
+mem_0256,antonio.becker@gitfit.demo,Antonio,Becker,Antonio Becker,1997-01-04,(555) 679-6913,false,2026-03-15,basic,cancelled,2026-04-26,lapsed,Improve flexibility; Build endurance,Cycling; HIIT,advanced,,false
+mem_0257,ellie.feil@gitfit.demo,Ellie,Feil,Ellie Feil,1992-11-10,(555) 935-6682,false,2025-02-22,premium,active,2026-05-10,lapsed,Build endurance,HIIT; Cycling,beginner,,false
+mem_0258,art.donnelly@gitfit.demo,Art,Donnelly,Art Donnelly,1973-07-31,(555) 959-8672,false,2026-05-24,premium,paused,2026-02-09,lapsed,Train for an event,Cycling,intermediate,,false
+mem_0259,kylie.oconner@gitfit.demo,Kylie,O'Conner,Kylie O'Conner,1962-05-13,(555) 321-3498,false,2026-04-25,basic,paused,2026-05-07,lapsed,Improve flexibility; Build strength,Cycling,beginner,,false
+mem_0260,lane.swift2@gitfit.demo,Lane,Swift,Lane Swift,1963-06-09,(555) 456-8713,false,2026-04-18,premium,active,2026-02-21,lapsed,Build endurance; Lose weight,Yoga,beginner,,false
+mem_0261,doreen.legros@gitfit.demo,Doreen,Legros,Doreen Legros,1988-12-02,(555) 520-2381,false,2026-04-11,premium,paused,2026-01-14,lapsed,Build strength,Cycling; HIIT,beginner,,false
+mem_0262,sheila.mohr@gitfit.demo,Sheila,Mohr,Sheila Mohr,1965-01-04,(555) 262-1798,false,2025-05-25,premium,active,2026-01-14,lapsed,Build endurance,Cycling,advanced,,false
+mem_0263,breanna.kozey@gitfit.demo,Breanna,Kozey,Breanna Kozey,1971-08-29,(555) 864-5307,false,2025-07-11,basic,active,2026-04-03,lapsed,Stress relief; Improve flexibility,Yoga; HIIT,intermediate,,false
+mem_0264,abagail.collier@gitfit.demo,Abagail,Collier,Abagail Collier,1998-12-27,(555) 794-1014,false,2024-10-02,basic,active,2026-03-30,lapsed,Improve flexibility; Build strength,HIIT,intermediate,,false
+mem_0265,cleve.strosin@gitfit.demo,Cleve,Strosin,Cleve Strosin,1967-02-24,(555) 694-8589,true,2026-06-16,premium,active,2026-03-03,lapsed,Improve flexibility; Lose weight,Yoga; HIIT,beginner,Prefers morning classes.,false
+mem_0266,serena.wuckert@gitfit.demo,Serena,Wuckert,Serena Wuckert,1997-06-06,(555) 757-3056,false,2025-07-14,basic,active,2026-01-17,lapsed,General fitness,Cycling; Yoga,intermediate,Training for a half-marathon this fall.,false
+mem_0267,camden.stoltenberg@gitfit.demo,Camden,Stoltenberg,Camden Stoltenberg,1966-11-19,(555) 873-6158,false,2025-03-06,premium,active,2026-03-26,lapsed,Build strength; Build endurance,HIIT; Yoga,intermediate,Very engaged — potential class ambassador.,false
+mem_0268,odie.funk@gitfit.demo,Odie,Funk,Odie Funk,2002-10-31,(555) 704-7973,false,2025-02-09,basic,cancelled,2026-02-19,lapsed,Stress relief,Cycling,intermediate,,false
+mem_0269,cierra.weimann@gitfit.demo,Cierra,Weimann,Cierra Weimann,1987-11-24,(555) 380-1256,false,2024-11-09,premium,active,2026-03-15,lapsed,Improve flexibility,Yoga; Cycling,intermediate,"Travels frequently, bookings are irregular.",false
+mem_0270,curt.moore@gitfit.demo,Curt,Moore,Curt Moore,1981-07-18,(555) 449-7786,false,2025-10-10,basic,active,2026-05-14,lapsed,General fitness; Build endurance,Yoga,beginner,Training for a half-marathon this fall.,false
+mem_0271,ari.schuppe@gitfit.demo,Ari,Schuppe,Ari Schuppe,1969-01-31,(555) 238-6670,false,2026-02-21,basic,cancelled,2026-01-11,lapsed,Train for an event; Improve flexibility,Yoga; Cycling,intermediate,,false
+mem_0272,jeannette.fahey@gitfit.demo,Jeannette,Fahey,Jeannette Fahey,1976-02-01,(555) 871-0516,false,2025-01-02,premium,cancelled,2026-03-10,lapsed,Stress relief; Build strength,Cycling,beginner,,false
+mem_0273,lena.stracke@gitfit.demo,Lena,Stracke,Lena Stracke,1981-03-21,(555) 603-7843,false,2026-04-05,basic,cancelled,2026-01-14,lapsed,Build endurance,Yoga; Cycling,advanced,,false
+mem_0274,andrew.kihn@gitfit.demo,Andrew,Kihn,Andrew Kihn,1990-01-21,(555) 229-4737,false,2024-09-13,basic,active,2026-03-06,lapsed,General fitness,Yoga; Cycling,beginner,,false
+mem_0275,merritt.crona@gitfit.demo,Merritt,Crona,Merritt Crona,1985-04-26,(555) 541-6031,false,2025-04-24,basic,paused,2026-05-13,lapsed,Build strength,HIIT,beginner,,false
+mem_0276,ramona.sawayn@gitfit.demo,Ramona,Sawayn,Ramona Sawayn,1984-11-24,(555) 802-3253,false,2025-11-09,basic,cancelled,2025-12-31,lapsed,General fitness,Yoga; Cycling,beginner,,false
+mem_0277,carson.cummings@gitfit.demo,Carson,Cummings,Carson Cummings,1974-10-28,(555) 692-9722,true,2026-06-17,premium,active,2026-05-06,lapsed,Build endurance,HIIT,intermediate,,false
+mem_0278,sonya.jakubowski@gitfit.demo,Sonya,Jakubowski,Sonya Jakubowski,1983-05-09,(555) 973-2140,false,2025-08-16,basic,active,2026-05-20,lapsed,Train for an event; Lose weight,Yoga; Cycling,beginner,,false
+mem_0279,tyrell.robel@gitfit.demo,Tyrell,Robel,Tyrell Robel,2004-11-23,(555) 317-8172,false,2025-08-03,premium,active,2026-04-13,lapsed,General fitness; Build strength,HIIT; Yoga,intermediate,,false
+mem_0280,marcella.von@gitfit.demo,Marcella,Von,Marcella Von,1958-05-22,(555) 693-6233,false,2025-01-27,basic,paused,2026-04-05,lapsed,Build strength; Train for an event,Cycling,beginner,,false
+mem_0281,jody.schmitt@gitfit.demo,Jody,Schmitt,Jody Schmitt,1988-09-24,(555) 389-6567,false,2024-12-14,basic,active,2026-03-15,lapsed,Stress relief,HIIT; Yoga,beginner,"Travels frequently, bookings are irregular.",false
+mem_0282,francis.kunze@gitfit.demo,Francis,Kunze,Francis Kunze,2004-02-28,(555) 996-6452,false,2025-11-14,premium,cancelled,2026-01-29,lapsed,Lose weight; Improve flexibility,HIIT; Yoga,advanced,,false
+mem_0283,jamel.kertzmann@gitfit.demo,Jamel,Kertzmann,Jamel Kertzmann,1992-04-03,(555) 647-2071,false,2025-12-10,basic,paused,2026-02-11,lapsed,Build strength; Improve flexibility,HIIT,beginner,,false
+mem_0284,madisyn.stoltenberg@gitfit.demo,Madisyn,Stoltenberg,Madisyn Stoltenberg,2005-05-15,(555) 396-8534,false,2025-04-12,premium,active,2026-04-17,lapsed,General fitness,Yoga,beginner,,false
+mem_0285,roel.ratke@gitfit.demo,Roel,Ratke,Roel Ratke,1986-02-27,(555) 391-5866,false,2026-05-20,basic,active,2026-03-25,lapsed,Build endurance,Cycling; Yoga,advanced,,false
+mem_0286,franz.emard@gitfit.demo,Franz,Emard,Franz Emard,1971-03-25,(555) 211-4839,false,2025-03-29,premium,active,2026-01-17,lapsed,General fitness; Stress relief,Yoga; HIIT,intermediate,,false
+mem_0287,marlen.simonis@gitfit.demo,Marlen,Simonis,Marlen Simonis,1987-06-29,(555) 324-8152,false,2025-06-12,premium,cancelled,2026-01-16,lapsed,Lose weight,HIIT,intermediate,,false
+mem_0288,arjun.lednerpaucek@gitfit.demo,Arjun,Ledner-Paucek,Arjun Ledner-Paucek,1974-10-19,(555) 236-0210,false,2024-09-21,basic,active,2026-01-23,lapsed,Lose weight; General fitness,Yoga; Cycling,advanced,,false
+mem_0289,zora.carter@gitfit.demo,Zora,Carter,Zora Carter,1979-01-13,(555) 801-0890,true,2025-12-20,basic,active,2026-01-08,lapsed,Lose weight; Build endurance,Cycling; HIIT,beginner,,false
+mem_0290,jermain.hayes@gitfit.demo,Jermain,Hayes,Jermain Hayes,2002-02-10,(555) 367-5091,false,2025-05-04,premium,active,2026-02-10,lapsed,Improve flexibility,Cycling,advanced,,false
+mem_0291,brandi.moen@gitfit.demo,Brandi,Moen,Brandi Moen,1977-05-23,(555) 744-4319,false,2025-07-13,basic,paused,2026-03-17,lapsed,Build endurance,HIIT,advanced,Prefers morning classes.,false
+mem_0292,ardella.damore@gitfit.demo,Ardella,D'Amore,Ardella D'Amore,1958-01-29,(555) 490-9845,false,2026-01-17,basic,active,2026-01-05,lapsed,Improve flexibility,Cycling; Yoga,intermediate,Training for a half-marathon this fall.,false
+mem_0293,fredrick.block@gitfit.demo,Fredrick,Block,Fredrick Block,1958-09-05,(555) 849-8114,false,2025-06-24,basic,cancelled,2026-05-03,lapsed,Build strength; Improve flexibility,HIIT; Yoga,intermediate,,false
+mem_0294,edison.pouros@gitfit.demo,Edison,Pouros,Edison Pouros,1958-11-10,(555) 682-7552,false,2025-08-20,basic,active,2026-03-02,lapsed,Build strength,Cycling; Yoga,beginner,Very engaged — potential class ambassador.,false
+mem_0295,brianne.witting@gitfit.demo,Brianne,Witting,Brianne Witting,1992-04-28,(555) 792-6227,false,2025-11-13,premium,active,2026-02-23,lapsed,Stress relief,HIIT,beginner,,false
+mem_0296,dameon.buckridge@gitfit.demo,Dameon,Buckridge,Dameon Buckridge,1986-11-30,(555) 611-3654,false,2026-04-02,premium,cancelled,2025-12-22,lapsed,Build strength; Build endurance,HIIT; Cycling,intermediate,Training for a half-marathon this fall.,false
+mem_0297,eula.howe@gitfit.demo,Eula,Howe,Eula Howe,1991-05-18,(555) 628-3386,false,2026-03-18,basic,active,2026-02-06,lapsed,Build strength; General fitness,Cycling,intermediate,,false
+mem_0298,trace.dibbert@gitfit.demo,Trace,Dibbert,Trace Dibbert,1977-12-27,(555) 815-4508,false,2026-07-14,premium,active,2026-02-17,lapsed,General fitness,HIIT; Yoga,intermediate,,false
+mem_0299,august.cassin@gitfit.demo,August,Cassin,August Cassin,1992-03-12,(555) 658-8222,false,2025-11-07,basic,active,2026-05-17,lapsed,Stress relief,Yoga; Cycling,beginner,,false
+mem_0300,otis.okunevabode@gitfit.demo,Otis,Okuneva-Bode,Otis Okuneva-Bode,1996-08-01,(555) 661-9588,false,2025-03-18,premium,active,2026-02-15,lapsed,Stress relief; Build strength,Yoga; Cycling,advanced,"Travels frequently, bookings are irregular.",false
