@@ -27,7 +27,7 @@ export default function NavLinks({ role }: NavLinksProps) {
         return (
           <Link className={`nav-link${isActive ? " active" : ""}`} href={href} aria-current={isActive ? "page" : undefined} key={href}>
             <Icon />
-            <span>{label}</span>
+            <span className="sr-only">{label}</span>
           </Link>
         );
       })}
