@@ -2,12 +2,16 @@
 
 import { FormEvent, useEffect, useRef, useState } from "react";
 
+import { IconClose, IconSparkle } from "@/app/components/icons";
+
 type Message = { role: "assistant" | "user"; content: string };
 
 const greeting: Message = {
   role: "assistant",
   content: "Hey, I’m Fitbot. What do you want to move toward today?",
 };
+
+const starters = ["Plan my week", "Give me a quick workout", "Build consistency"];
 
 export function ChatbotOverlay() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,9 +42,9 @@ export function ChatbotOverlay() {
   useEffect(() => { if (isOpen) inputRef.current?.focus(); }, [isOpen]);
   useEffect(() => { messageListRef.current?.scrollTo({ top: messageListRef.current.scrollHeight }); }, [isOpen, messages, isSending]);
 
-  async function sendMessage(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const message = input.trim();
+  async function sendMessage(event?: FormEvent<HTMLFormElement>, preset?: string) {
+    event?.preventDefault();
+    const message = (preset ?? input).trim();
     if (!message || isSending) return;
 
     setMessages((current) => [...current, { role: "user", content: message }]);
@@ -59,18 +63,21 @@ export function ChatbotOverlay() {
     }
   }
 
-  if (!isOpen) return <button className="chatbot-launcher" type="button" onClick={() => setIsOpen(true)} aria-label="Open Fitbot chat">Fitbot</button>;
+  if (!isOpen) {
+    return <button className="chatbot-launcher" type="button" onClick={() => setIsOpen(true)} aria-label="Open Fitbot chat"><IconSparkle /><span>Fitbot</span></button>;
+  }
 
   return (
-    <section className="chatbot-overlay" aria-label="Conversation with Fitbot">
+    <section className="chatbot-overlay animate-scale-in" aria-label="Conversation with Fitbot">
       <header className="chatbot-overlay-header">
-        <div><span className="message-avatar">F</span><strong>Fitbot</strong></div>
-        <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Fitbot chat">×</button>
+        <div><span className="message-avatar">F</span><span className="wordmark">Fitbot</span></div>
+        <button type="button" onClick={() => setIsOpen(false)} aria-label="Close Fitbot chat"><IconClose /></button>
       </header>
       <div className="message-list chatbot-message-list" ref={messageListRef} aria-live="polite">
         {messages.map((message, index) => <div className={`message-row ${message.role}`} key={`${message.role}-${index}`}><div className="message-avatar">{message.role === "assistant" ? "F" : "You"}</div><p>{message.content}</p></div>)}
         {isSending && <div className="message-row assistant"><div className="message-avatar">F</div><p className="typing"><i /><i /><i /></p></div>}
       </div>
+      {messages.length === 1 && <div className="chat-starters chatbot-starters">{starters.map((starter) => <button key={starter} type="button" onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}
       <form className="chat-form chatbot-form" onSubmit={sendMessage}>
         <label className="sr-only" htmlFor="chatbot-message">Message Fitbot</label>
         <input ref={inputRef} id="chatbot-message" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Tell Fitbot what’s on your mind..." disabled={isSending} />

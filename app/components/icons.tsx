@@ -65,3 +65,11 @@ export function IconSpinner(props: IconProps) {
     </IconBase>
   );
 }
+
+export function IconClose(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m6 6 12 12M18 6 6 18" />
+    </IconBase>
+  );
+}
