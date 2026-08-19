@@ -131,6 +131,7 @@ export const timeOffIntent: Intent = {
         reply: `Here are your time-off requests:\n${requests
           .map((request) => `${formatDate(request.requested_date)} — ${request.status}.`)
           .join("\n")}`,
+        card: { kind: "time-off", requests: requests.map((request) => ({ date: request.requested_date, status: request.status })) },
       };
     }
 

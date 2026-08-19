@@ -60,6 +60,7 @@ export const myAppointmentsIntent: Intent = {
       reply: `Here are your upcoming bookings:\n${classes
         .map((classRow) => `${classRow.name} (${classRow.type}) with ${classRow.instructor} — ${formatDate(classRow.class_date)}, ${formatTime(classRow.start_time)}.`)
         .join("\n")}`,
+      card: { kind: "schedule", classes: classes.map((classRow) => ({ title: classRow.name, type: classRow.type, instructor: classRow.instructor, date: classRow.class_date, time: classRow.start_time, capacity: classRow.capacity, bookedCount: classRow.booked_count })) },
     };
   },
 };

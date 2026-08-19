@@ -9,7 +9,7 @@ type MemberRow = {
   created_at: string;
 };
 
-type OutreachMessageRow = { id: string };
+type OutreachMessageRow = { id: string; body: string; sent_at: string | null };
 
 const sendPattern = /\bsend\s+(?:outreach|the\s+promotion|the\s+message)\s+to\b/i;
 
@@ -53,7 +53,7 @@ export const outreachSendIntent: Intent = {
     const name = memberLabel(member);
     const { data: draftData, error: draftError } = await supabase
       .from("outreach_messages")
-      .select("id")
+      .select("id, body, sent_at")
       .eq("target_user_id", member.id)
       .eq("status", "draft")
       .order("created_at", { ascending: false })
@@ -70,16 +70,22 @@ export const outreachSendIntent: Intent = {
     }
 
     // This only updates GitFit's internal record. No email or SMS provider exists.
-    const { error: updateError } = await supabase
+    const { data: sentData, error: updateError } = await supabase
       .from("outreach_messages")
       .update({ status: "sent", sent_at: new Date().toISOString() })
-      .eq("id", draft.id);
+      .eq("id", draft.id)
+      .select("sent_at")
+      .maybeSingle();
 
     if (updateError) {
       console.error("Unable to mark outreach as sent", updateError);
       return { reply: "I couldn’t mark that outreach as sent right now. Please try again shortly." };
     }
 
-    return { reply: `Marked the outreach to ${name} as sent.` };
+    const sentMessage = sentData as Pick<OutreachMessageRow, "sent_at"> | null;
+    return {
+      reply: `Marked the outreach to ${name} as sent.`,
+      card: { kind: "outreach", memberName: name, message: draft.body, sent: true, ...(sentMessage?.sent_at ? { sentAt: sentMessage.sent_at } : {}) },
+    };
   },
 };

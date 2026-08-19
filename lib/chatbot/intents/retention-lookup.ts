@@ -46,6 +46,13 @@ export const retentionLookupIntent: Intent = {
       return { reply: `${caveat}\nNone found.` };
     }
 
-    return { reply: `${caveat}\n${candidates.map((member) => member.full_name || member.email).join("\n")}` };
+    return {
+      reply: `${caveat}\n${candidates.map((member) => member.full_name || member.email).join("\n")}`,
+      card: {
+        kind: "members",
+        title: "Members needing re-engagement",
+        members: candidates.map((member) => ({ name: member.full_name || member.email, email: member.email, status: member.role, reason: "No recorded bookings" })),
+      },
+    };
   },
 };

@@ -26,7 +26,10 @@ export const whoIsBookedIntent: Intent = {
     const { data, error } = await query; const classes = (data ?? []) as ClassRow[];
     if (error) return { reply: "I couldn’t retrieve class bookings right now. Please try again shortly." };
     if (classes.length === 0) return { reply: "I couldn’t find a class matching that request." };
-    if (classes.length > 1) return { reply: `I found a few possible classes. Please be more specific:\n${classes.slice(0, 8).map(label).join("\n")}` };
+    if (classes.length > 1) return {
+      reply: `I found a few possible classes. Please be more specific:\n${classes.slice(0, 8).map(label).join("\n")}`,
+      card: { kind: "schedule", classes: classes.slice(0, 8).map((classRow) => ({ title: classRow.name, type: classRow.type, instructor: classRow.instructor, date: classRow.class_date, time: classRow.start_time, capacity: classRow.capacity, bookedCount: classRow.booked_count })) },
+    };
     const classRow = classes[0];
     // Use classes.booked_count (kept in sync by the bookings triggers) rather than
     // counting bookings rows directly: seed data set booked_count without matching

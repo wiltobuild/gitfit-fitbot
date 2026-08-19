@@ -4,13 +4,18 @@ import { useState } from "react";
 
 import { useToast } from "@/app/components/toaster";
 
-export function OutreachCardActions() {
+export function OutreachCardActions({ sent, sentAt }: { sent: boolean; sentAt?: string }) {
   const [queued, setQueued] = useState(false);
   const { showSuccess } = useToast();
+  const sentLabel = sentAt ? `Sent ${new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(sentAt))}` : "Sent";
 
   function queueOutreach() {
     setQueued(true);
     showSuccess("Outreach queued to send");
+  }
+
+  if (sent) {
+    return <div className="chat-outreach-actions"><span className="badge badge-success">{sentLabel}</span></div>;
   }
 
   return <div className="chat-outreach-actions">
