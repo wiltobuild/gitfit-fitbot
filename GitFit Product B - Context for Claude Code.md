@@ -229,10 +229,15 @@ Starting point, subject to revision after reconciliation:
   - **Section 3 (roles)**: real schema has only `client`/`staff`
     (`supabase/migrations/0001_profiles_and_roles.sql`) — no
     `member`/`trainer`/`manager` split exists anywhere in code or DB. User
-    confirmed (2026-08-19): adopt a real `trainer`/`manager` DB-role split
-    (not a flat staff role with feature-level gating), enforced via RLS,
-    matching this section's original design. Existing `staff` rows will
-    migrate to `manager` to preserve current access.
+    confirmed (2026-08-19): distinguish manager-level staff from
+    trainer-level staff, enforced via RLS, matching this section's
+    permission model — but as a boolean `is_manager` flag on the existing
+    `staff` role rather than a third `role` value (simpler, touches far
+    less code, since `role` itself never changes). "Manager" = `role =
+    'staff' and is_manager = true`; "trainer" = `role = 'staff' and
+    is_manager = false`. Existing `staff` rows backfill `is_manager =
+    true` to preserve current access. See
+    `docs/tasks/operations-dashboard/plan.md` for the full design.
   - **Section 5 (schema)**: shared-Supabase-project assumption holds
     (trivially — it's one app). `classes` (`0004`) exists but is
     read-only/seeded, no `trainer_id` or `promoted` column, no staff

@@ -101,19 +101,28 @@ outreach ended up staff-only by design.
 
 ## 2. Additions needed for the Operations Dashboard (Phases A–D, + partial E)
 
-### Phase A — role split (no new tables)
-- `profiles.role` check constraint widened: `client | trainer | manager`.
-  Existing `staff` rows backfill to `manager` (preserves current
-  full-studio-visibility behavior — today's `staff` accounts behave like a
-  manager, not a trainer scoped to one week).
-- `is_staff(uid)` redefined as `role in ('trainer','manager')` — every
-  existing policy that already calls it (bookings, time_off, outreach,
-  member-lookup) keeps working unmodified.
-- New `is_manager(uid)` helper for manager-exclusive writes (Phases B–D).
+### Phase A — manager flag (no new tables, `role` unchanged)
+- `profiles.role` stays `client | staff` — **not** widened to a third
+  value. Revised 2026-08-19 per user feedback: a boolean is simpler and
+  touches far less code than a 3-value enum, since `role` never changes
+  value or type.
+- New `profiles.is_manager boolean not null default false`, with a check
+  constraint (`not is_manager or role = 'staff'`) so a client can never
+  carry it. Existing `staff` rows backfill to `is_manager = true`
+  (preserves current full-studio-visibility behavior — today's `staff`
+  accounts behave like a manager, not a trainer scoped to one week).
+  "Trainer" = `role = 'staff' and is_manager = false`.
+- `is_staff(uid)` is **unchanged** — still means `role = 'staff'`.
+- New `is_manager(uid)` helper (`role = 'staff' and is_manager`) for
+  manager-exclusive writes (Phases B–D).
 - `protect_profile_role` trigger and the `profiles` UPDATE policy switch
-  their guard from `is_staff` to `is_manager` (a trainer should not be able
-  to edit another profile or any role, only their own) — the `postgres`
-  session exemption from `0002` is preserved unchanged.
+  their guard from `is_staff` to `is_manager` (trainer-level staff should
+  not be able to edit another profile or any role, only their own) — the
+  `postgres` session exemption from `0002` is preserved unchanged.
+- Code footprint: only `lib/auth/session.ts` changes (adds `isManager` to
+  `SessionUser`, two new manager-only guard functions) — every existing
+  `"staff"` literal check across intents/UI/API routes stays as-is. See
+  `plan.md` for the full breakdown.
 
 ### Phase B — request resolution + trainer scoping
 - `time_off_requests.type` column added: `time_off | shift_swap`.
