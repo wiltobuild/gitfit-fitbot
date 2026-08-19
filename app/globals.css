@@ -78,6 +78,7 @@
   --shadow-brand: 0 14px 30px rgba(110, 63, 224, .25);
 
   --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-spring: cubic-bezier(.34, 1.28, .64, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -247,13 +248,13 @@
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-up { animation: fade-up .4s var(--ease-out) both; }
+.animate-fade-up { animation: fade-up .4s var(--ease-spring) both; }
 
 @keyframes scale-in {
   from { opacity: 0; transform: scale(.96); }
   to { opacity: 1; transform: scale(1); }
 }
-.animate-scale-in { animation: scale-in .18s var(--ease-out) both; }
+.animate-scale-in { animation: scale-in .18s var(--ease-spring) both; }
 
 /* Appointments — Stage 4 schedule experience. Specific selectors preserve these
    token-based overrides while the legacy appointments rules remain below. */
@@ -347,3 +348,41 @@ h1,h2 { font-family:var(--font-baloo-2), ui-rounded, sans-serif; letter-spacing:
 .quick-action-staff .quick-action-icon { background:#E9ECF4; color:var(--color-ink); }
 .quick-action-appointments:last-child { grid-column:1 / -1; }
 @media (max-width:640px) { .quick-actions { grid-template-columns:1fr; }.quick-action-fitbot { grid-column:auto; }.quick-action-appointments:last-child { grid-column:auto; } }
+
+/* Iteration 2 â€” functional momentum, quiet schedule identity, and gradient citations. */
+.momentum-ring { position:relative; display:grid; flex:0 0 auto; place-items:center; }
+.momentum-ring svg { width:100%; height:100%; overflow:visible; transform:rotate(-90deg); }
+.momentum-ring-track,.momentum-ring-progress { fill:none; stroke-width:10; }
+.momentum-ring-track { stroke:var(--color-violet-subtle); }
+.momentum-ring-progress { stroke-linecap:round; transition:stroke-dashoffset .35s var(--ease-spring); }
+.momentum-ring-value { position:absolute; color:var(--color-ink); font:700 clamp(52px,8vw,72px)/.8 var(--font-display); letter-spacing:-3px; }
+.dashboard-momentum { display:flex; align-items:center; gap:28px; margin:26px 0 4px; padding:22px 0; border-bottom:1px solid var(--color-border); }
+.dashboard-momentum h3 { margin:0; color:var(--color-ink); font:700 24px/1.05 var(--font-display); letter-spacing:-.8px; }
+.dashboard-momentum p { margin:8px 0 0; color:var(--color-muted); font-size:14px; line-height:1.5; }
+.dashboard-momentum a { color:var(--color-violet-dark); font-weight:700; text-decoration:underline; text-decoration-color:rgba(91,50,190,.3); text-underline-offset:3px; }
+.dashboard-momentum a:focus-visible { outline:2px solid var(--color-violet); outline-offset:3px; }
+
+.module-card { isolation:isolate; }
+.module-card::before { position:absolute; z-index:0; inset:-1px; border-radius:inherit; padding:1px; background:var(--gradient-brand); content:""; opacity:0; pointer-events:none; transform:scale(.985); transition:opacity .2s var(--ease-out),transform .2s var(--ease-out); -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; }
+.module-card:hover::before { opacity:1; transform:scale(1); }
+.module-card > * { position:relative; z-index:1; }
+.module-card:focus-visible { outline:3px solid var(--color-ink); outline-offset:4px; }
+.module-card b { color:var(--color-ink-soft); }
+
+.appointments-shell .class-card { border-left:4px solid var(--color-border-strong); padding-left:18px; }
+.appointments-shell .class-card.class-type-yoga { border-left-color:var(--color-teal); }
+.appointments-shell .class-card.class-type-cycling { border-left-color:var(--color-violet); }
+.appointments-shell .class-card.class-type-hiit { border-left-color:var(--color-warning); }
+.appointments-shell .class-card h3 { margin-top:23px; font-size:29px; line-height:.98; letter-spacing:-1.1px; }
+.appointments-shell .reserve-button { min-height:42px; padding-inline:18px; font-size:13px; font-weight:800; }
+.appointments-shell .spots.badge-success { background:var(--color-success-subtle); color:var(--color-ink); }
+.appointments-shell .class-type.badge-success,.appointments-shell .class-type.badge-warning { color:var(--color-ink); }
+.appointments-shell .reserved.badge-success { color:var(--color-ink); }
+.booking-confirmed { animation:booking-confirmed .35s var(--ease-spring) both; }
+@keyframes booking-confirmed { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:scale(1); } }
+
+/* Light brand hues stay out of small text on paper; they remain available for fills, icons, and gradients. */
+.starter-card b { color:var(--color-ink-soft); }
+footer span { color:var(--color-violet-dark); }
+.chat-starters button span { color:var(--color-violet-dark); }
+@media (max-width:640px) { .dashboard-momentum { align-items:flex-start; gap:18px; }.momentum-ring { width:144px !important; height:144px !important; }.momentum-ring-value { font-size:54px; }.dashboard-momentum h3 { font-size:21px; } }

@@ -2,11 +2,43 @@ import Link from "next/link";
 
 import { signOut } from "@/app/actions/auth";
 import { IconCalendar, IconShield, IconSparkle, MomentumArc } from "@/app/components/icons";
+import MomentumRing from "@/app/components/momentum-ring";
 import SiteNav from "@/app/components/site-nav";
 import { requireUserOrRedirect } from "@/lib/auth/session";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+function formatDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 export default async function DashboardPage() {
   const { user, role } = await requireUserOrRedirect();
+  const today = new Date();
+  const mondayOffset = (today.getDay() + 6) % 7;
+  const weekMonday = new Date(today);
+  weekMonday.setDate(today.getDate() - mondayOffset);
+  weekMonday.setHours(0, 0, 0, 0);
+  const weekSunday = new Date(weekMonday);
+  weekSunday.setDate(weekMonday.getDate() + 6);
+
+  let bookedThisWeek: number | null = null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("bookings")
+      .select("id, classes!inner(class_date)")
+      .eq("user_id", user.id)
+      .gte("classes.class_date", formatDate(weekMonday))
+      .lte("classes.class_date", formatDate(weekSunday));
+
+    if (error) throw error;
+    bookedThisWeek = data?.length ?? 0;
+  } catch (error) {
+    console.error("Unable to load this week's bookings for dashboard", error);
+  }
 
   return (
     <div className="account-shell">
@@ -27,6 +59,24 @@ export default async function DashboardPage() {
               {role === "staff" ? "Staff" : "Member"}
             </span>
           </div>
+          {bookedThisWeek !== null ? (
+            <div className="dashboard-momentum">
+              <MomentumRing value={bookedThisWeek} target={4} />
+              <div>
+                {bookedThisWeek === 0 ? (
+                  <>
+                    <h3>No classes booked this week yet</h3>
+                    <p><Link href="/appointments">Book a class</Link> whenever you&apos;re ready.</p>
+                  </>
+                ) : (
+                  <>
+                    <h3>Classes booked this week</h3>
+                    <p>A gentle nudge: aim for 4.</p>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : null}
           <div className="quick-actions" aria-label="Quick actions">
             <Link className="quick-action quick-action-fitbot" href="/chat">
               <MomentumArc className="quick-action-arc" />
