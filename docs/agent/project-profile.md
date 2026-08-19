@@ -5,11 +5,15 @@ the "Repository Facts" section — it should reflect a fresh inspection._
 
 ## Identity
 
-- **What**: GitFit's chatbot — the landing-page "fitbot" that acts as an
-  orchestrator across the other three GitFit products (built by teammates).
-  It holds a conversation, decides which product(s) a request touches, calls
-  into them through a shared tool contract, and narrates the result back. See
-  [docs/build-doc.md](../build-doc.md) for the full architecture/contract doc.
+- **What**: The GitFit Suite — a unified fitness-management product this
+  repo owns end-to-end (Supabase auth/roles, schedule, appointments, member
+  records, retention/outreach), with a deterministic-first chatbot as the
+  suite's persistent, native intelligent interface. Supersedes the earlier
+  "chatbot orchestrates teammates' separate products via a shared contract"
+  model in [docs/build-doc.md](../build-doc.md) — see the 2026-08-18
+  architecture-pivot entry in `decisions.md`. `docs/build-doc.md` is kept for
+  brand tokens (palette/fonts/voice) and historical context, not as the
+  current architecture doc.
 - **Audience**: Capstone team (4 people, one product each) + course
   instructor/grader; end users are demo-day viewers exercising the chat UI.
 - **Evaluation context**: Capstone project — graded, portfolio-worthy. Needs
