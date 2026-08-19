@@ -161,7 +161,7 @@ export const workoutPlanIntent: Intent = {
     return {
       reply,
       data: { durationMinutes, goal, equipment, level, blocks },
-      card: { kind: "workout", title: `${durationMinutes}-minute ${goal} workout`, blocks: blocks.flatMap((block) => block.exercises.map((exercise) => ({ name: `${block.label} · ${exercise.name}`, detail: `${exercise.durationMinutes} min${exercise.notes ? ` · ${exercise.notes}` : ""}` }))) },
+      card: { kind: "workout", title: `${durationMinutes}-minute ${goal} workout`, blocks: blocks.flatMap((block) => block.exercises.map((exercise) => ({ name: exercise.name, detail: `${exercise.durationMinutes} min${exercise.notes ? ` · ${exercise.notes}` : ""}`, blockLabel: block.label }))) },
     };
   },
 };

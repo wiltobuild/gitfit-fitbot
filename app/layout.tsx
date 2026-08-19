@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Baloo_2, Inter } from "next/font/google";
 import { ChatbotOverlay } from "@/app/components/chatbot-overlay";
 import RouteProgress from "@/app/components/route-progress";
+import { Toaster } from "@/app/components/toaster";
 import { getSession } from "@/lib/auth/session";
 import "./globals.css";
 
@@ -22,12 +23,14 @@ export const metadata: Metadata = {
   description: "GitFit helps you turn fitness intentions into your next move."
 };
 
+export const viewport: Viewport = { themeColor: "#141B3C" };
+
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
 
   return (
     <html lang="en" className={`${baloo2.variable} ${inter.variable}`}>
-      <body><RouteProgress />{children}{session && <ChatbotOverlay />}</body>
+      <body><Toaster><RouteProgress />{children}{session && <ChatbotOverlay />}</Toaster></body>
     </html>
   );
 }

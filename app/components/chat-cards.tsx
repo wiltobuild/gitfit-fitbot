@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { InstructorAvatar } from "@/app/components/instructor-avatar";
+import { OutreachCardActions } from "@/app/components/outreach-card-actions";
 import type { RichCard } from "@/lib/chatbot/types";
 
 function initials(name: string) { return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "?"; }
@@ -17,7 +18,7 @@ export function ChatCard({ card }: { card: RichCard }) {
       </section>;
     }
     case "members": return <section className="chat-card chat-members-card" aria-label="Member results"><h2 className="sr-only">Member results</h2>{card.members.map((member) => <div className="chat-member-row" key={member.email}><span className="member-initials" aria-hidden="true">{initials(member.name)}</span><div><strong>{member.name}</strong><span>{member.email}</span></div><span className="badge badge-neutral">{member.status}</span></div>)}</section>;
-    case "workout": return <section className="chat-card chat-workout-card" aria-label="Workout plan"><h2>{card.title}</h2><ol>{card.blocks.map((block, index) => <li key={`${block.name}-${index}`}><strong>{block.name}</strong><span>{block.detail}</span></li>)}</ol></section>;
-    case "outreach": return <section className="chat-card chat-outreach-card" aria-label="Outreach draft"><h2>Outreach draft for {card.memberName}</h2><p>{card.message}</p><small>Nothing sent yet</small><div><button className="btn btn-secondary btn-sm" type="button">Send when ready</button><button className="btn btn-outline btn-sm" type="button">Edit draft</button></div></section>;
+    case "workout": return <section className="chat-card chat-workout-card" aria-label="Workout plan"><h2>{card.title}</h2><div className="chat-workout-blocks">{card.blocks.map((block, index) => <div className="chat-workout-row" key={`${block.name}-${index}`}>{block.blockLabel && (index === 0 || card.blocks[index - 1]?.blockLabel !== block.blockLabel) ? <span className="badge badge-brand">{block.blockLabel}</span> : null}<div><strong>{block.name}</strong><span>{block.detail}</span></div></div>)}</div></section>;
+    case "outreach": return <section className="chat-card chat-outreach-card" aria-label="Outreach draft"><h2>Outreach draft</h2><div className="chat-outreach-member"><span className="member-initials" aria-hidden="true">{initials(card.memberName)}</span><strong>{card.memberName}</strong></div><p className="chat-outreach-message">{card.message}</p><small>Nothing sent yet</small><OutreachCardActions /></section>;
   }
 }
