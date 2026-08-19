@@ -1,4 +1,5 @@
 import { UnauthorizedError, requireUserOrThrow } from "@/lib/auth/session";
+import { routeMessage } from "@/lib/chatbot/router";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   if (!message) return Response.json({ error: "A message is required." }, { status: 400 });
 
+  const result = await routeMessage(message, session);
   const supabase = await createSupabaseServerClient();
   const { error: userMessageError } = await supabase.from("chat_messages").insert({
     user_id: session.user.id,
@@ -29,18 +31,17 @@ export async function POST(request: Request) {
     throw userMessageError;
   }
 
-  const reply = `That’s a strong place to start. You said: “${message}” — what would make that feel like a win this week?`;
   const { error: assistantMessageError } = await supabase.from("chat_messages").insert({
     user_id: session.user.id,
     role: "assistant",
-    content: reply,
+    content: result.reply,
   });
 
   if (assistantMessageError) {
     throw assistantMessageError;
   }
 
-  return Response.json({ reply });
+  return Response.json({ reply: result.reply });
 }
 
 export async function GET() {
