@@ -52,7 +52,7 @@ export function ChatExperience() {
       </aside>
       <section className="chat-panel" aria-label="Conversation with Fitbot">
         <div className="message-list">
-          {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
+          {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p className={message.card ? "sr-only" : undefined} aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
           {isSending && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><MomentumArc /></div><p className="typing"><i /><i /><i /></p></div>}
         </div>
         {messages.length === 1 && <div className="chat-starters">{starters.map((starter) => <button key={starter} onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}

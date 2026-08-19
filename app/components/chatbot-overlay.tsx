@@ -99,7 +99,7 @@ export function ChatbotOverlay() {
         <button type="button" onClick={closeOverlay} aria-label="Close Fitbot chat"><IconClose /></button>
       </header>
       <div className="message-list chatbot-message-list" ref={messageListRef}>
-        {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
+        {messages.map((message, index) => <div className="message-stack" key={`${message.role}-${index}`}><div className={`message-row ${message.role}`}><div className={`message-avatar ${message.role === "assistant" ? "assistant-avatar" : "user-avatar"}`}>{message.role === "assistant" ? <MomentumArc /> : <IconUser />}</div><p className={message.card ? "sr-only" : undefined} aria-live={message.role === "assistant" ? "polite" : undefined}>{message.content}</p></div>{message.card ? <ChatCard card={message.card} /> : null}</div>)}
         {isSending && <div className="message-row assistant"><div className="message-avatar assistant-avatar"><MomentumArc /></div><p className="typing"><i /><i /><i /></p></div>}
       </div>
       {messages.length === 1 && <div className="chat-starters chatbot-starters">{starters.map((starter) => <button key={starter} type="button" onClick={() => sendMessage(undefined, starter)}>{starter}<span>→</span></button>)}</div>}
