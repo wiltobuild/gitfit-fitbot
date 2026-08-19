@@ -103,7 +103,6 @@ export function MomentumArc({ className, ...props }: IconProps) {
         </linearGradient>
       </defs>
       <path d="M24 86.5A45 45 0 1 1 96 38" stroke="url(#momentum-arc-gradient)" strokeWidth="10" strokeLinecap="round" />
-      <path d="M96 38 100 26" stroke="#C43FD6" strokeWidth="4" strokeLinecap="round" />
     </svg>
   );
 }
