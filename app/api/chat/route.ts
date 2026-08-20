@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   if (userMessageError) throw userMessageError;
   const { error: assistantMessageError } = await supabase.from("chat_messages").insert({ user_id: session.user.id, role: "assistant", content: result.reply });
   if (assistantMessageError) throw assistantMessageError;
-  return Response.json({ reply: result.reply, card: result.card, suggestedChips: result.suggestedChips });
+  return Response.json({ reply: result.reply, card: result.card, suggestedChips: result.suggestedChips, role: session.role });
 }
 
 export async function GET() {
@@ -31,5 +31,5 @@ export async function GET() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from("chat_messages").select("role, content, created_at").eq("user_id", session.user.id).order("created_at", { ascending: true });
   if (error) throw error;
-  return Response.json({ messages: (data ?? []).map((message) => message.role === "assistant" ? { ...message, suggestedChips: session.role === "admin" ? ADMIN_MENU : session.role === "staff" ? STAFF_MENU : CLIENT_MENU } : message) });
+  return Response.json({ role: session.role, messages: (data ?? []).map((message) => message.role === "assistant" ? { ...message, suggestedChips: session.role === "admin" ? ADMIN_MENU : session.role === "staff" ? STAFF_MENU : CLIENT_MENU } : message) });
 }
