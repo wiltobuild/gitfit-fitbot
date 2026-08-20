@@ -25,6 +25,9 @@ const strongScheduleKeywords = [
   "yoga",
   "cycling",
   "hiit",
+  "boxing",
+  "pilates",
+  "strength",
   "spots",
   "spot",
   "full",
@@ -35,6 +38,12 @@ const strongScheduleKeywords = [
   "lee",
   "avery",
   "thompson",
+  "diego",
+  "reyes",
+  "elena",
+  "cruz",
+  "jordan",
+  "blake",
 ];
 
 const weakDateKeywords = ["today", "tomorrow", "tonight", "this week", ...weekdayNames];
@@ -48,7 +57,7 @@ const weakDateKeywords = ["today", "tomorrow", "tonight", "this week", ...weekda
 // the cheapest correct fix without coupling intents to each other's code.
 const otherIntentShaped = /\b(workout|exercise|training|off|pto)\b/i;
 
-const instructorTerms = ["sofia", "martinez", "marcus", "lee", "avery", "thompson"];
+const instructorTerms = ["sofia", "martinez", "marcus", "lee", "avery", "thompson", "diego", "reyes", "elena", "cruz", "jordan", "blake"];
 
 type ClassRow = {
   name: string;
@@ -131,7 +140,7 @@ export const scheduleIntent: Intent = {
     const normalizedMessage = message.toLowerCase();
     const dateFilter = resolveDateFilter(normalizedMessage);
     const instructorFilter = instructorTerms.find((term) => hasWord(normalizedMessage, term));
-    const typeFilter = ["yoga", "cycling", "hiit"].find((type) => hasWord(normalizedMessage, type));
+    const typeFilter = ["yoga", "cycling", "hiit", "boxing", "pilates", "strength"].find((type) => hasWord(normalizedMessage, type));
     const isAvailabilityQuery = ["spots", "spot", "full", "how many", "left"].some((keyword) =>
       normalizedMessage.includes(keyword),
     );
