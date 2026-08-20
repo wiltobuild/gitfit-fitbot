@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { ChipId } from "@/lib/chatbot/chip-labels";
 
 type Member = {
   id: string;
@@ -19,8 +20,8 @@ function formatMemberSince(createdAt: string) {
   return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(new Date(createdAt));
 }
 
-function openFitBot() {
-  window.dispatchEvent(new CustomEvent("fitbot:open", { detail: { preset: "look up a member" } }));
+function openFitBot(chipId: ChipId, memberId?: string) {
+  window.dispatchEvent(new CustomEvent("fitbot:open", { detail: { chipId, memberId } }));
 }
 
 export function MemberSearch() {
@@ -85,14 +86,14 @@ export function MemberSearch() {
         {status === "idle" ? <p className="staff-search-state">Search the member directory to see results.</p> : null}
         {status === "loading" ? <p className="staff-search-state">Searching members…</p> : null}
         {status === "error" ? <p className="staff-search-state staff-search-error">We couldn&apos;t look up members right now.</p> : null}
-        {status === "success" && members.length === 0 ? <div className="staff-search-state"><p>No members found.</p><button type="button" className="staff-fitbot-text" onClick={openFitBot}>Ask FitBot for help</button></div> : null}
+        {status === "success" && members.length === 0 ? <div className="staff-search-state"><p>No members found.</p><button type="button" className="staff-fitbot-text" onClick={() => openFitBot("member-lookup")}>Ask FitBot for help</button></div> : null}
         {status === "success" && members.length > 0 ? <ul className="staff-member-list" aria-label="Member search results">
           {members.map((member) => <li className="staff-member-row" key={member.id}>
             <span className="staff-member-initials" aria-hidden="true">{initials(member.full_name, member.email)}</span>
             <div className="staff-member-identity"><strong>{member.full_name || "Unnamed member"}</strong><span>{member.email}</span></div>
             <span className="badge badge-neutral">{member.is_staff ? "staff" : "member"}</span>
             <span className="staff-member-since">Member since {formatMemberSince(member.created_at)}</span>
-            <button className="btn btn-outline btn-sm" type="button" onClick={openFitBot}>Ask FitBot about {member.full_name || "member"}</button>
+            <button className="btn btn-outline btn-sm" type="button" onClick={() => openFitBot("member-summary", member.id)}>Ask FitBot about {member.full_name || "member"}</button>
           </li>)}
         </ul> : null}
       </div>

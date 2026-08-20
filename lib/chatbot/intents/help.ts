@@ -9,7 +9,7 @@ export const helpIntent: Intent = {
   match: (message) => {
     const normalizedMessage = message.toLowerCase();
 
-    return helpKeywords.some((keyword) => normalizedMessage.includes(keyword));
+    return !/\bplan\b.*\b(week|workout)\b|\b(workout|week)\b.*\bplan\b/.test(normalizedMessage) && helpKeywords.some((keyword) => normalizedMessage.includes(keyword));
   },
   handle: (_message, session) => {
     if (session.role === "staff") {

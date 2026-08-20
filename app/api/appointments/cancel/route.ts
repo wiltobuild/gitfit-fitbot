@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { UnauthorizedError, requireUserOrThrow } from "@/lib/auth/session";
+import { cancelBooking } from "@/lib/appointments/booking";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const errorResponse = (code: string, message: string, status: number) =>
@@ -20,8 +21,7 @@ export async function POST(request: Request) {
   if (!classId) return errorResponse("invalid_request", "A classId is required.", 400);
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("bookings").delete().eq("class_id", classId).eq("user_id", session.user.id).select("id");
-  if (error) throw error;
-  if (!data?.length) return errorResponse("not_booked", "You don’t have a booking for that class.", 409);
-  return NextResponse.json({ ok: true });
+  const result = await cancelBooking(supabase, session.user.id, classId);
+  if (result.ok) return NextResponse.json({ ok: true });
+  return errorResponse(result.code, result.message, 409);
 }
