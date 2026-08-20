@@ -1,5 +1,22 @@
 # Loop 4 — proposal: leaning toward the `gitfit-yoga-booking` reference
 
+**2026-08-20 update**: `/appointments` is done — a parallel session
+(`docs/tasks/appointments-visual-redesign/`, commit `1eb046e`, merged from
+`main`) restyled the real booking page against the same reference package
+(confirmed identical: same brand-token match, same "no iframe embed"
+call, same "visual only, credits are a static placeholder" scope) and
+explicitly listed `/dashboard`, `/staff`, `/chat` as **out of scope**. So:
+- Both open questions below are resolved by that work's precedent, not
+  hypothetical anymore: `.reserve-button` gradient-fills
+  (`background:linear-gradient(105deg,var(--teal),var(--violet),var(--magenta))`)
+  — gradient is *not* chat-only in practice. Button *label text* stays on
+  `font-body`/Inter — the Baloo-on-buttons deviation was **not** copied,
+  matching this doc's original recommendation.
+- Remaining scope for this loop, if it proceeds: `/staff` (Operations
+  Dashboard's own surface, never touched) and optionally `/dashboard`.
+  `/appointments` should be treated as the reference implementation to
+  match, not re-litigated.
+
 Not yet implemented. Written per the user's request (2026-08-19) to
 propose before touching code, same gate as loops 1–3 and as
 `operations-dashboard`'s Phase A. Reference material lives at

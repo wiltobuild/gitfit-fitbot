@@ -21,7 +21,15 @@ Give "staff" a manager/trainer distinction via a boolean flag, enforced by
 Postgres RLS. **No new screens, no visible feature change** for anyone
 currently signed in as staff — foundational plumbing Phases B–D build on.
 
-## 1. Migration — `supabase/migrations/0011_manager_flag.sql`
+## 1. Migration — `supabase/migrations/0013_manager_flag.sql`
+
+Renumbered from `0011` (2026-08-20): `main` merged in `0011_members_table.sql`
+and `0012_retarget_outreach_and_search_members.sql` (the shared-member-data
+task) while this plan was awaiting approval. No conflict with this plan's
+content — that work only touches `members`/`outreach_messages` and reuses
+`is_staff(auth.uid())` as-is; this migration only touches `profiles` and
+adds `is_manager`. Just a number collision, resolved by taking the next
+free slot.
 
 ```sql
 -- Phase A: distinguish manager-level staff from trainer-level staff via a
@@ -135,7 +143,7 @@ because of the `UserRole` type change, which no longer happens).
 ## 3. Verification (Apollo step)
 
 1. `npm run lint` and `npm run build` clean.
-2. Apply `0011` manually via the Supabase SQL Editor.
+2. Apply `0013` manually via the Supabase SQL Editor.
 3. Live-test against the real project:
    - Existing (pre-migration) staff account now has `is_manager = true`;
      sign-in, `/staff`, member lookup, time-off submission, outreach
