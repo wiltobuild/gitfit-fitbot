@@ -6,6 +6,7 @@ import { whoIsBookedIntent } from "@/lib/chatbot/intents/who-is-booked";
 import { memberLookupIntent } from "@/lib/chatbot/intents/member-lookup";
 import { workoutPlanIntent } from "@/lib/chatbot/intents/workout-plan";
 import { timeOffIntent } from "@/lib/chatbot/intents/time-off";
+import { timeOffReviewIntent } from "@/lib/chatbot/intents/time-off-review";
 import { retentionLookupIntent } from "@/lib/chatbot/intents/retention-lookup";
 import { outreachDraftIntent } from "@/lib/chatbot/intents/outreach-draft";
 import { outreachSendIntent } from "@/lib/chatbot/intents/outreach-send";
@@ -18,4 +19,4 @@ import type { Intent } from "@/lib/chatbot/types";
 // (bare date-word) matcher fallback is intentionally broad and otherwise
 // wins by registration order — see schedule.ts's `otherIntentShaped`
 // exclusion for the belt-and-suspenders half of this fix.
-export const intents: Intent[] = [myGoalsIntent, myActivityIntent, membersByAttributeIntent, myAppointmentsIntent, bookClassIntent, whoIsBookedIntent, memberLookupIntent, workoutPlanIntent, timeOffIntent, retentionLookupIntent, outreachDraftIntent, outreachSendIntent, helpIntent, scheduleIntent];
+export const intents: Intent[] = [myGoalsIntent, myActivityIntent, membersByAttributeIntent, myAppointmentsIntent, bookClassIntent, whoIsBookedIntent, memberLookupIntent, workoutPlanIntent, timeOffReviewIntent, timeOffIntent, retentionLookupIntent, outreachDraftIntent, outreachSendIntent, helpIntent, scheduleIntent];

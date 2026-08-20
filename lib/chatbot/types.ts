@@ -14,7 +14,7 @@ export type IntentResult = { reply: string; data?: unknown; card?: RichCard; sug
 export type Intent = {
   id: string;
   description: string;
-  roles: Array<"client" | "staff">;
+  roles: Array<"client" | "staff" | "admin">;
   match: (message: string, session: SessionUser) => boolean;
   handle: (message: string, session: SessionUser) => Promise<IntentResult> | IntentResult;
 };

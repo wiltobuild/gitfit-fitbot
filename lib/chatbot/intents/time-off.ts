@@ -44,7 +44,7 @@ function toDateString(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-function resolveRequestedDate(message: string) {
+export function resolveRequestedDate(message: string) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -103,10 +103,11 @@ function isLookup(message: string) {
 export const timeOffIntent: Intent = {
   id: "time-off",
   description: "Lets staff submit and review their time-off requests.",
-  roles: ["staff"],
+  roles: ["staff", "admin"],
   match: (message) =>
-    timeOffLookupPatterns.some((pattern) => pattern.test(message)) ||
-    timeOffRequestPatterns.some((pattern) => pattern.test(message)),
+    !/\b(approve|approved|deny|denied|reject|rejected)\b/i.test(message) &&
+    (timeOffLookupPatterns.some((pattern) => pattern.test(message)) ||
+      timeOffRequestPatterns.some((pattern) => pattern.test(message))),
   handle: async (message, session) => {
     const supabase = await createSupabaseServerClient();
 

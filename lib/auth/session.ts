@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export type UserRole = "client" | "staff";
+export type UserRole = "client" | "staff" | "admin";
 
 export type SessionUser = {
   user: User;
@@ -44,7 +44,7 @@ export async function getSession(): Promise<SessionUser | null> {
   if (!profile) {
     console.error(`No profiles row for authenticated user ${user.id} (${user.email}) — signup trigger may have failed.`);
   }
-  const role: UserRole = profile?.role === "staff" ? "staff" : "client";
+  const role: UserRole = profile?.role === "admin" ? "admin" : profile?.role === "staff" ? "staff" : "client";
 
   return { user, role };
 }
@@ -69,10 +69,10 @@ export async function requireUserOrThrow(): Promise<SessionUser> {
   return session;
 }
 
-export async function requireRoleOrRedirect(role: "staff"): Promise<SessionUser> {
+export async function requireRoleOrRedirect(role: "staff" | "admin" | Array<"staff" | "admin">): Promise<SessionUser> {
   const session = await requireUserOrRedirect();
 
-  if (session.role !== role) {
+  if (Array.isArray(role) ? !role.includes(session.role as "staff" | "admin") : session.role !== role) {
     // Authenticated users without staff access return to the future dashboard.
     redirect("/dashboard?error=forbidden");
   }
@@ -80,10 +80,10 @@ export async function requireRoleOrRedirect(role: "staff"): Promise<SessionUser>
   return session;
 }
 
-export async function requireRoleOrThrow(role: "staff"): Promise<SessionUser> {
+export async function requireRoleOrThrow(role: "staff" | "admin" | Array<"staff" | "admin">): Promise<SessionUser> {
   const session = await requireUserOrThrow();
 
-  if (session.role !== role) {
+  if (Array.isArray(role) ? !role.includes(session.role as "staff" | "admin") : session.role !== role) {
     throw new UnauthorizedError("wrong-role");
   }
 

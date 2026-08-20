@@ -1,5 +1,5 @@
 import { UnauthorizedError, requireUserOrThrow } from "@/lib/auth/session";
-import { CHIP_LABELS, CLIENT_MENU, STAFF_MENU, type ChipId } from "@/lib/chatbot/chip-labels";
+import { ADMIN_MENU, CHIP_LABELS, CHIP_ROLES, CLIENT_MENU, STAFF_MENU, type ChipId } from "@/lib/chatbot/chip-labels";
 import { chips } from "@/lib/chatbot/chips";
 import { routeMessage } from "@/lib/chatbot/router";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -12,9 +12,10 @@ export async function POST(request: Request) {
   const chipId = typeof body.chipId === "string" ? body.chipId : undefined;
   const params = body.params && typeof body.params === "object" ? { memberId: typeof body.params.memberId === "string" ? body.params.memberId : undefined } : undefined;
   if (chipId && !Object.prototype.hasOwnProperty.call(chips, chipId)) return Response.json({ error: "Unknown chipId." }, { status: 400 });
+  if (chipId && !CHIP_ROLES[chipId as ChipId].includes(session.role)) return Response.json({ error: "Forbidden." }, { status: 403 });
   if (!chipId && !message) return Response.json({ error: "A message is required." }, { status: 400 });
   const result = chipId ? await chips[chipId as ChipId](session, params) : await routeMessage(message, session);
-  result.suggestedChips ??= session.role === "staff" ? STAFF_MENU : CLIENT_MENU;
+  result.suggestedChips ??= session.role === "admin" ? ADMIN_MENU : session.role === "staff" ? STAFF_MENU : CLIENT_MENU;
   const content = chipId ? CHIP_LABELS[chipId as ChipId] : message;
   const supabase = await createSupabaseServerClient();
   const { error: userMessageError } = await supabase.from("chat_messages").insert({ user_id: session.user.id, role: "user", content });
@@ -30,5 +31,5 @@ export async function GET() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.from("chat_messages").select("role, content, created_at").eq("user_id", session.user.id).order("created_at", { ascending: true });
   if (error) throw error;
-  return Response.json({ messages: (data ?? []).map((message) => message.role === "assistant" ? { ...message, suggestedChips: session.role === "staff" ? STAFF_MENU : CLIENT_MENU } : message) });
+  return Response.json({ messages: (data ?? []).map((message) => message.role === "assistant" ? { ...message, suggestedChips: session.role === "admin" ? ADMIN_MENU : session.role === "staff" ? STAFF_MENU : CLIENT_MENU } : message) });
 }

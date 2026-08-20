@@ -55,8 +55,8 @@ export default async function DashboardPage() {
               <h2>Welcome back</h2>
               <p className="dashboard-email">Signed in as {user.email}</p>
             </div>
-            <span className={`badge ${role === "staff" ? "badge-brand" : "badge-neutral"}`}>
-              {role === "staff" ? "Staff" : "Member"}
+            <span className={`badge ${role === "staff" || role === "admin" ? "badge-brand" : "badge-neutral"}`}>
+              {role === "admin" ? "Admin" : role === "staff" ? "Staff" : "Member"}
             </span>
           </div>
           {bookedThisWeek !== null ? (
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
               </span>
               <span aria-hidden="true">&rarr;</span>
             </Link>
-            {role === "staff" ? (
+            {role === "staff" || role === "admin" ? (
               <Link className="quick-action quick-action-staff" href="/staff">
                 <span className="quick-action-content">
                   <span className="quick-action-icon"><IconShield /></span>

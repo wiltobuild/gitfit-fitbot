@@ -17,7 +17,7 @@ function formatTime(time: string) { const [hours, minutes] = time.split(":").map
 function todayDate() { const today = new Date(); return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`; }
 
 export const memberLookupIntent: Intent = {
-  id: "member-lookup", description: "Looks up a member's profile and upcoming bookings for staff.", roles: ["staff"], match: (message) => explicitLookupPattern.test(message) || bareLookupWithTermPattern.test(message),
+  id: "member-lookup", description: "Looks up a member's profile and upcoming bookings for staff.", roles: ["staff", "admin"], match: (message) => explicitLookupPattern.test(message) || bareLookupWithTermPattern.test(message),
   handle: async (message, _session) => {
     const searchTerm = extractSearchTerm(message);
     if (!searchTerm) return { reply: "Please specify a member name or email to look up." };

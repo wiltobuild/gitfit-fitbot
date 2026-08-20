@@ -17,7 +17,7 @@ const links = [
 
 export default function NavLinks({ role }: NavLinksProps) {
   const pathname = usePathname();
-  const navLinks = role === "staff" ? [...links, { href: "/staff", label: "Staff", icon: IconShield }] : links;
+  const navLinks = role === "staff" || role === "admin" ? [...links, { href: "/staff", label: "Staff", icon: IconShield }] : links;
 
   return (
     <div className="nav-links">
