@@ -38,7 +38,7 @@ export function RequestsInbox({ initialRequests }: { initialRequests: PendingReq
   }
 
   return (
-    <section className="surface-card staff-requests-inbox" aria-labelledby="requests-inbox-title">
+    <section className={`surface-card staff-requests-inbox${requests.length ? " staff-panel-flagged staff-panel-flagged-warning" : ""}`} aria-labelledby="requests-inbox-title">
       <div className="staff-panel-heading">
         <div>
           <p className="eyebrow"><span /> Requests</p>

@@ -3,8 +3,9 @@
 Single-pass session, not the multi-agent adversarial-pair process used in
 loops 1-3 — user asked directly for a design critique of `/staff` (Manager
 console) via the `frontend-design` skill, then said to prioritize and
-implement from the findings myself rather than approve item-by-item.
-Palette/typography untouched throughout, per the user's constraint.
+implement from the findings myself rather than approve item-by-item, then
+in a follow-up message asked for the remaining two items too. Palette/
+typography untouched throughout, per the user's constraint.
 
 ## What was reviewed
 Live screenshot of `/` (landing) plus a static mock of the Manager console
@@ -66,5 +67,35 @@ rhythm confirmed between every section post-reorder.
 Not live-verified against real auth/Supabase data — same tradeoff noted
 in prior sessions' checkpoint memory, acceptable for a component-level
 CSS/JSX change.
+
+## Follow-up pass — items 1 and 3 (visual tiering + the color-system finding)
+User asked to go through the remaining two items from the original
+critique. Re-examined finding 1 (wall of identical white cards) and
+finding 3 (color-system unification, previously marked "already
+consistent, no change") together, because they turned out to be the same
+opportunity: rather than leaving the color-consistency finding as a
+no-op, used the *already-consistent* warning/danger tokens to draw a real
+throughline from the new ops-band signal dots to the specific panels they
+describe.
+
+**What changed**: `app/staff/requests-inbox.tsx` and
+`app/staff/at-risk-members.tsx` now conditionally add
+`staff-panel-flagged staff-panel-flagged-warning`/`-danger` to their
+`<section>` when there's actually something pending (`requests.length` /
+`totalCount` > 0) — a 3px top-border accent in the same
+`var(--color-warning)`/`var(--color-danger)` used by the ops-band dots,
+reusing the exact border-shorthand-override technique `.staff-pulse-card`
+already established (1px neutral border + 3px colored top, later in
+source order so it wins). `app/globals.css` gained
+`.staff-panel-flagged*` (3 short rules). This is the only tiering change
+made — Studio Pulse, Live Register, Activity Log, Member Search, and
+FitBot tiles stay plain white on purpose; only the two panels an ops-band
+signal actually points at get flagged, and only while the count is
+nonzero, matching the panels' own "quiet when empty" copy.
+
+Verified the same way: `tsc --noEmit` clean, mock rebuilt with the new
+conditional classes against the freshly compiled CSS, screenshotted —
+amber top-border on Requests Inbox, red on At-Risk Members, both
+traceable to their header pill's dot color.
 
 Committed on `operations-dashboard`, not pushed.

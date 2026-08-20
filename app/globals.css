@@ -193,6 +193,17 @@
 .staff-ops-signal-dot-warning { background:var(--color-warning); }
 .staff-ops-signal-dot-danger { background:var(--color-danger); }
 
+/* Loop 5 cont'd — panel-level tiering: the two panels an ops-band signal
+   points at (Requests, At-Risk) pick up the same top-border-accent device
+   already used by .staff-pulse-card, in the same tokens as the signal dot
+   above, so the color carries from header signal to the panel it refers
+   to. Both are conditional on real pending state, same "quiet when empty"
+   rule the panels' own copy already follows — an empty inbox looks like
+   every other reference card, not artificially flagged. */
+.staff-panel-flagged { border-top-width:3px; border-top-style:solid; }
+.staff-panel-flagged-warning { border-top-color:var(--color-warning); }
+.staff-panel-flagged-danger { border-top-color:var(--color-danger); }
+
 /* ---------------------------------------------------------------------
    Form fields
 --------------------------------------------------------------------- */

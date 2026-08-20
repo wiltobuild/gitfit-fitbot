@@ -20,7 +20,7 @@ function formatLastVisit(date: string | null) {
 
 export function AtRiskMembers({ members, totalCount }: { members: AtRiskMember[]; totalCount: number }) {
   return (
-    <section className="surface-card staff-at-risk" aria-labelledby="at-risk-title">
+    <section className={`surface-card staff-at-risk${totalCount ? " staff-panel-flagged staff-panel-flagged-danger" : ""}`} aria-labelledby="at-risk-title">
       <div className="staff-panel-heading">
         <div>
           <p className="eyebrow"><span /> Retention</p>
