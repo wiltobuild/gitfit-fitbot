@@ -1,6 +1,7 @@
 {
   "name": "gitfit-fitbot",
   "version": "0.1.0",
+  "description": "GitFit is a unified, Supabase-backed fitness-management platform that gives members a home for booking classes and tracking progress, gives staff a live studio operations console, and ties it all together with Fitbot, a deterministic-first chat assistant.",
   "private": true,
   "scripts": {
     "dev": "next dev",
