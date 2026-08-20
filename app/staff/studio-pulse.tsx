@@ -1,4 +1,4 @@
-export type PulseStat = { label: string; value: string; detail?: string };
+export type PulseStat = { label: string; value: string; detail?: string; tone?: "brand" | "success" | "warning" | "danger" };
 export type TeachingLoadRow = { name: string; count: number };
 
 export function StudioPulse({ stats, teachingLoad }: { stats: PulseStat[]; teachingLoad: TeachingLoadRow[] }) {
@@ -12,7 +12,7 @@ export function StudioPulse({ stats, teachingLoad }: { stats: PulseStat[]; teach
       </div>
       <div className="staff-pulse-grid">
         {stats.map((stat) => (
-          <div className="staff-pulse-card" key={stat.label}>
+          <div className="staff-pulse-card" data-tone={stat.tone} key={stat.label}>
             <strong>{stat.value}</strong>
             <span>{stat.label}</span>
             {stat.detail ? <small>{stat.detail}</small> : null}

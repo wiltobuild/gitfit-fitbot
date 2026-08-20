@@ -99,10 +99,10 @@ export default async function StaffPage() {
     }
 
     pulseStats = [
-      { label: "booked this week", value: `${weekBookedPercent}%`, detail: `${weekBooked}/${weekCapacity} spots` },
-      { label: "active members", value: String(lifecycleCounts.active) },
-      { label: "at-risk members", value: String(lifecycleCounts.at_risk) },
-      { label: "lapsed members", value: String(lifecycleCounts.lapsed) },
+      { label: "booked this week", value: `${weekBookedPercent}%`, detail: `${weekBooked}/${weekCapacity} spots`, tone: "brand" },
+      { label: "active members", value: String(lifecycleCounts.active), tone: "success" },
+      { label: "at-risk members", value: String(lifecycleCounts.at_risk), tone: "warning" },
+      { label: "lapsed members", value: String(lifecycleCounts.lapsed), tone: "danger" },
     ];
 
     const allAtRiskMembers = members.filter((member) => member.lifecycle_status === "at_risk");

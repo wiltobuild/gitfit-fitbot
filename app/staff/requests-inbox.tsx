@@ -61,10 +61,10 @@ export function RequestsInbox({ initialRequests }: { initialRequests: PendingReq
                   {request.reason ? <small>&ldquo;{request.reason}&rdquo;</small> : null}
                 </div>
                 <div className="staff-request-actions">
-                  <button className="btn btn-outline btn-sm" disabled={isPending} onClick={() => void resolve(request.id, "denied")} type="button">
+                  <button className="btn btn-outline-danger btn-sm" disabled={isPending} onClick={() => void resolve(request.id, "denied")} type="button">
                     {isPending ? "…" : "Deny"}
                   </button>
-                  <button className="btn btn-primary btn-sm" disabled={isPending} onClick={() => void resolve(request.id, "approved")} type="button">
+                  <button className="btn btn-success btn-sm" disabled={isPending} onClick={() => void resolve(request.id, "approved")} type="button">
                     {isPending ? "…" : "Approve"}
                   </button>
                 </div>

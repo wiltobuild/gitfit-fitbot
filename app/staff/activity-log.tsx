@@ -29,7 +29,7 @@ export function ActivityLog({ entries }: { entries: ActivityEntry[] }) {
       ) : (
         <ul className="staff-activity-list" aria-label="Recent request decisions">
           {entries.map((entry) => (
-            <li className="staff-activity-row" key={entry.id}>
+            <li className="staff-activity-row" data-status={entry.status} key={entry.id}>
               <span className={`badge ${entry.status === "approved" ? "badge-success" : "badge-danger"}`}>{entry.status}</span>
               <span className="staff-activity-text">
                 <strong>{entry.reviewer_name}</strong> {entry.status} <strong>{entry.requester_name}</strong>&apos;s request for {formatRequestedDate(entry.requested_date)}
