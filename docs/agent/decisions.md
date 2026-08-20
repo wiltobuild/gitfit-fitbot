@@ -239,3 +239,38 @@ this session).
 change directly rather than pasting into the SQL Editor.
 
 **Approved by**: user
+
+## 2026-08-20 — Phase A (`is_manager` flag): approved, implemented, then reverted — admin role already covers it
+
+Merged latest `main` into `operations-dashboard` first (admin-role +
+Fitbot capability-expansion work, migrations `0013_members_by_attribute_
+search.sql`/`0014_admin_role.sql`, commit `472ec26`) — zero conflicts.
+That merge took the `0013` slot Phase A's plan had been using.
+
+User approved a boolean `is_manager` flag on `profiles` (with an
+admin-superset fix to `is_manager(uid)`, needed because the plan's
+original version would have excluded admins from access `0014` had just
+granted them). Implemented directly (no `codex` CLI in this environment):
+migration `0015_manager_flag.sql` + `lib/auth/session.ts`
+(`SessionUser.isManager`, `requireManagerOrRedirect`/`Throw`). `npm run
+lint`/`build` both clean. Never applied to the live database.
+
+**Then reverted, same session**: user pointed out the flag was
+redundant — `role = 'admin'` (from `0014`) already *is* the manager tier,
+`role = 'staff'` already *is* the trainer tier. A separate `is_manager`
+boolean would just be a second way to encode the same distinction `0014`
+already made. Deleted `0015_manager_flag.sql`, reverted `lib/auth/
+session.ts` to its post-`0014`-merge state via `git checkout`. Nothing
+had been committed or applied to Supabase, so the revert is total — no
+residue anywhere.
+
+**Where Phase A actually landed**: it's done, via `0014`, already merged.
+Phases B–D's manager-only gates should check `is_admin(uid)` in SQL /
+`session.role === "admin"` in code — see the superseded-plan note at the
+top of `operations-dashboard/plan.md` for detail.
+
+**Why**: Avoid building a second, redundant permission axis when the
+admin-role merge already solved the trainer/manager split the day before
+this was raised.
+
+**Approved by**: user

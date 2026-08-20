@@ -83,7 +83,18 @@ Three roles total in the system: `member`, `trainer`, `manager`. This product on
 
 *Reconcile: if real usage or the actual codebase has already answered either open question above, update this section with the real answer and remove it from "unresolved."*
 
-**Resolved 2026-08-19**: `manager`/`trainer` will be separate, mutually exclusive DB role values (not a manager-who-also-teaches composite). See Reconciliation Log below.
+**Resolved 2026-08-19, superseded 2026-08-20**: `manager`/`trainer` are
+separate, mutually exclusive access tiers — but not a bespoke pair of DB
+values. A parallel task (unrelated to this one) merged `role = 'admin'`
+into the existing `client | staff` enum before this product's own
+manager/trainer split was implemented. Rather than add a redundant
+`is_manager` boolean (built once, then reverted the same session — see
+`docs/agent/decisions.md`, 2026-08-20), **Manager = `role = 'admin'`,
+Trainer = `role = 'staff'`**. Every "manager can / trainer can only"
+statement in the table above still holds — only the underlying DB value
+changed. Helpers `is_staff(uid)` (staff-or-admin) and `is_admin(uid)`
+(admin-only) already exist (`0014_admin_role.sql`) and are what every new
+manager-only policy below should call. See Reconciliation Log below.
 
 ---
 
@@ -167,27 +178,96 @@ create policy "only managers resolve requests"
 
 ---
 
-## 6. What already exists — verify this entire section against the real project
+## 6. What already exists — reconciled 2026-08-20
 
-As of this doc's last update, believed to exist: a static HTML/CSS/JS prototype (no backend) implementing a Manager view (calendar, needs-attention rail, staff & certifications, roster drawer, promote action, activity feed) and a Trainer view (own schedule, own requests, own notifications, flag-to-manager), plus a demo-only role switcher and a mock `Api` object shaped like real Supabase calls.
+Live Next.js + Supabase app, one `/staff` route (`app/staff/page.tsx`),
+gated `requireRoleOrRedirect(["staff", "admin"])`. **No Manager/Trainer
+view split exists yet** — every `staff` and `admin` account sees the
+exact same page today. That's the biggest gap versus this doc's Section
+2/3 model (two views based on role) and isn't captured by Phases B–D
+below, which are schema/RLS-focused, not UI-focused. Concretely, the page
+has three panels, all suite-wide (not scoped to "my own week"):
 
-**This section is the most likely to be stale of anything in this document — a prototyping project moves fastest here.** Replace this entire section with what you actually find: what's built, what's partially built, what's been removed, what's been added that isn't described anywhere above.
+- **Live register** — today's classes studio-wide, capacity/fill-level
+  bars, no create/edit/cancel affordance (`classes` has no mutation path
+  for anyone — Phase C).
+- **Member directory search** — staff-wide member lookup, no
+  trainer-vs-manager distinction.
+- **Ask FitBot tiles** — links into the chatbot (owned by a teammate,
+  out of scope for this product's own UI work).
+
+No request-approval UI (`time_off_requests` submission exists via a
+chatbot intent, but nothing resolves `status`), no schedule-management
+UI, no cert UI, no promote-class action, no at-risk visibility, no
+activity feed. Schema-wise: `time_off_requests` already has an
+admin-only UPDATE policy (`time_off_requests_update_admin`, added
+incidentally by the admin-role merge) but no `type` column for
+`shift_swap` and no narrowed SELECT (`is_staff`, not
+own-rows-for-trainers, sees everything). `classes` has no `trainer_id`/
+`promoted`. No `promo_events`. No `spec`/`cert_name`/`cert_expiry` on
+`profiles`. No `at_risk_flags` — `lib/chatbot/intents/retention-lookup.ts`
+computes an ad-hoc notion of "worth re-engaging" but it isn't a table and
+isn't manager-visible outside chat.
 
 ---
 
-## 7. Plan ahead — rebuild this section after reconciling, don't just append to it
+## 7. Plan ahead — rebuilt 2026-08-20 against real current state
 
-*Once Sections 1–6 have been checked against reality, write a build plan based on the actual current state — not the plan below, which reflects the assumptions this doc started with.*
+Full schema-level detail lives in `docs/tasks/operations-dashboard/
+investigation.md` (Phases A–E) — this section is the product-workflow
+view of the same plan, phrased around what a Manager or Trainer actually
+needs to be able to do, per Section 3's tables.
 
-Starting point, subject to revision after reconciliation:
+**0. Manager/Trainer view split** — not one of the lettered phases below
+but a prerequisite for all of them mattering: today's single shared
+`/staff` page needs to branch on `session.role === "admin"` (Manager) vs
+`"staff"` (Trainer) so the UI itself stops offering actions/visibility a
+Trainer shouldn't have, on top of the RLS enforcement each phase below
+adds server-side. Without this, Phases B–D's new server-side permissions
+have no UI to attach to.
 
-1. Confirm the shared-Supabase-project assumption (Section 5).
-2. Create/complete the schema; enable RLS on every table, none left open by default.
-3. Implement the RLS policies for `requests` and `classes`/`promo_events`.
-4. Seed `classes` and `profiles` with data equivalent to the current prototype's, so before/after behavior is comparable.
-5. Wire Supabase Auth; replace any client-side role switcher with a real read of `profiles.role`.
-6. Replace mock `Api.*` function bodies with real Supabase queries, keeping signatures stable.
-7. Implement the Section 3 permission tables as the actual UI gate, backed by RLS — not just conditional rendering.
+**A. Done** — `role='admin'` = Manager, `role='staff'` = Trainer. No
+further schema work.
+
+**B. Request resolution + trainer scoping** — `time_off_requests.type`
+column; verify/extend the existing admin-only UPDATE policy; narrow
+SELECT so Trainer sees only their own requests. UI: an "Approve/Deny"
+affordance in the Manager view; Trainer view shows only their own
+submissions (view 0 dependency).
+
+**C. Class ownership** — `classes.trainer_id`, `classes.promoted`;
+admin-only INSERT/UPDATE/DELETE policies (none exist today). UI: Manager
+gets create/edit/cancel + "Promote" on underbooked classes; Trainer view
+scopes the register to `trainer_id = auth.uid()`.
+
+**D. Promotion events + certifications** — `promo_events` table
+(admin-only INSERT); `profiles.spec`/`cert_name`/`cert_expiry` (Trainer
+self-editable, Manager can edit anyone's — RLS already covers this via
+the existing `is_staff`-based UPDATE policy widened by the admin-role
+merge). UI: Manager gets a trainer roster/cert view; Trainer gets a
+"flag to manager" affordance instead of a real promote action.
+
+**E. At-risk visibility — needs its own investigation pass first.**
+Whether to add an `at_risk_flags` table or surface
+`retention-lookup.ts`'s existing logic to the Manager view directly is
+still an open question (see `investigation.md` Phase E). Don't plan this
+one in detail until that investigation happens.
+
+**Communication / notifications (user-decided 2026-08-20):** no dedicated
+notifications table or delivery mechanism — "notifications" are derived
+from existing state, not a new subsystem. Trainer's "My requests" panel
+always shows current status (pending/approved/denied) — that status
+change *is* the notification, no unread tracking. Manager's "Requests
+inbox" shows a live pending count. Same pattern would apply to a future
+class-flag feature (Phase D) if built. Section 3's "view their own
+notifications" / "cross-suite activity feed" language is satisfied by
+this derived-state approach for now; revisit only if a real
+push/unread-badge experience becomes a stated requirement.
+
+Suggested order: **0 → B → C → D**, with E scoped separately once there's
+room. 0 is small (branch the existing page, no new schema) and unblocks
+every other phase's UI; B is the smallest schema lift and has partial
+groundwork already in place from the admin-role merge.
 
 ---
 
@@ -214,6 +294,22 @@ Starting point, subject to revision after reconciliation:
 ## Reconciliation Log
 
 *Filled in by whoever (or whichever agent session) last reconciled this doc against the real project. What was checked, what matched, what didn't, what was updated. Newest first.*
+
+- **2026-08-20 — second reconciliation pass (Claude Code).** Triggered by
+  a teammate's parallel merge (`0014_admin_role.sql`, unrelated task) that
+  added `role = 'admin'` while this product's own manager/trainer work was
+  in flight. Section 3: replaced the `is_manager` boolean plan with
+  `role = 'admin'` = Manager / `role = 'staff'` = Trainer — the boolean
+  was actually built and approved, then reverted the same session once
+  the redundancy was noticed (full sequence in `docs/agent/decisions.md`).
+  Section 6: rewritten — confirmed the single biggest gap versus this
+  doc's own Section 2/3 model is structural, not just missing schema: one
+  shared `/staff` page renders identically for every `staff`/`admin`
+  account today, no Manager-view/Trainer-view branch exists at all.
+  Section 7: rebuilt as a workflow-phased plan (0: view split, then
+  B→C→D→E) cross-referenced to `docs/tasks/operations-dashboard/
+  investigation.md`'s schema-level Phase breakdown, instead of the
+  generic 7-step scaffold this doc started with.
 
 - **2026-08-19 — first reconciliation pass (Claude Code).** The premise in
   Section 1 (four teammates building four separate products against a

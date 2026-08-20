@@ -101,41 +101,41 @@ outreach ended up staff-only by design.
 
 ## 2. Additions needed for the Operations Dashboard (Phases A–D, + partial E)
 
-### Phase A — manager flag (no new tables, `role` unchanged)
-- `profiles.role` stays `client | staff` — **not** widened to a third
-  value. Revised 2026-08-19 per user feedback: a boolean is simpler and
-  touches far less code than a 3-value enum, since `role` never changes
-  value or type.
-- New `profiles.is_manager boolean not null default false`, with a check
-  constraint (`not is_manager or role = 'staff'`) so a client can never
-  carry it. Existing `staff` rows backfill to `is_manager = true`
-  (preserves current full-studio-visibility behavior — today's `staff`
-  accounts behave like a manager, not a trainer scoped to one week).
-  "Trainer" = `role = 'staff' and is_manager = false`.
-- `is_staff(uid)` is **unchanged** — still means `role = 'staff'`.
-- New `is_manager(uid)` helper (`role = 'staff' and is_manager`) for
-  manager-exclusive writes (Phases B–D).
-- `protect_profile_role` trigger and the `profiles` UPDATE policy switch
-  their guard from `is_staff` to `is_manager` (trainer-level staff should
-  not be able to edit another profile or any role, only their own) — the
-  `postgres` session exemption from `0002` is preserved unchanged.
-- Code footprint: only `lib/auth/session.ts` changes (adds `isManager` to
-  `SessionUser`, two new manager-only guard functions) — every existing
-  `"staff"` literal check across intents/UI/API routes stays as-is. See
-  `plan.md` for the full breakdown.
+### Phase A — SUPERSEDED 2026-08-20: no `is_manager` flag, `admin` role covers it
+Originally this phase added a boolean `profiles.is_manager` flag so
+`role = 'staff'` could split into trainer/manager. Before that plan was
+implemented against the live database, `main` merged in
+`0014_admin_role.sql` (a parallel task, unrelated to this one), which
+added `role = 'admin'` as a third value and redefined `is_staff(uid)` as
+a `staff`-or-`admin` superset. The `is_manager` version was actually
+built and approved once, then reverted the same session once the overlap
+was noticed — see the 2026-08-20 entries in `docs/agent/decisions.md` for
+the full sequence.
+
+**Current state, no further action needed**: `role` is
+`client | staff | admin`. "Trainer" = `role = 'staff'`. "Manager" =
+`role = 'admin'`. Helpers `is_staff(uid)` (staff-or-admin) and
+`is_admin(uid)` (admin-only) already exist from `0014` and cover
+everything Phases B–D need — every "manager-only" gate below should read
+`is_admin(uid)` in SQL / `session.role === "admin"` in code, not a new
+flag or helper. `lib/auth/session.ts` needs no changes for this.
 
 ### Phase B — request resolution + trainer scoping
 - `time_off_requests.type` column added: `time_off | shift_swap`.
-- New UPDATE policy: manager-only, can set `status`/`reviewed_by`/`reviewed_at`.
-- SELECT policy narrowed: trainer sees only `user_id = auth.uid()`, manager
-  sees all (today: any staff sees all — this is the biggest real gap
-  versus Product B's model).
+- New UPDATE policy: admin-only, can set `status`/`reviewed_by`/`reviewed_at`
+  — **partially done already**: `0014_admin_role.sql` added
+  `time_off_requests_update_admin`, an admin-only UPDATE policy, ahead of
+  this phase being scoped. Confirm its `using`/`with check` cover exactly
+  what this phase needs before assuming it's complete.
+- SELECT policy narrowed: staff (trainer-level) sees only
+  `user_id = auth.uid()`, admin sees all (today: any staff-or-admin sees
+  all — this is the biggest real gap versus Product B's model).
 
 ### Phase C — class ownership
 - `classes.trainer_id uuid references profiles(id)`, nullable.
 - `classes.promoted boolean default false`.
-- New manager-only INSERT/UPDATE/DELETE policies on `classes` (none exist
-  today beyond open SELECT).
+- New admin-only INSERT/UPDATE/DELETE policies on `classes` (none exist
+  today beyond open SELECT) — gate on `is_admin(uid)`.
 - Seed data stays generic — the existing `instructor` text field (Sofia/
   Marcus/Avery) is not remapped onto real accounts as part of this phase;
   real trainer accounts get created and linked via `trainer_id` whenever
@@ -151,13 +151,17 @@ promo_events (
   created_at timestamptz not null default now()
 )
 ```
-Manager-only INSERT. Trainer capability is "flag to manager," not a DB
-write — likely just a UI/chat affordance, no new table needed for the flag
-itself unless we want it durable (open question, not yet decided).
+Admin-only INSERT (`is_admin(uid)`). Trainer capability is "flag to
+manager," not a DB write — likely just a UI/chat affordance, no new table
+needed for the flag itself unless we want it durable (open question, not
+yet decided).
 
-`profiles` gains `spec text`, `cert_name text`, `cert_expiry date`. Trainer
-can update their own (already covered by the Phase A self-update RLS
-carve-out); manager can update anyone's.
+`profiles` gains `spec text`, `cert_name text`, `cert_expiry date`. Both
+staff and admin can already update any profile today — confirmed:
+`profiles_update_self_or_staff` (name unchanged since `0001`) calls
+`is_staff(auth.uid())`, which `0014` redefined to match staff-or-admin,
+so the policy's behavior widened automatically without the policy itself
+being touched. No RLS change needed for this field; only the new columns.
 
 Underbooked threshold, per Product B's shared vocabulary: `booked_count / capacity < 0.45`.
 
