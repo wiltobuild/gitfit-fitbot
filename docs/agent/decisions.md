@@ -216,4 +216,26 @@ until the design direction is sorted out.
 
 **Next step**: resume Phase A approval once the design-redirect work is
 scoped or shelved — plan.md is unchanged and still valid, just not handed
-to Codex yet.
+to Codex yet. **Update**: `operations-dashboard/plan.md`'s proposed
+migration also needs renumbering — `0011` and `0012` are now taken by the
+`members` table work merged from `main` (next entry below).
+
+## 2026-08-19 — `members` table + outreach retarget (0011, 0012) applied to live Supabase
+
+Ran both migrations directly against the live database (user supplied the
+Postgres password for this one task, used only transiently — stored in
+`.env.local` during the run, removed immediately after, the `pg` package
+uninstalled afterward). Connected via the regional pooler
+(`aws-0-us-west-2.pooler.supabase.com`), since the direct
+`db.<ref>.supabase.co` host did not resolve.
+
+Found and removed 4 pre-existing `outreach_messages` rows targeting the
+known junk test accounts (`Jordan Smith`, `Design Test User`) before `0012`
+could add its FK to `members` — these blocked the constraint and had zero
+real value (same accounts flagged for cleanup in the product audit earlier
+this session).
+
+**Why**: User asked to run the already-approved shared-member-data schema
+change directly rather than pasting into the SQL Editor.
+
+**Approved by**: user

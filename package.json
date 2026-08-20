@@ -17,14 +17,17 @@
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.6.0",
     "@tailwindcss/postcss": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
+    "exceljs": "^4.4.0",
     "prettier": "latest",
     "tailwindcss": "latest",
+    "tsx": "^4.23.12",
     "typescript": "latest"
   }
 }

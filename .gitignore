@@ -6,6 +6,9 @@ out/
 !.env.example
 *.tsbuildinfo
 .DS_Store
+.vercel
+.env*
+supabase/.temp
 
 # Design reference only — not part of this app, delete once the visual
 # redirect is done (see docs/agent/decisions.md, 2026-08-19).
