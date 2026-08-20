@@ -1,5 +1,17 @@
 # Loop 4 — proposal: leaning toward the `gitfit-yoga-booking` reference
 
+**2026-08-20 update, later same day: `/staff` is done too** (commit
+`75f4f44`, `operations-dashboard` branch). Applied against the real
+Manager/Trainer console content built earlier that session, not the old
+single-view page this doc originally scoped against: ambient background
+wash, staggered fade-up entrances, row-hover affordances, and bold
+capacity-status wording replacing the old badge, all reusing exact
+classes already proven on `/appointments`. `/dashboard` was left alone —
+explicitly out of scope, it's shared suite infrastructure, not this
+product's surface (see the reconciliation note in `GitFit Product B -
+Context for Claude Code.md` Section 2). Loop 4 is closed; nothing else
+planned against this reference package.
+
 **2026-08-20 update**: `/appointments` is done — a parallel session
 (`docs/tasks/appointments-visual-redesign/`, commit `1eb046e`, merged from
 `main`) restyled the real booking page against the same reference package
