@@ -115,7 +115,7 @@ function formatTime(time: string) {
 export const scheduleIntent: Intent = {
   id: "schedule",
   description: "Lists classes and answers schedule availability questions.",
-  roles: ["client", "staff"],
+  roles: ["client", "staff", "admin"],
   match: (message) => {
     const normalizedMessage = message.toLowerCase();
     if (strongScheduleKeywords.some((keyword) => normalizedMessage.includes(keyword))) {

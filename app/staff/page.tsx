@@ -18,7 +18,7 @@ function isCurrentOrNext(classRow: StudioClass, now: Date) {
 }
 
 export default async function StaffPage() {
-  const { user } = await requireRoleOrRedirect("staff");
+  const { user } = await requireRoleOrRedirect(["staff", "admin"]);
   const today = new Date();
   const todayString = formatDate(today);
   let classes: StudioClass[] = [];

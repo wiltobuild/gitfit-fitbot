@@ -10,7 +10,7 @@ function resolveTime(message: string) { const match = message.match(/\b(\d{1,2})
 function label(row: ClassRow) { const [hours, minutes] = row.start_time.split(":").map(Number); return `${row.name} — ${row.class_date}, ${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`; }
 
 export const whoIsBookedIntent: Intent = {
-  id: "who-is-booked", description: "Reports booking totals for a class to staff.", roles: ["staff"],
+  id: "who-is-booked", description: "Reports booking totals for a class to staff.", roles: ["staff", "admin"],
   match: (message) => {
     const normalized = message.toLowerCase();
     const asksForRoster = /\b(who is booked for|who's (in|booked)|attendee|roster)\b/i.test(normalized);

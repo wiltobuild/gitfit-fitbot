@@ -2,7 +2,7 @@ import { UnauthorizedError, requireRoleOrThrow } from "@/lib/auth/session";
 
 export async function GET() {
   try {
-    const session = await requireRoleOrThrow("staff");
+    const session = await requireRoleOrThrow(["staff", "admin"]);
 
     return Response.json({ ok: true, message: "pong", user: session.user.email });
   } catch (error) {

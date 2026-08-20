@@ -3,7 +3,7 @@ import { searchMembers, type MemberRow } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
-  try { await requireRoleOrThrow("staff"); } catch (error) {
+  try { await requireRoleOrThrow(["staff", "admin"]); } catch (error) {
     if (error instanceof UnauthorizedError) return Response.json({ error: error.reason === "unauthenticated" ? "Unauthorized" : "Forbidden" }, { status: error.reason === "unauthenticated" ? 401 : 403 });
     throw error;
   }

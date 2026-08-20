@@ -31,7 +31,7 @@ function todayDate() {
 export const myAppointmentsIntent: Intent = {
   id: "my-appointments",
   description: "Lists the current member's upcoming class bookings.",
-  roles: ["client", "staff"],
+  roles: ["client", "staff", "admin"],
   match: (message) => /\b(my (appointments|bookings|classes)|what appointments do i have|what am i booked for)\b/i.test(message),
   handle: async (_message, session) => {
     const supabase = await createSupabaseServerClient();

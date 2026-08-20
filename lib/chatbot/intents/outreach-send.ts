@@ -8,7 +8,7 @@ function extractSearchTerm(message: string) { return message.replace(/^\s*(?:ple
 function memberLabel(member: MemberRow) { return member.full_name || member.email; }
 
 export const outreachSendIntent: Intent = {
-  id: "outreach-send", description: "Marks the latest staff-reviewed outreach draft as sent for one member.", roles: ["staff"], match: (message) => sendPattern.test(message),
+  id: "outreach-send", description: "Marks the latest staff-reviewed outreach draft as sent for one member.", roles: ["staff", "admin"], match: (message) => sendPattern.test(message),
   handle: async (message) => {
     const searchTerm = extractSearchTerm(message);
     if (!searchTerm) return { reply: "Please specify a member name or email to send outreach to." };

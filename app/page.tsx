@@ -30,7 +30,7 @@ export default async function Home() {
             {modules.map((module, index) => (
               <ModuleCard {...module} animationDelay={`${index * 60}ms`} key={module.href} />
             ))}
-            {session.role === "staff" && (
+            {(session.role === "staff" || session.role === "admin") && (
               <ModuleCard href="/staff" title="Staff Console" description="Support your members and manage the day." icon={IconShield} animationDelay="180ms" />
             )}
           </div>
