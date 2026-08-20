@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 
 const weekdayNames = [
   "sunday",
@@ -119,12 +120,12 @@ export const scheduleIntent: Intent = {
   match: (message) => {
     const normalizedMessage = message.toLowerCase();
     if (strongScheduleKeywords.some((keyword) => normalizedMessage.includes(keyword))) {
-      return true;
+      return 1;
     }
     if (otherIntentShaped.test(normalizedMessage)) {
-      return false;
+      return 0;
     }
-    return weakDateKeywords.some((keyword) => normalizedMessage.includes(keyword));
+    return Number(weakDateKeywords.some((keyword) => normalizedMessage.includes(keyword)));
   },
   handle: async (message) => {
     const normalizedMessage = message.toLowerCase();

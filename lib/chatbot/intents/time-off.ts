@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 
 const weekdayNames = [
   "sunday",
@@ -19,6 +20,7 @@ const timeOffRequestPatterns = [
   /\bpto\b/i,
   /\btake\s+(?:\w+\s+)?off\b/i,
   /\b(?:need|want)\s+(?:\w+\s+){0,3}off\b/i,
+  /\bwon(?:'t| not)\s+be\s+able\s+to\s+work\b/i,
 ];
 
 const timeOffLookupPatterns = [
@@ -104,10 +106,7 @@ export const timeOffIntent: Intent = {
   id: "time-off",
   description: "Lets staff submit and review their time-off requests.",
   roles: ["staff", "admin"],
-  match: (message) =>
-    !/\b(approve|approved|deny|denied|reject|rejected)\b/i.test(message) &&
-    (timeOffLookupPatterns.some((pattern) => pattern.test(message)) ||
-      timeOffRequestPatterns.some((pattern) => pattern.test(message))),
+  match: (message) => !/\b(approve|approved|deny|denied|reject|rejected)\b/i.test(message) ? scoreTriggerFamily(message, [...timeOffLookupPatterns, ...timeOffRequestPatterns]) * (1 + scoreEntity(message, [/\b(today|tomorrow|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i])) : 0,
   handle: async (message, session) => {
     const supabase = await createSupabaseServerClient();
 

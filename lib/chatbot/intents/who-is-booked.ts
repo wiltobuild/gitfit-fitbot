@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 
 const weekdays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 type ClassRow = { id: string; name: string; type: string; instructor: string; class_date: string; start_time: string; capacity: number; booked_count: number };
@@ -17,7 +18,7 @@ export const whoIsBookedIntent: Intent = {
     const hasClassReference = Boolean(
       resolveDate(normalized) || resolveTime(normalized) || ["yoga", "cycling", "hiit", "sofia", "martinez", "marcus", "lee", "avery", "thompson"].some((term) => hasWord(normalized, term)),
     );
-    return asksForRoster && hasClassReference;
+    return asksForRoster && hasClassReference ? 2 : 0;
   },
   handle: async (message) => {
     const normalized = message.toLowerCase(); const supabase = await createSupabaseServerClient(); let query = supabase.from("classes").select("id, name, type, instructor, class_date, start_time, capacity, booked_count").order("class_date").order("start_time");

@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 
 type ClassRow = {
   name: string;
@@ -32,7 +33,7 @@ export const myAppointmentsIntent: Intent = {
   id: "my-appointments",
   description: "Lists the current member's upcoming class bookings.",
   roles: ["client", "staff", "admin"],
-  match: (message) => /\b(my (appointments|bookings|classes)|what appointments do i have|what am i booked for)\b/i.test(message),
+  match: (message) => Number(/\b(my (appointments|bookings|classes)|what appointments do i have|what am i booked for)\b/i.test(message)),
   handle: async (_message, session) => {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase

@@ -1,6 +1,7 @@
 import { searchMembers } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 
 type ClassRow = { name: string; type: string; instructor: string; class_date: string; start_time: string };
 
@@ -8,7 +9,7 @@ const explicitLookupPattern = /\b(?:look\s+up|find)\s+(?:a\s+)?member\b|\bmember
 const bareLookupWithTermPattern = /\blook\s+up\s+(?=[\w.+-]+@[\w.-]+\.[a-z]{2,}\b|[a-z]+\s+[a-z]+)/i;
 
 function extractSearchTerm(message: string) {
-  const withoutTrigger = message.replace(/^\s*(?:please\s+)?(?:look\s+up|find)\s+(?:a\s+)?member(?:\s+(?:named|called))?\b/i, "").replace(/^\s*(?:please\s+)?member\s+info(?:\s+for)?\b/i, "").replace(/^\s*(?:please\s+)?who\s+is\s+(?:the\s+)?member\b/i, "").replace(/^\s*(?:please\s+)?look\s+up\b/i, "");
+  const withoutTrigger = message.replace(/^\s*(?:please\s+)?(?:look\s+up|find)\s+(?:a\s+)?member(?:\s+(?:named|called))?\b/i, "").replace(/^\s*(?:please\s+)?member\s+info(?:\s+for)?\b/i, "").replace(/^\s*(?:please\s+)?who\s+is\s+(?:the\s+)?member\b/i, "").replace(/^\s*(?:please\s+)?look\s+up\b/i, "").replace(/^\s*(?:can|could)\s+you\s+pull\s+up\b/i, "").replace(/\s*(?:'s)?\s+account\s*\??\s*$/i, "");
   return withoutTrigger.replace(/^[\s,.:;!?"']+|[\s,.:;!?"']+$/g, "");
 }
 
@@ -17,7 +18,7 @@ function formatTime(time: string) { const [hours, minutes] = time.split(":").map
 function todayDate() { const today = new Date(); return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`; }
 
 export const memberLookupIntent: Intent = {
-  id: "member-lookup", description: "Looks up a member's profile and upcoming bookings for staff.", roles: ["staff", "admin"], match: (message) => explicitLookupPattern.test(message) || bareLookupWithTermPattern.test(message),
+  id: "member-lookup", description: "Looks up a member's profile and upcoming bookings for staff.", roles: ["staff", "admin"], match: (message) => scoreTriggerFamily(message, [explicitLookupPattern, bareLookupWithTermPattern, /\bpull up\b.*\baccount\b/i]) * (1 + scoreEntity(message, [/\b[a-z]+\s+[a-z]+(?:\x27s)?\b/i, /\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/i])),
   handle: async (message, _session) => {
     const searchTerm = extractSearchTerm(message);
     if (!searchTerm) return { reply: "Please specify a member name or email to look up." };

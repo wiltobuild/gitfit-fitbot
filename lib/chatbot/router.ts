@@ -6,12 +6,16 @@ export async function routeMessage(
   message: string,
   session: SessionUser,
 ): Promise<IntentResult & { intentId: string }> {
+  let matchedIntent: typeof intents[number] | undefined;
+  let highestScore = 0;
   for (const intent of intents) {
-    if (intent.roles.includes(session.role) && intent.match(message, session)) {
-      const result = await intent.handle(message, session);
-
-      return { ...result, intentId: intent.id };
-    }
+    if (!intent.roles.includes(session.role)) continue;
+    const score = intent.match(message, session);
+    if (score > highestScore) { matchedIntent = intent; highestScore = score; }
+  }
+  if (matchedIntent) {
+    const result = await matchedIntent.handle(message, session);
+    return { ...result, intentId: matchedIntent.id };
   }
 
   return {

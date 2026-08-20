@@ -19,8 +19,5 @@ import { myActivityIntent } from "@/lib/chatbot/intents/my-activity";
 import { membersByAttributeIntent } from "@/lib/chatbot/intents/members-by-attribute";
 import type { Intent } from "@/lib/chatbot/types";
 
-// More specific intents are ordered before `scheduleIntent`, whose weak
-// (bare date-word) matcher fallback is intentionally broad and otherwise
-// wins by registration order — see schedule.ts's `otherIntentShaped`
-// exclusion for the belt-and-suspenders half of this fix.
+// Intents are selected by deterministic confidence score; registration order is the stable tie-breaker.
 export const intents: Intent[] = [myGoalsIntent, myActivityIntent, membersByAttributeIntent, myAppointmentsIntent, bookClassIntent, classInfoIntent, studioCapacityIntent, instructorClassesIntent, rosterSummaryIntent, whoIsBookedIntent, memberLookupIntent, workoutPlanIntent, timeOffReviewIntent, timeOffIntent, retentionLookupIntent, outreachDraftIntent, outreachSendIntent, helpIntent, scheduleIntent];

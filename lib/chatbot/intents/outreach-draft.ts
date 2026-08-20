@@ -1,13 +1,14 @@
 import { searchMembers, type MemberRow } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 
-const draftPattern = /\b(?:draft\s+(?:outreach|a\s+message|promotion)\s+for|prepare\s+outreach\s+for)\b/i;
-function extractSearchTerm(message: string) { return message.replace(/^\s*(?:please\s+)?(?:draft\s+(?:outreach|a\s+message|promotion)\s+for|prepare\s+outreach\s+for)\b/i, "").replace(/^[\s,.:;!?"']+|[\s,.:;!?"']+$/g, ""); }
+const draftPattern = /\b(?:draft\s+(?:outreach|a\s+message|promotion)\s+for|prepare\s+outreach\s+for|write\s+something\s+to\s+win\s+back)\b/i;
+function extractSearchTerm(message: string) { return message.replace(/^\s*(?:please\s+)?(?:draft\s+(?:outreach|a\s+message|promotion)\s+for|prepare\s+outreach\s+for)\b/i, "").replace(/^\s*(?:can|could)\s+you\s+write\s+something\s+to\s+win\s+back\b/i, "").replace(/^[\s,.:;!?"']+|[\s,.:;!?"']+$/g, ""); }
 function memberLabel(member: MemberRow) { return member.full_name || member.email; }
 
 export const outreachDraftIntent: Intent = {
-  id: "outreach-draft", description: "Creates a staff-reviewed outreach draft for one member.", roles: ["staff", "admin"], match: (message) => draftPattern.test(message),
+  id: "outreach-draft", description: "Creates a staff-reviewed outreach draft for one member.", roles: ["staff", "admin"], match: (message) => scoreTriggerFamily(message, [draftPattern]) * (1 + scoreEntity(message, [/\b(?:for|back)\s+[a-z]+\b/i])),
   handle: async (message, session) => {
     const searchTerm = extractSearchTerm(message);
     if (!searchTerm) return { reply: "Please specify a member name or email for the outreach draft." };

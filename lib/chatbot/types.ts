@@ -17,6 +17,6 @@ export type Intent = {
   id: string;
   description: string;
   roles: Array<"client" | "staff" | "admin">;
-  match: (message: string, session: SessionUser) => boolean;
+  match: (message: string, session: SessionUser) => number;
   handle: (message: string, session: SessionUser) => Promise<IntentResult> | IntentResult;
 };
