@@ -1,0 +1,1 @@
+export function fillLevel(bookings: number, capacity: number): "healthy" | "filling" | "full" { const ratio = capacity ? bookings / capacity : 0; return ratio >= 1 ? "full" : ratio >= .8 ? "filling" : "healthy"; }
