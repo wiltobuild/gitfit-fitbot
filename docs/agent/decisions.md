@@ -188,3 +188,32 @@ revertible independent of whatever else lands on `main` from the rest of
 the suite.
 
 **Approved by**: user
+
+## 2026-08-19 — Phase A implementation paused for a visual-design redirect
+
+Codex handoff for `operations-dashboard` Phase A (`plan.md`, manager-flag
+migration — plan was written and awaiting sign-off) is on hold. User
+surfaced reference screenshots of a "GitFit Yoga" design (gradient accent
+system, richer instructor/class cards, capacity-bar styling, credit/pass
+UI chrome) and wants the live app's visual language to move toward it.
+Source not yet identified — confirmed via grep it is **not**
+`public/appointments-prototype.html` (title reads "Pulse Studio - Member
+Booking," no matching strings, and the live app no longer references that
+file at all). User will locate and provide the actual source (URL or
+file) before any redesign work starts.
+
+Scope, as given: **visual language only** — gradients, card treatments,
+color/typography, capacity-bar styling — applied to the app's current
+structure. Explicitly **not** adopting the credit/class-pass booking model
+shown in the reference (`5/8 credits left`, `Reserve Spot (1 Credit)`) —
+that would be a real schema/booking-logic change, not styling, and was
+turned down for now.
+
+**Why**: User's explicit instruction — this takes priority over Phase A
+until the design direction is sorted out.
+
+**Approved by**: user
+
+**Next step**: resume Phase A approval once the design-redirect work is
+scoped or shelved — plan.md is unchanged and still valid, just not handed
+to Codex yet.

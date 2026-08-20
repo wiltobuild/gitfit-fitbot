@@ -6,3 +6,7 @@ out/
 !.env.example
 *.tsbuildinfo
 .DS_Store
+
+# Design reference only — not part of this app, delete once the visual
+# redirect is done (see docs/agent/decisions.md, 2026-08-19).
+gitfit-booking-static-package/
