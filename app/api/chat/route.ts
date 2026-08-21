@@ -59,7 +59,9 @@ export async function POST(request: Request) {
       user_id: session.user.id,
       role: "assistant",
       content: result.reply,
-      resolved_entities: result.resolvedEntities
+      resolved_entities: result.resolvedEntities,
+      card: result.card,
+      suggested_chips: result.suggestedChips
     });
   if (assistantMessageError) throw assistantMessageError;
   return Response.json({
@@ -82,7 +84,7 @@ export async function GET() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("chat_messages")
-    .select("id, role, content, created_at, is_promotional")
+    .select("id, role, content, created_at, is_promotional, card, suggested_chips")
     .eq("user_id", session.user.id)
     .order("created_at", { ascending: true });
   if (error) throw error;
@@ -94,11 +96,12 @@ export async function GET() {
         ? {
             ...message,
             suggestedChips:
-              session.role === "admin"
+              message.suggested_chips ??
+              (session.role === "admin"
                 ? ADMIN_MENU
                 : session.role === "staff"
                   ? STAFF_MENU
-                  : CLIENT_MENU
+                  : CLIENT_MENU)
           }
         : message
     )
