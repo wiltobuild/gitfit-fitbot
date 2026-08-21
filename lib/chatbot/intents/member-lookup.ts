@@ -1,7 +1,8 @@
-import { searchMembers } from "@/lib/members/queries";
+import { listMembersForStaff, searchMembers, type MemberRow } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
+import { fuzzyMatch } from "@/lib/chatbot/entity-extraction";
 
 type ClassRow = { name: string; type: string; instructor: string; class_date: string; start_time: string };
 
@@ -23,8 +24,15 @@ export const memberLookupIntent: Intent = {
     const searchTerm = extractSearchTerm(message);
     if (!searchTerm) return { reply: "Please specify a member name or email to look up." };
     const supabase = await createSupabaseServerClient();
-    const { data: members, error } = await searchMembers(supabase, searchTerm);
+    const { data: searchedMembers, error } = await searchMembers(supabase, searchTerm);
     if (error) { console.error("Unable to search members", error); return { reply: "I couldn't look up members right now. Please try again shortly." }; }
+    let members = searchedMembers;
+    if (members.length === 0) {
+      const { data: roster, error: rosterError } = await listMembersForStaff(supabase);
+      if (rosterError) { console.error("Unable to retrieve members for fuzzy lookup", rosterError); return { reply: "I couldn't look up members right now. Please try again shortly." }; }
+      const matchedName = fuzzyMatch(searchTerm, roster.flatMap((member) => member.full_name ? [member.full_name] : []));
+      if (matchedName) members = roster.filter((member): member is MemberRow & { full_name: string } => member.full_name === matchedName);
+    }
     if (members.length === 0) return { reply: `No members found matching '${searchTerm}'.` };
     if (members.length > 1) return { reply: `I found multiple members matching '${searchTerm}'. Please narrow the search:\n${members.map((member) => `${member.full_name || member.email} — ${member.email} — ${member.is_staff ? "staff" : "member"}`).join("\n")}`, card: { kind: "members", members: members.map((member) => ({ name: member.full_name || member.email, email: member.email, status: member.is_staff ? "staff" : "member" })) } };
 
