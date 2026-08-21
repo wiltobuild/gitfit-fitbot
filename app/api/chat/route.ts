@@ -29,7 +29,7 @@ export async function GET() {
   let session;
   try { session = await requireUserOrThrow(); } catch (error) { if (error instanceof UnauthorizedError) return Response.json({ error: "Unauthorized" }, { status: 401 }); throw error; }
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from("chat_messages").select("role, content, created_at").eq("user_id", session.user.id).order("created_at", { ascending: true });
+  const { data, error } = await supabase.from("chat_messages").select("id, role, content, created_at, is_promotional").eq("user_id", session.user.id).order("created_at", { ascending: true });
   if (error) throw error;
-  return Response.json({ role: session.role, messages: (data ?? []).map((message) => message.role === "assistant" ? { ...message, suggestedChips: session.role === "admin" ? ADMIN_MENU : session.role === "staff" ? STAFF_MENU : CLIENT_MENU } : message) });
+  return Response.json({ userId: session.user.id, role: session.role, messages: (data ?? []).map((message) => message.role === "assistant" ? { ...message, suggestedChips: session.role === "admin" ? ADMIN_MENU : session.role === "staff" ? STAFF_MENU : CLIENT_MENU } : message) });
 }

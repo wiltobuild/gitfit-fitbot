@@ -5,6 +5,8 @@ import { IconCalendar, IconShield, IconSparkle, MomentumArc } from "@/app/compon
 import MomentumRing from "@/app/components/momentum-ring";
 import SiteNav from "@/app/components/site-nav";
 import { requireUserOrRedirect } from "@/lib/auth/session";
+import { getMemberForUser } from "@/lib/members/queries";
+import { getMemberPromotions, personalizeOutreachBody } from "@/lib/outreach/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function formatDate(date: Date) {
@@ -12,6 +14,17 @@ function formatDate(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function formatPromotionDate(sentAt: string | null) {
+  if (!sentAt) return "Recently";
+  const date = new Date(sentAt);
+  if (Number.isNaN(date.getTime())) return "Recently";
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: date.getFullYear() === new Date().getFullYear() ? undefined : "numeric" }).format(date);
+}
+
+function previewPromotion(body: string) {
+  return body.length > 150 ? `${body.slice(0, 147).trimEnd()}...` : body;
 }
 
 export default async function DashboardPage() {
@@ -25,6 +38,7 @@ export default async function DashboardPage() {
   weekSunday.setDate(weekMonday.getDate() + 6);
 
   let bookedThisWeek: number | null = null;
+  let promotions: Array<{ id: string; subject: string; body: string; sent_at: string | null }> | null = null;
   try {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase
@@ -38,6 +52,19 @@ export default async function DashboardPage() {
     bookedThisWeek = data?.length ?? 0;
   } catch (error) {
     console.error("Unable to load this week's bookings for dashboard", error);
+  }
+
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data: member, error: memberError } = await getMemberForUser(supabase, user.id);
+    if (memberError) throw memberError;
+    if (member) {
+      const { data, error } = await getMemberPromotions(supabase, member.id);
+      if (error) throw error;
+      promotions = (data ?? []).map((promotion) => ({ ...promotion, body: personalizeOutreachBody(promotion.body, member.full_name) }));
+    }
+  } catch (error) {
+    console.error("Unable to load promotions for dashboard", error);
   }
 
   return (
@@ -109,6 +136,18 @@ export default async function DashboardPage() {
             </form>
           </div>
         </section>
+        {promotions ? <section className="surface-card dashboard-card dashboard-promotions animate-fade-up" style={{ animationDelay: ".14s" }}>
+          <div className="dashboard-card-top">
+            <div>
+              <h2>Promotions</h2>
+              <p className="dashboard-email">Updates and offers from your GitFit team.</p>
+            </div>
+          </div>
+          {promotions.length ? <div className="promotion-list">{promotions.map((promotion) => <article className="promotion-item" key={promotion.id}>
+            <div className="promotion-item-top"><h3>{promotion.subject}</h3><time dateTime={promotion.sent_at ?? undefined}>{formatPromotionDate(promotion.sent_at)}</time></div>
+            <p>{previewPromotion(promotion.body)}</p>
+          </article>)}</div> : <p className="dashboard-promotions-empty">No promotions right now. Check back soon for updates from the studio.</p>}
+        </section> : null}
       </main>
     </div>
   );

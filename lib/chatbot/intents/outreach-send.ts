@@ -1,4 +1,5 @@
 import { searchMembers, type MemberRow } from "@/lib/members/queries";
+import { personalizeOutreachBody } from "@/lib/outreach/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
@@ -16,10 +17,6 @@ function extractSearchTerm(message: string) {
 }
 function memberLabel(member: MemberRow) {
   return member.full_name || member.email;
-}
-function personalize(body: string, member: MemberRow) {
-  const firstName = member.full_name?.trim().split(/\s+/)[0] || "there";
-  return body.replaceAll("[First name]", firstName);
 }
 
 export const outreachSendIntent: Intent = {
@@ -70,7 +67,7 @@ export const outreachSendIntent: Intent = {
       return {
         reply: `There's no draft outreach for ${name} yet — say 'draft outreach for ${name}' first.`
       };
-    const personalizedBody = personalize(draft.body, member);
+    const personalizedBody = personalizeOutreachBody(draft.body, member.full_name);
     const { data: sentData, error: updateError } = await supabase
       .from("outreach_messages")
       .update({ status: "sent", sent_at: new Date().toISOString() })
