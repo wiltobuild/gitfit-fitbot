@@ -160,7 +160,8 @@ export default async function DashboardPage() {
   return <div className="account-shell"><SiteNav /><ClientDashboard
     bookingHistory={bookingHistory}
     currentWeekBooked={streak.currentWeekBooked}
-    encouragingMessage={encouragingMessage}
+    encouragingMessage={encouragingMessage.message}
+    encouragingMessageCategory={encouragingMessage.category}
     promotions={promotions}
     streakWeeks={streak.streakWeeks}
     upcomingBookings={upcomingBookings}

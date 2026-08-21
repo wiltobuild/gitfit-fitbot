@@ -6,6 +6,8 @@ export type EncouragingMessageInput = {
   today: string;
 };
 
+export type EncouragingMessageCategory = keyof typeof messages;
+
 const messages = {
   "no-streak-yet": [
     "Your next session is the start of something great. Pick a class that sounds fun and let’s get moving.",
@@ -39,7 +41,7 @@ export function hashString(input: string): number {
   return hash >>> 0;
 }
 
-export function getEncouragingMessage({ streakWeeks, currentWeekBooked, hasAnyHistory, userId, today }: EncouragingMessageInput) {
+export function getEncouragingMessage({ streakWeeks, currentWeekBooked, hasAnyHistory, userId, today }: EncouragingMessageInput): { message: string; category: EncouragingMessageCategory } {
   const category = !hasAnyHistory
     ? "no-streak-yet"
     : streakWeeks > 0 && currentWeekBooked
@@ -48,5 +50,5 @@ export function getEncouragingMessage({ streakWeeks, currentWeekBooked, hasAnyHi
         ? "streak-active-this-week-not-yet-booked"
         : "streak-just-broken";
   const pool = messages[category];
-  return pool[hashString(`${userId}${today}`) % pool.length];
+  return { message: pool[hashString(`${userId}${today}`) % pool.length], category };
 }

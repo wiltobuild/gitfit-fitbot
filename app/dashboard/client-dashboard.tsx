@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { signOut } from "@/app/actions/auth";
 import { IconCalendar, IconSparkle, MomentumArc } from "@/app/components/icons";
 import MomentumRing from "@/app/components/momentum-ring";
+import type { EncouragingMessageCategory } from "@/lib/dashboard/encouraging-messages";
 import type { ClassRow } from "@/lib/members/queries";
 
 type Promotion = { id: string; subject: string; body: string; sent_at: string | null };
@@ -28,12 +29,12 @@ function SessionList({ classes, emptyTitle, emptyCopy }: { classes: ClassRow[]; 
   </li>)}</ul> : <div className="empty-state client-dashboard-empty"><h3>{emptyTitle}</h3><p>{emptyCopy}</p></div>;
 }
 
-export function ClientDashboard({ bookingHistory, currentWeekBooked, encouragingMessage, promotions, streakWeeks, upcomingBookings, userEmail }: { bookingHistory: ClassRow[]; currentWeekBooked: boolean; encouragingMessage: string; promotions: Promotion[] | null; streakWeeks: number; upcomingBookings: ClassRow[]; userEmail?: string }) {
+export function ClientDashboard({ bookingHistory, currentWeekBooked, encouragingMessage, encouragingMessageCategory, promotions, streakWeeks, upcomingBookings, userEmail }: { bookingHistory: ClassRow[]; currentWeekBooked: boolean; encouragingMessage: string; encouragingMessageCategory: EncouragingMessageCategory; promotions: Promotion[] | null; streakWeeks: number; upcomingBookings: ClassRow[]; userEmail?: string }) {
   return <main className="account-content client-dashboard-content">
     <header className="account-intro animate-fade-up"><p className="eyebrow"><span /> Your home base</p><h1>Ready when you are.</h1><p>Keep your routine moving, see what&apos;s next, or ask FitBot for a little guidance.</p></header>
-    <section className="surface-card dashboard-card animate-fade-up" style={{ animationDelay: ".08s" }}>
+    <section className="surface-card dashboard-card client-momentum-card animate-fade-up" style={{ animationDelay: ".08s" }}>
       <div className="dashboard-card-top"><div><h2>Your momentum</h2><p className="dashboard-email">Signed in as {userEmail}</p></div><span className="badge badge-neutral">Member</span></div>
-      <div className="dashboard-momentum client-streak"><MomentumRing target={8} value={streakWeeks} /><div><h3>{streakWeeks === 1 ? "1 completed week in your streak" : `${streakWeeks} completed weeks in your streak`}</h3><p>{encouragingMessage}</p><span className={`client-week-status ${currentWeekBooked ? "is-booked" : ""}`}>This week: {currentWeekBooked ? "booked" : "not yet booked"}</span></div></div>
+      <div className="dashboard-momentum client-streak"><MomentumRing target={8} value={streakWeeks} /><div><h3>{streakWeeks === 1 ? "1 completed week in your streak" : `${streakWeeks} completed weeks in your streak`}</h3><p className={`client-streak-message client-streak-tone-${encouragingMessageCategory}`}>{encouragingMessage}</p><span className={`client-week-status ${currentWeekBooked ? "is-booked" : ""}`}>This week: {currentWeekBooked ? "booked" : "not yet booked"}</span></div></div>
       <div className="quick-actions" aria-label="Quick actions"><Link className="quick-action quick-action-fitbot" href="/chat"><MomentumArc className="quick-action-arc" /><span className="quick-action-content"><span className="quick-action-icon"><IconSparkle /></span><span>Chat with FitBot</span></span><span aria-hidden="true">→</span></Link><Link className="quick-action quick-action-appointments" href="/appointments"><span className="quick-action-content"><span className="quick-action-icon"><IconCalendar /></span><span>View appointments</span></span><span aria-hidden="true">→</span></Link></div>
       <div className="account-sign-out"><form action={signOut}><button className="btn btn-outline" type="submit">Sign out</button></form></div>
     </section>
