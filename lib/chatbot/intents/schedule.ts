@@ -1,8 +1,7 @@
 import {
   resolveClassType,
   resolveDate,
-  resolveInstructor,
-  resolveWeekday
+  resolveInstructor
 } from "@/lib/chatbot/entity-extraction";
 import type { Intent } from "@/lib/chatbot/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -48,15 +47,19 @@ export const scheduleIntent: Intent = {
   roles: ["client", "staff", "admin"],
   match: (message) => {
     const normalized = message.toLowerCase();
+    if (otherIntentShaped.test(normalized)) return 0;
     if (
       strongScheduleKeywords.some((keyword) => normalized.includes(keyword)) ||
       resolveInstructor(normalized)
     )
       return 1;
-    if (otherIntentShaped.test(normalized)) return 0;
-    return Number(
-      Boolean(resolveDate(normalized) || resolveWeekday(normalized))
-    );
+    // A bare date/weekday with no other schedule-shaped wording (e.g. "Friday
+    // at 7am") is exactly the shape of a slot-filling answer to another
+    // intent's pending question — deliberately not matched here so it doesn't
+    // outscore/hijack that reconciliation (see router.ts's pending-clarification
+    // check). A standalone date query without any class-shaped wording is a
+    // narrow enough case that losing it is an acceptable trade-off.
+    return 0;
   },
   handle: async (message, _session, pendingAnswer) => {
     void pendingAnswer;
