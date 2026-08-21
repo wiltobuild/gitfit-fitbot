@@ -129,6 +129,77 @@ export async function getUpcomingBookingsForUser(
 
   return classes;
 }
+
+export async function getBookingHistoryForUser(
+  supabase: SupabaseServerClient,
+  userId: string,
+  limit = 20
+) {
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("created_at, classes!inner(name, type, instructor, class_date, start_time, capacity, booked_count)")
+    .eq("user_id", userId)
+    .lt("classes.class_date", todayDate())
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+
+  return (data ?? [])
+    .map((booking) => booking.classes as unknown as ClassRow | null)
+    .filter((classRow): classRow is ClassRow => classRow !== null)
+    .sort((a, b) => `${b.class_date} ${b.start_time}`.localeCompare(`${a.class_date} ${a.start_time}`));
+}
+
+export async function getMemberStreak(supabase: SupabaseServerClient, userId: string) {
+  const today = new Date();
+  const mondayOffset = (today.getDay() + 6) % 7;
+  const currentWeekMonday = new Date(today);
+  currentWeekMonday.setDate(today.getDate() - mondayOffset);
+  currentWeekMonday.setHours(0, 0, 0, 0);
+  const lookbackMonday = new Date(currentWeekMonday);
+  lookbackMonday.setDate(currentWeekMonday.getDate() - 25 * 7);
+  const currentWeekKey = formatDateForQuery(currentWeekMonday);
+  const currentWeekSunday = new Date(currentWeekMonday);
+  currentWeekSunday.setDate(currentWeekMonday.getDate() + 6);
+
+  // Upper bound is the END of the current ISO week, not "today" -- a class
+  // booked in advance for later this week must still count toward
+  // currentWeekBooked (the week is "secured" the moment it's booked, not
+  // only once the class date arrives).
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("classes!inner(class_date)")
+    .eq("user_id", userId)
+    .gte("classes.class_date", formatDateForQuery(lookbackMonday))
+    .lte("classes.class_date", formatDateForQuery(currentWeekSunday));
+
+  if (error) throw error;
+
+  const bookedWeeks = new Set<string>();
+  for (const booking of data ?? []) {
+    const classDate = (booking.classes as unknown as { class_date: string } | null)?.class_date;
+    if (!classDate) continue;
+    const date = new Date(`${classDate}T00:00:00`);
+    const offset = (date.getDay() + 6) % 7;
+    date.setDate(date.getDate() - offset);
+    bookedWeeks.add(formatDateForQuery(date));
+  }
+
+  let streakWeeks = 0;
+  const completedWeek = new Date(currentWeekMonday);
+  completedWeek.setDate(currentWeekMonday.getDate() - 7);
+  while (completedWeek >= lookbackMonday && bookedWeeks.has(formatDateForQuery(completedWeek))) {
+    streakWeeks += 1;
+    completedWeek.setDate(completedWeek.getDate() - 7);
+  }
+
+  return { streakWeeks, currentWeekBooked: bookedWeeks.has(currentWeekKey) };
+}
+
+function formatDateForQuery(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
 export async function searchMembersByAttributes(supabase: SupabaseServerClient, { fitnessLevel, preferredClassType, staleAfterDays, staleBeforeDays }: { fitnessLevel?: string; preferredClassType?: string; staleAfterDays?: number; staleBeforeDays?: number }) { const { data, error } = await supabase.rpc("search_members_by_attributes", { p_fitness_level: fitnessLevel ?? null, p_preferred_class_type: preferredClassType ?? null, p_stale_after_days: staleAfterDays ?? null, p_stale_before_days: staleBeforeDays ?? null }); return { data: (data ?? []) as MemberRow[], error }; }
 
 export async function getCohortMembers(supabase: SupabaseServerClient, { minDays, maxDays }: { minDays: number; maxDays: number }) {
