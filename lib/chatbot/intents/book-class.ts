@@ -118,6 +118,17 @@ function resolutionReply(classes: ClassRow[], action: "book" | "cancel") {
       : "I couldn't find a class matching that request.";
   return `I found a few possible classes. Please be more specific:\n${classes.slice(0, 8).map(classLabel).join("\n")}`;
 }
+function disambiguationCard(classes: ClassRow[], action: "book" | "cancel") {
+  return {
+    kind: "disambiguation" as const,
+    prompt: "I found a few possible classes — which one?",
+    options: classes.slice(0, 8).map((row) => ({
+      label: classLabel(row),
+      detail: `with ${row.instructor}`,
+      sendMessage: `${action === "cancel" ? "cancel my booking for" : "book me into"} ${row.type} on ${row.class_date} at ${formatTime(row.start_time)} with ${row.instructor}`
+    }))
+  };
+}
 const timeOffShaped = /\b(day off|days off|time off|off work|pto)\b/i;
 const cancelPattern =
   /\b(cancel my|i can(?:not|'t) make it to|i won(?:not|'t) be able to attend|drop me from|take me out of)\b/i;
@@ -191,9 +202,12 @@ export const bookClassIntent: Intent = {
             }
           };
       }
-      return {
-        reply: resolutionReply(resolved.classes, cancelling ? "cancel" : "book")
-      };
+      return resolved.classes.length
+        ? {
+            reply: "I found a few possible matches.",
+            card: disambiguationCard(resolved.classes, cancelling ? "cancel" : "book")
+          }
+        : { reply: resolutionReply(resolved.classes, cancelling ? "cancel" : "book") };
     }
     const classRow = resolved.classes[0];
     const supabase = await createSupabaseServerClient();

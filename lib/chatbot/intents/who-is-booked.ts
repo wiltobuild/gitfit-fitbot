@@ -26,7 +26,7 @@ export const whoIsBookedIntent: Intent = {
     if (date) query = query.eq("class_date", date); if (instructor) query = query.ilike("instructor", `%${instructor}%`); if (type) query = query.ilike("type", type); if (time) query = query.eq("start_time", time);
     const { data, error } = await query; const classes = (data ?? []) as ClassRow[];
     if (error) return { reply: "I couldn't retrieve class bookings right now. Please try again shortly." }; if (!classes.length) return { reply: "I couldn't find a class matching that request." };
-    if (classes.length > 1) return { reply: `I found a few possible classes. Please be more specific:\n${classes.slice(0, 8).map(label).join("\n")}`, card: { kind: "schedule", classes: classes.slice(0, 8).map((classRow) => ({ title: classRow.name, type: classRow.type, instructor: classRow.instructor, date: classRow.class_date, time: classRow.start_time, capacity: classRow.capacity, bookedCount: classRow.booked_count })) } };
+    if (classes.length > 1) return { reply: "I found a few possible classes.", card: { kind: "disambiguation", prompt: "Which class would you like the roster for?", options: classes.slice(0, 8).map((classRow) => ({ label: label(classRow), detail: `with ${classRow.instructor}`, sendMessage: `who is booked for ${classRow.type} on ${classRow.class_date} at ${label(classRow).split(", ")[1]} with ${classRow.instructor}` })) } };
     const classRow = classes[0];
     const { data: bookings, error: bookingError } = await supabase.from("bookings").select("user_id").eq("class_id", classRow.id);
     if (bookingError) return { reply: "I couldn't retrieve attendee names right now. Please try again shortly." };

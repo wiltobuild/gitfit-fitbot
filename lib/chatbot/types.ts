@@ -64,6 +64,17 @@ export type RichCard =
         capacity: number;
         fillLevel: "healthy" | "filling" | "full";
       }>;
+    }
+  | {
+      kind: "disambiguation";
+      prompt: string;
+      options: Array<{ label: string; detail?: string; sendMessage: string }>;
+    }
+  | {
+      kind: "notice";
+      tone: "info" | "tip" | "error";
+      title?: string;
+      body: string;
     };
 
 export type IntentResult = {

@@ -8,7 +8,7 @@ export async function getMemberActivitySummary(
 ): Promise<IntentResult> {
   const { data: member } = await getMemberForUser(supabase, userId);
   if (!member)
-    return { reply: "I don’t have an activity profile on file yet." };
+    return { reply: "I don’t have an activity profile on file yet.", card: { kind: "notice", tone: "info", body: "I don’t have an activity profile on file yet." } };
   const today = new Date();
   const monday = new Date(today);
   monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
@@ -21,9 +21,8 @@ export async function getMemberActivitySummary(
     .eq("user_id", userId)
     .gte("classes.class_date", date(monday))
     .lte("classes.class_date", date(sunday));
-  return {
-    reply: `You’ve booked ${data?.length ?? 0} classes this week (aim for 4). Your last visit was ${member.last_visit_date ?? "not recorded"}; you’ve been a ${member.membership_tier ?? "member"} tier member since ${member.join_date ?? "your join date isn’t recorded"}.`
-  };
+  const body = `You’ve booked ${data?.length ?? 0} classes this week (aim for 4). Your last visit was ${member.last_visit_date ?? "not recorded"}; you’ve been a ${member.membership_tier ?? "member"} tier member since ${member.join_date ?? "your join date isn’t recorded"}.`;
+  return { reply: "Here’s your activity summary.", card: { kind: "notice", tone: "info", title: "Your activity", body } };
 }
 export const myActivityIntent: Intent = {
   id: "my-activity",

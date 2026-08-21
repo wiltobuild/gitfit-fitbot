@@ -110,13 +110,14 @@ export const memberLookupIntent: Intent = {
       return { reply: `No members found matching '${searchTerm}'.` };
     if (members.length > 1)
       return {
-        reply: `I found multiple members matching '${searchTerm}'. Please narrow the search:\n${members.map((member) => `${member.full_name || member.email} — ${member.email} — ${member.is_staff ? "staff" : "member"}`).join("\n")}`,
+        reply: "I found a few possible members.",
         card: {
-          kind: "members",
-          members: members.map((member) => ({
-            name: member.full_name || member.email,
-            email: member.email,
-            status: member.is_staff ? "staff" : "member"
+          kind: "disambiguation",
+          prompt: "Which member did you mean?",
+          options: members.map((member) => ({
+            label: member.full_name || member.email,
+            detail: `${member.email} — ${member.is_staff ? "staff" : "member"}`,
+            sendMessage: `look up member ${member.email}`
           }))
         }
       };

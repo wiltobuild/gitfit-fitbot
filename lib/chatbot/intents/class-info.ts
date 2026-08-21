@@ -10,6 +10,10 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const infoPattern =
   /\b(tell me about|what is|details on|who teaches|who'?s teaching)\b/i;
+function formatTime(time: string) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
+}
 function pendingString(args: Record<string, unknown> | undefined, key: string) {
   const value = args?.[key];
   return typeof value === "string" ? value : undefined;
@@ -71,10 +75,16 @@ export const classInfoIntent: Intent = {
       return { reply: "I couldn't find a class matching that request." };
     if (classes.length > 1)
       return {
-        reply: `I found a few possible classes. Please be more specific:\n${classes
-          .slice(0, 8)
-          .map((row) => `${row.name} — ${row.class_date}, ${row.start_time}`)
-          .join("\n")}`
+        reply: "I found a few possible matches.",
+        card: {
+          kind: "disambiguation",
+          prompt: "I found a few possible classes — which one?",
+          options: classes.slice(0, 8).map((row) => ({
+            label: `${row.name} — ${row.class_date}, ${row.start_time}`,
+            detail: `with ${row.instructor}`,
+            sendMessage: `tell me about ${row.type} on ${row.class_date} at ${formatTime(row.start_time)} with ${row.instructor}`
+          }))
+        }
       };
     const row = classes[0];
     return {

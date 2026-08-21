@@ -44,7 +44,16 @@ export const outreachSendIntent: Intent = {
       return { reply: `No members found matching '${searchTerm}'.` };
     if (members.length > 1)
       return {
-        reply: `I found multiple members matching '${searchTerm}'. Please narrow the search:\n${members.map((member) => `${memberLabel(member)} — ${member.email}`).join("\n")}`
+        reply: "I found a few possible members.",
+        card: {
+          kind: "disambiguation",
+          prompt: "Which member should receive this outreach?",
+          options: members.map((member) => ({
+            label: memberLabel(member),
+            detail: member.email,
+            sendMessage: `send outreach to ${member.email}`
+          }))
+        }
       };
     const member = members[0];
     const name = memberLabel(member);

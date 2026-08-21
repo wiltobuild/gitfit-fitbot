@@ -39,9 +39,6 @@ function matchingProfiles(message: string, profiles: StaffProfile[]) {
 function profileName(profile: StaffProfile) {
   return profile.full_name || "Staff member";
 }
-function resolutionReply(profiles: StaffProfile[]) {
-  return `I found a few possible staff members. Please be more specific:\n${profiles.slice(0, 8).map(profileName).join("\n")}`;
-}
 function hasPlausibleName(message: string) {
   return message
     .replace(reviewPattern, "")
@@ -91,7 +88,19 @@ export const timeOffReviewIntent: Intent = {
       message,
       (profiles ?? []) as StaffProfile[]
     );
-    if (matches.length > 1) return { reply: resolutionReply(matches) };
+    if (matches.length > 1)
+      return {
+        reply: "I found a few possible staff members.",
+        card: {
+          kind: "disambiguation",
+          prompt: "Which staff member's time-off request should I review?",
+          options: matches.slice(0, 8).map((profile) => ({
+            label: profileName(profile),
+            detail: formatDate(requestedDate),
+            sendMessage: `${status === "approved" ? "approve" : "deny"} time off for ${profileName(profile)} on ${requestedDate}`
+          }))
+        }
+      };
     if (!matches.length)
       return {
         reply: `No pending time-off request was found for that person on ${formatDate(requestedDate)}.`

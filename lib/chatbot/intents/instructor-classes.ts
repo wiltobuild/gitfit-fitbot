@@ -35,7 +35,16 @@ export async function getInstructorClasses(message: string) {
     return { reply: "Tell me whose schedule you'd like to see." };
   if (matches.length > 1)
     return {
-      reply: `I found a few possible instructors. Please be more specific:\n${matches.map((member) => member.full_name || member.email).join("\n")}`
+      reply: "I found a few possible instructors.",
+      card: {
+        kind: "disambiguation" as const,
+        prompt: "Which instructor did you mean?",
+        options: matches.map((member) => ({
+          label: member.full_name || member.email,
+          detail: member.email,
+          sendMessage: `show classes for ${member.full_name}`
+        }))
+      }
     };
   const instructor = matches[0].full_name || matches[0].email;
   const { data, error } = await supabase

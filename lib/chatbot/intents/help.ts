@@ -20,17 +20,17 @@ export const helpIntent: Intent = {
     void pendingAnswer;
     if (session.role === "admin")
       return {
-        reply:
-          "I can help run the studio and support your fitness routine: schedules, class details, instructor lookups, booking, studio capacity, roster summaries, member lookup, outreach, and time-off tools. You can also approve or deny pending staff time-off by naming the person and date."
+        reply: "Here’s what I can help with.",
+        card: { kind: "notice", tone: "info", title: "Fitbot for admins", body: "I can help run the studio and support your fitness routine: schedules, class details, instructor lookups, booking, studio capacity, roster summaries, member lookup, outreach, and time-off tools. You can also approve or deny pending staff time-off by naming the person and date." }
       };
     if (session.role === "staff")
       return {
-        reply:
-          "I can help with fitness goals, booking, schedule questions, class details, instructor lookups, today's studio capacity, roster summaries, member lookup, outreach, and time-off coverage."
+        reply: "Here’s what I can help with.",
+        card: { kind: "notice", tone: "info", title: "Fitbot for staff", body: "I can help with fitness goals, booking, schedule questions, class details, instructor lookups, today's studio capacity, roster summaries, member lookup, outreach, and time-off coverage." }
       };
     return {
-      reply:
-        "I can help with fitness goals, booking, schedule questions, class details, and instructor class lookups. Ask about a day, instructor, or class type to get started."
+      reply: "Here’s what I can help with.",
+      card: { kind: "notice", tone: "info", title: "What Fitbot can do", body: "I can help with fitness goals, booking, schedule questions, class details, and instructor class lookups. Ask about a day, instructor, or class type to get started." }
     };
   }
 };
