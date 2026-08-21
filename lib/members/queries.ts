@@ -33,3 +33,7 @@ export async function listMembersForStaff(supabase: SupabaseServerClient) {
   return { data: (data ?? []) as MemberRow[], error };
 }
 export async function searchMembersByAttributes(supabase: SupabaseServerClient, { fitnessLevel, preferredClassType, staleAfterDays, staleBeforeDays }: { fitnessLevel?: string; preferredClassType?: string; staleAfterDays?: number; staleBeforeDays?: number }) { const { data, error } = await supabase.rpc("search_members_by_attributes", { p_fitness_level: fitnessLevel ?? null, p_preferred_class_type: preferredClassType ?? null, p_stale_after_days: staleAfterDays ?? null, p_stale_before_days: staleBeforeDays ?? null }); return { data: (data ?? []) as MemberRow[], error }; }
+
+export async function getCohortMembers(supabase: SupabaseServerClient, { minDays, maxDays }: { minDays: number; maxDays: number }) {
+  return searchMembersByAttributes(supabase, { staleAfterDays: minDays, staleBeforeDays: maxDays });
+}
