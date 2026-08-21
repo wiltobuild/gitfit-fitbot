@@ -21,6 +21,7 @@ const strongScheduleKeywords = [
 ];
 const otherIntentShaped = /\b(workout|exercise|training|off|pto)\b/i;
 type ClassRow = {
+  id: string;
   name: string;
   type: string;
   instructor: string;
@@ -74,7 +75,7 @@ export const scheduleIntent: Intent = {
     let query = supabase
       .from("classes")
       .select(
-        "name, type, instructor, class_date, start_time, capacity, booked_count"
+        "id, name, type, instructor, class_date, start_time, capacity, booked_count"
       )
       .order("class_date", { ascending: true })
       .order("start_time", { ascending: true });
@@ -127,7 +128,10 @@ export const scheduleIntent: Intent = {
           capacity: classRow.capacity,
           bookedCount: classRow.booked_count
         }))
-      }
+      },
+      ...(classes.length === 1
+        ? { resolvedEntities: { classId: classes[0].id, date: classes[0].class_date } }
+        : {})
     };
   }
 };
