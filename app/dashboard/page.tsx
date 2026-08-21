@@ -1,13 +1,17 @@
 import Link from "next/link";
 
 import { signOut } from "@/app/actions/auth";
+import { AdminDashboard } from "@/app/dashboard/admin-dashboard";
 import { IconCalendar, IconShield, IconSparkle, MomentumArc } from "@/app/components/icons";
 import MomentumRing from "@/app/components/momentum-ring";
 import SiteNav from "@/app/components/site-nav";
-import { requireUserOrRedirect } from "@/lib/auth/session";
+import { requireUserOrRedirect, type UserRole } from "@/lib/auth/session";
+import { getClassesForMonth, getUpcomingClasses, type StudioClass } from "@/lib/classes/queries";
 import { getMemberForUser } from "@/lib/members/queries";
+import { getMemberLifecycleBreakdown, getRetentionCandidates } from "@/lib/members/queries";
 import { getMemberPromotions, personalizeOutreachBody } from "@/lib/outreach/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getPendingTimeOffCount, listPendingTimeOffRequests, type PendingTimeOffRequest } from "@/lib/time-off/queries";
 
 function formatDate(date: Date) {
   const year = date.getFullYear();
@@ -29,6 +33,7 @@ function previewPromotion(body: string) {
 
 export default async function DashboardPage() {
   const { user, role } = await requireUserOrRedirect();
+  const dashboardRole: UserRole = role;
   const today = new Date();
   const mondayOffset = (today.getDay() + 6) % 7;
   const weekMonday = new Date(today);
@@ -36,6 +41,64 @@ export default async function DashboardPage() {
   weekMonday.setHours(0, 0, 0, 0);
   const weekSunday = new Date(weekMonday);
   weekSunday.setDate(weekMonday.getDate() + 6);
+
+  if (role === "admin") {
+    const upcomingEnd = new Date(today);
+    upcomingEnd.setDate(today.getDate() + 7);
+    let weeklyClasses: StudioClass[] = [];
+    let upcomingClasses: StudioClass[] = [];
+    let monthClasses: StudioClass[] = [];
+    let lifecycleCounts: Record<string, number> = {};
+    let tierCounts: Record<string, number> = {};
+    let reengagementCount = 0;
+    let pendingTimeOffCount = 0;
+    let pendingRequests: PendingTimeOffRequest[] = [];
+
+    try {
+      const supabase = await createSupabaseServerClient();
+      weeklyClasses = await getUpcomingClasses(supabase, { from: formatDate(weekMonday), to: formatDate(weekSunday) });
+    } catch (error) { console.error("Unable to load weekly classes for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      upcomingClasses = await getUpcomingClasses(supabase, { from: formatDate(today), to: formatDate(upcomingEnd) });
+    } catch (error) { console.error("Unable to load upcoming classes for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      monthClasses = await getClassesForMonth(supabase, today.getFullYear(), today.getMonth() + 1);
+    } catch (error) { console.error("Unable to load calendar classes for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      const breakdown = await getMemberLifecycleBreakdown(supabase);
+      lifecycleCounts = breakdown.lifecycleCounts;
+      tierCounts = breakdown.tierCounts;
+    } catch (error) { console.error("Unable to load member breakdown for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { candidates, error } = await getRetentionCandidates(supabase);
+      if (error) throw error;
+      reengagementCount = candidates.length;
+    } catch (error) { console.error("Unable to load retention candidates for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      pendingTimeOffCount = await getPendingTimeOffCount(supabase);
+    } catch (error) { console.error("Unable to load pending time-off count for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      pendingRequests = await listPendingTimeOffRequests(supabase);
+    } catch (error) { console.error("Unable to load pending time-off requests for admin dashboard", error); }
+
+    const totalCapacity = weeklyClasses.reduce((total, classRow) => total + classRow.capacity, 0);
+    const totalBooked = weeklyClasses.reduce((total, classRow) => total + classRow.booked_count, 0);
+    return <AdminDashboard
+      month={today.getMonth() + 1}
+      monthClasses={monthClasses}
+      pendingRequests={pendingRequests}
+      stats={{ weeklyFillRate: totalCapacity ? Math.round((totalBooked / totalCapacity) * 100) : 0, lifecycleCounts, tierCounts, reengagementCount, pendingTimeOffCount }}
+      upcomingClasses={upcomingClasses}
+      userEmail={user.email}
+      year={today.getFullYear()}
+    />;
+  }
 
   let bookedThisWeek: number | null = null;
   let promotions: Array<{ id: string; subject: string; body: string; sent_at: string | null }> | null = null;
@@ -82,8 +145,8 @@ export default async function DashboardPage() {
               <h2>Welcome back</h2>
               <p className="dashboard-email">Signed in as {user.email}</p>
             </div>
-            <span className={`badge ${role === "staff" || role === "admin" ? "badge-brand" : "badge-neutral"}`}>
-              {role === "admin" ? "Admin" : role === "staff" ? "Staff" : "Member"}
+            <span className={`badge ${dashboardRole === "staff" || dashboardRole === "admin" ? "badge-brand" : "badge-neutral"}`}>
+              {dashboardRole === "admin" ? "Admin" : dashboardRole === "staff" ? "Staff" : "Member"}
             </span>
           </div>
           {bookedThisWeek !== null ? (
@@ -120,7 +183,7 @@ export default async function DashboardPage() {
               </span>
               <span aria-hidden="true">&rarr;</span>
             </Link>
-            {role === "staff" || role === "admin" ? (
+            {dashboardRole === "staff" || dashboardRole === "admin" ? (
               <Link className="quick-action quick-action-staff" href="/staff">
                 <span className="quick-action-content">
                   <span className="quick-action-icon"><IconShield /></span>
