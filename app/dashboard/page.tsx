@@ -2,11 +2,12 @@ import Link from "next/link";
 
 import { signOut } from "@/app/actions/auth";
 import { AdminDashboard } from "@/app/dashboard/admin-dashboard";
+import { StaffDashboard, StaffDashboardNotLinked } from "@/app/dashboard/staff-dashboard";
 import { IconCalendar, IconShield, IconSparkle, MomentumArc } from "@/app/components/icons";
 import MomentumRing from "@/app/components/momentum-ring";
 import SiteNav from "@/app/components/site-nav";
 import { requireUserOrRedirect, type UserRole } from "@/lib/auth/session";
-import { getClassesForMonth, getUpcomingClasses, type StudioClass } from "@/lib/classes/queries";
+import { getClassesForInstructor, getClassesForMonth, getInstructorBookingRateTrend, getUpcomingClasses, type StudioClass } from "@/lib/classes/queries";
 import { getMemberForUser } from "@/lib/members/queries";
 import { getMemberLifecycleBreakdown, getRetentionCandidates } from "@/lib/members/queries";
 import { getMemberPromotions, personalizeOutreachBody } from "@/lib/outreach/queries";
@@ -98,6 +99,39 @@ export default async function DashboardPage() {
       userEmail={user.email}
       year={today.getFullYear()}
     /></div>;
+  }
+
+  if (role === "staff") {
+    let instructorMember: Awaited<ReturnType<typeof getMemberForUser>>["data"] = null;
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data, error } = await getMemberForUser(supabase, user.id);
+      if (error) throw error;
+      instructorMember = data;
+    } catch (error) {
+      console.error("Unable to resolve instructor profile for staff dashboard", error);
+    }
+
+    if (!instructorMember || !instructorMember.is_instructor) {
+      return <div className="staff-dashboard-shell"><SiteNav /><StaffDashboardNotLinked /></div>;
+    }
+
+    let classes: StudioClass[] = [];
+    let bookingRateTrend = { thisWeekFillPercent: 0, lastWeekFillPercent: 0 };
+    try {
+      const supabase = await createSupabaseServerClient();
+      classes = await getClassesForInstructor(supabase, instructorMember.id);
+    } catch (error) {
+      console.error("Unable to load instructor classes for staff dashboard", error);
+    }
+    try {
+      const supabase = await createSupabaseServerClient();
+      bookingRateTrend = await getInstructorBookingRateTrend(supabase, instructorMember.id);
+    } catch (error) {
+      console.error("Unable to load instructor booking-rate trend for staff dashboard", error);
+    }
+
+    return <div className="staff-dashboard-shell"><SiteNav /><StaffDashboard bookingRateTrend={bookingRateTrend} classes={classes} instructorName={instructorMember.full_name} /></div>;
   }
 
   let bookedThisWeek: number | null = null;

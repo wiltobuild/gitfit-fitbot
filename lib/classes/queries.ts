@@ -44,3 +44,62 @@ export async function getClassesForMonth(
   const finalDay = `${year}-${String(month).padStart(2, "0")}-${String(lastDay.getDate()).padStart(2, "0")}`;
   return getUpcomingClasses(supabase, { from: firstDay, to: finalDay });
 }
+
+function formatDate(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+export async function getClassesForInstructor(
+  supabase: SupabaseServerClient,
+  memberId: string
+) {
+  const today = new Date();
+  const { data, error } = await supabase
+    .from("classes")
+    .select(classSelect)
+    .eq("instructor_member_id", memberId)
+    .gte("class_date", formatDate(today))
+    .order("class_date")
+    .order("start_time");
+
+  if (error) throw error;
+  return (data ?? []) as StudioClass[];
+}
+
+export async function getInstructorBookingRateTrend(
+  supabase: SupabaseServerClient,
+  memberId: string
+): Promise<{ thisWeekFillPercent: number; lastWeekFillPercent: number }> {
+  const today = new Date();
+  const mondayOffset = (today.getDay() + 6) % 7;
+  const thisWeekMonday = new Date(today);
+  thisWeekMonday.setDate(today.getDate() - mondayOffset);
+  thisWeekMonday.setHours(0, 0, 0, 0);
+  const thisWeekSunday = new Date(thisWeekMonday);
+  thisWeekSunday.setDate(thisWeekMonday.getDate() + 6);
+  const lastWeekMonday = new Date(thisWeekMonday);
+  lastWeekMonday.setDate(thisWeekMonday.getDate() - 7);
+  const lastWeekSunday = new Date(thisWeekMonday);
+  lastWeekSunday.setDate(thisWeekMonday.getDate() - 1);
+
+  const { data, error } = await supabase
+    .from("classes")
+    .select("class_date, booked_count, capacity")
+    .eq("instructor_member_id", memberId)
+    .gte("class_date", formatDate(lastWeekMonday))
+    .lte("class_date", formatDate(thisWeekSunday));
+
+  if (error) throw error;
+
+  const fillPercent = (from: Date, to: Date) => {
+    const classes = (data ?? []).filter((classRow) => classRow.class_date >= formatDate(from) && classRow.class_date <= formatDate(to));
+    const capacity = classes.reduce((total, classRow) => total + classRow.capacity, 0);
+    const booked = classes.reduce((total, classRow) => total + classRow.booked_count, 0);
+    return capacity ? Math.round((booked / capacity) * 100) : 0;
+  };
+
+  return {
+    thisWeekFillPercent: fillPercent(thisWeekMonday, thisWeekSunday),
+    lastWeekFillPercent: fillPercent(lastWeekMonday, lastWeekSunday)
+  };
+}
