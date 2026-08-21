@@ -10,6 +10,7 @@ type TimeOffRequestRow = {
 };
 type StaffProfile = { id: string; full_name: string | null };
 const reviewPattern = /\b(approve|approved|deny|denied|reject|rejected)\b/i;
+const requestedDatePattern = /\b(today|tomorrow|sunday|monday|tuesday|wednesday|thursday|friday|saturday|\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?|january|february|march|april|may|june|july|august|september|october|november|december)\b/i;
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -57,10 +58,9 @@ export const timeOffReviewIntent: Intent = {
   description: "Lets admins approve or deny pending staff time-off requests.",
   roles: ["admin"],
   match: (message) =>
-    scoreTriggerFamily(message, [reviewPattern]) &&
-    Boolean(resolveRequestedDate(message)) &&
-    hasPlausibleName(message)
-      ? 2
+    Boolean(resolveRequestedDate(message)) && hasPlausibleName(message)
+      ? scoreTriggerFamily(message, [reviewPattern]) *
+        (1 + scoreEntity(message, [requestedDatePattern]))
       : 0,
   handle: async (message, session, pendingAnswer) => {
     void pendingAnswer;

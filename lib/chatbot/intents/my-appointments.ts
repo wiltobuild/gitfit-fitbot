@@ -36,11 +36,10 @@ export const myAppointmentsIntent: Intent = {
   description: "Lists the current member's upcoming class bookings.",
   roles: ["client", "staff", "admin"],
   match: (message) =>
-    Number(
-      /\b(my (appointments|bookings|classes)|what appointments do i have|what am i booked for)\b/i.test(
-        message
-      )
-    ),
+    scoreTriggerFamily(message, [
+      /\b(my (appointments|bookings|classes)|what appointments do i have|what am i booked for)\b/i
+    ]) *
+    (1 + scoreEntity(message, [/\b(appointments?|bookings?|classes)\b/i])),
   handle: async (_message, session, pendingAnswer) => {
     void pendingAnswer;
     const supabase = await createSupabaseServerClient();

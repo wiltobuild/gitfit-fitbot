@@ -45,9 +45,13 @@ export const rosterSummaryIntent: Intent = {
   description: "Summarizes roster lifecycle and membership tiers.",
   roles: ["staff", "admin"],
   match: (message) =>
-    Number(
-      /\b(roster summary|member summary|membership breakdown)\b/i.test(message)
-    ),
+    scoreTriggerFamily(message, [
+      /\b(roster summary|member summary|membership breakdown)\b/i
+    ]) *
+    (1 +
+      scoreEntity(message, [
+        /\b(lifecycle|at[ -]?risk|lapsed|membership tiers?)\b/i
+      ])),
   handle: async (_message, _session, pendingAnswer) => {
     void pendingAnswer;
     return getRosterSummary();

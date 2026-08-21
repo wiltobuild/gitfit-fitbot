@@ -29,11 +29,10 @@ export const myActivityIntent: Intent = {
   description: "Summarizes the current member's activity.",
   roles: ["client"],
   match: (message) =>
-    Number(
-      /\b(when did i last visit|how am i doing|my activity|how active have i been)\b/i.test(
-        message
-      )
-    ),
+    scoreTriggerFamily(message, [
+      /\b(when did i last visit|how am i doing|my activity|how active have i been)\b/i
+    ]) *
+    (1 + scoreEntity(message, [])),
   handle: async (_message, session, pendingAnswer) => {
     void pendingAnswer;
     return getMemberActivitySummary(

@@ -1,11 +1,16 @@
 import { resolveClassType } from "@/lib/chatbot/entity-extraction";
 import { getMemberForUser } from "@/lib/members/queries";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 import type { Intent } from "@/lib/chatbot/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const recommendClassIntent: Intent = {
   id: "recommend-class", description: "Recommends upcoming classes based on the member's preferences.", roles: ["client"],
-  match: (message) => Number(/\b(what should i book|what class is right for me|recommend (?:me )?(?:a )?class|what class should i take)\b/i.test(message)),
+  match: (message) =>
+    scoreTriggerFamily(message, [
+      /\b(what should i book|what class is right for me|recommend (?:me )?(?:a )?class|what class should i take)\b/i
+    ]) *
+    (1 + scoreEntity(message, [])),
   handle: async (_message, session, pendingAnswer) => {
     void pendingAnswer;
     const supabase = await createSupabaseServerClient();

@@ -9,11 +9,13 @@ export const membersByAttributeIntent: Intent = {
   description: "Finds staff members by interests, level, or activity.",
   roles: ["staff", "admin"],
   match: (message) =>
-    Number(
-      /\b(members interested in|members who like|who wants .+ training|beginners? who haven|inactive|stale)\b/i.test(
-        message
-      )
-    ),
+    scoreTriggerFamily(message, [
+      /\b(members interested in|members who like|who wants .+ training|beginners? who haven|inactive|stale)\b/i
+    ]) *
+    (1 +
+      scoreEntity(message, [
+        /\b(yoga|cycling|hiit|beginner|intermediate|advanced|haven['â€™]?t been|inactive|stale|\d+\s+days?)\b/i
+      ])),
   handle: async (message, _session, pendingAnswer) => {
     void pendingAnswer;
     const type = resolveClassType(message);

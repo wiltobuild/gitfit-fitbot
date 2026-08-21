@@ -29,7 +29,8 @@ export const retentionLookupIntent: Intent = {
   description: "Finds members needing re-engagement based on lifecycle status.",
   roles: ["staff", "admin"],
   match: (message) =>
-    Number(retentionPatterns.some((pattern) => pattern.test(message))),
+    scoreTriggerFamily(message, retentionPatterns) *
+    (1 + scoreEntity(message, [/\b(at[ -]?risk|lapsed|lifecycle status)\b/i])),
   handle: async (_message, _session, pendingAnswer) => {
     void pendingAnswer;
     const supabase = await createSupabaseServerClient();

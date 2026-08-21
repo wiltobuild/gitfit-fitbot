@@ -1,8 +1,11 @@
 import { resolveClassType, resolveDate, resolveInstructor, resolveTime } from "@/lib/chatbot/entity-extraction";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 import type { Intent } from "@/lib/chatbot/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type ClassRow = { id: string; name: string; type: string; instructor: string; class_date: string; start_time: string; capacity: number; booked_count: number };
+const rosterPattern = /\b(who is booked for|who's (in|booked)|attendee|roster)\b/i;
+const classReferencePattern = /\b(yoga|cycling|hiit|today|tomorrow|tonight|sunday|monday|tuesday|wednesday|thursday|friday|saturday|sofia|martinez|marcus|lee|avery|thompson|\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}(?:\/\d{2,4})?|january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}(?::\d{2})?\s*(?:a\.?m\.?|p\.?m\.?)\b)/i;
 function label(row: ClassRow) { const [hours, minutes] = row.start_time.split(":").map(Number); return `${row.name} — ${row.class_date}, ${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`; }
 function pendingString(args: Record<string, unknown> | undefined, key: string) { const value = args?.[key]; return typeof value === "string" ? value : undefined; }
 
@@ -10,9 +13,13 @@ export const whoIsBookedIntent: Intent = {
   id: "who-is-booked", description: "Reports booking totals for a class to staff.", roles: ["staff", "admin"],
   match: (message) => {
     const normalized = message.toLowerCase();
-    const asksForRoster = /\b(who is booked for|who's (in|booked)|attendee|roster)\b/i.test(normalized);
+    const asksForRoster = scoreTriggerFamily(normalized, [rosterPattern]);
     const hasClassReference = Boolean(resolveDate(normalized) || resolveTime(normalized) || resolveClassType(normalized) || resolveInstructor(normalized));
-    return asksForRoster ? (hasClassReference ? 2 : 1) : 0;
+    return asksForRoster
+      ? hasClassReference
+        ? scoreTriggerFamily(normalized, [rosterPattern]) * (1 + scoreEntity(normalized, [classReferencePattern]))
+        : 1
+      : 0;
   },
   handle: async (message, _session, pendingAnswer) => {
     const normalized = message.toLowerCase();

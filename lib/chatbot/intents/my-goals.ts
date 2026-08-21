@@ -59,11 +59,10 @@ export const myGoalsIntent: Intent = {
   description: "Summarizes the current member's goals.",
   roles: ["client"],
   match: (message) =>
-    Number(
-      /\b(what should i train for|my goals|my fitness level|what are my goals)\b/i.test(
-        message
-      )
-    ),
+    scoreTriggerFamily(message, [
+      /\b(what should i train for|my goals|my fitness level|what are my goals)\b/i
+    ]) *
+    (1 + scoreEntity(message, [])),
   handle: async (_message, session, pendingAnswer) => {
     void pendingAnswer;
     return getMemberGoalsSummary(await createSupabaseServerClient(), session.user.id);

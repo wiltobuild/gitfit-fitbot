@@ -1,5 +1,6 @@
 import { isCurrentOrNext } from "@/lib/classes/current-or-next";
 import type { Intent } from "@/lib/chatbot/types";
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type ClassRow = { name: string; type: string; instructor: string; class_date: string; start_time: string; duration_minutes: number; capacity: number; booked_count: number };
@@ -9,7 +10,11 @@ const endTime = (classRow: ClassRow) => { const [hours, minutes] = classRow.star
 
 export const nowAndNextIntent: Intent = {
   id: "now-and-next", description: "Reports the current and next studio classes.", roles: ["client", "staff", "admin"],
-  match: (message) => Number(/\b(what'?s happening now|what'?s next|what'?s going on right now|current class|next class)\b/i.test(message)),
+  match: (message) =>
+    scoreTriggerFamily(message, [
+      /\b(what'?s happening now|what'?s next|what'?s going on right now|current class|next class)\b/i
+    ]) *
+    (1 + scoreEntity(message, [])),
   handle: async (_message, _session, pendingAnswer) => {
     void pendingAnswer;
     const now = new Date(); const today = dateString(now); const tomorrowDate = new Date(now); tomorrowDate.setDate(now.getDate() + 1); const tomorrow = dateString(tomorrowDate);
