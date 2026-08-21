@@ -4,19 +4,13 @@ import { MemberSearch } from "@/app/staff/member-search";
 import { StaffFitBotTiles } from "@/app/staff/fitbot-tiles";
 import { requireRoleOrRedirect } from "@/lib/auth/session";
 import { fillLevel } from "@/lib/classes/fill-level";
+import { isCurrentOrNext } from "@/lib/classes/current-or-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type StudioClass = { id: string; name: string; instructor: string; class_date: string; start_time: string; duration_minutes: number; capacity: number; booked_count: number };
 
 function formatDate(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
 function formatTime(time: string) { const [hours, minutes] = time.split(":").map(Number); return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`; }
-function isCurrentOrNext(classRow: StudioClass, now: Date) {
-  const [hours, minutes] = classRow.start_time.split(":").map(Number);
-  const startsAt = new Date(now); startsAt.setHours(hours, minutes, 0, 0);
-  const endsAt = new Date(startsAt.getTime() + classRow.duration_minutes * 60_000);
-  return now >= startsAt && now < endsAt;
-}
-
 export default async function StaffPage() {
   const { user, role } = await requireRoleOrRedirect(["staff", "admin"]);
   const today = new Date();

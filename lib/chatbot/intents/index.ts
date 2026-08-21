@@ -17,7 +17,9 @@ import { outreachSendIntent } from "@/lib/chatbot/intents/outreach-send";
 import { myGoalsIntent } from "@/lib/chatbot/intents/my-goals";
 import { myActivityIntent } from "@/lib/chatbot/intents/my-activity";
 import { membersByAttributeIntent } from "@/lib/chatbot/intents/members-by-attribute";
+import { recommendClassIntent } from "@/lib/chatbot/intents/recommend-class";
+import { nowAndNextIntent } from "@/lib/chatbot/intents/now-and-next";
 import type { Intent } from "@/lib/chatbot/types";
 
 // Intents are selected by deterministic confidence score; registration order is the stable tie-breaker.
-export const intents: Intent[] = [myGoalsIntent, myActivityIntent, membersByAttributeIntent, myAppointmentsIntent, bookClassIntent, classInfoIntent, studioCapacityIntent, instructorClassesIntent, rosterSummaryIntent, whoIsBookedIntent, memberLookupIntent, workoutPlanIntent, timeOffReviewIntent, timeOffIntent, retentionLookupIntent, outreachDraftIntent, outreachSendIntent, helpIntent, scheduleIntent];
+export const intents: Intent[] = [myGoalsIntent, myActivityIntent, recommendClassIntent, nowAndNextIntent, membersByAttributeIntent, myAppointmentsIntent, bookClassIntent, classInfoIntent, studioCapacityIntent, instructorClassesIntent, rosterSummaryIntent, whoIsBookedIntent, memberLookupIntent, workoutPlanIntent, timeOffReviewIntent, timeOffIntent, retentionLookupIntent, outreachDraftIntent, outreachSendIntent, helpIntent, scheduleIntent];
