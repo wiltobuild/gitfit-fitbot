@@ -1,31 +1,30 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { listMembersForStaff } from "@/lib/members/queries";
+import { getMemberLifecycleBreakdown, type MemberRow } from "@/lib/members/queries";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
-function breakdown(values: Array<string | null | undefined>) {
-  const counts = new Map<string, number>();
-  values.forEach((value) => {
-    const key = value || "not set";
-    counts.set(key, (counts.get(key) ?? 0) + 1);
-  });
-  return [...counts.entries()]
+function breakdown(counts: Record<string, number>) {
+  return Object.entries(counts)
     .map(([key, count]) => `${count} ${key}`)
     .join(", ");
 }
 export async function getRosterSummary() {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await listMembersForStaff(supabase);
-  if (error)
+  let members: MemberRow[];
+  let lifecycleCounts: Record<string, number>;
+  let tierCounts: Record<string, number>;
+  try {
+    ({ members, lifecycleCounts, tierCounts } = await getMemberLifecycleBreakdown(supabase));
+  } catch {
     return {
       reply:
         "I couldn't retrieve the roster right now. Please try again shortly."
     };
-  const members = data ?? [];
+  }
   const attention = members
     .filter((member) => ["at_risk", "lapsed"].includes(member.lifecycle_status))
     .slice(0, 8);
   return {
-    reply: `Roster summary: ${breakdown(members.map((member) => member.lifecycle_status))}. Membership tiers: ${breakdown(members.map((member) => member.membership_tier))}.`,
+    reply: `Roster summary: ${breakdown(lifecycleCounts)}. Membership tiers: ${breakdown(tierCounts)}.`,
     card: {
       kind: "members" as const,
       title: "Members needing attention",

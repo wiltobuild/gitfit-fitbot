@@ -1,4 +1,4 @@
-import { getMemberForUser } from "@/lib/members/queries";
+import { getMemberWeeklyActivity } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent, IntentResult } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
@@ -6,21 +6,11 @@ export async function getMemberActivitySummary(
   supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
   userId: string
 ): Promise<IntentResult> {
-  const { data: member } = await getMemberForUser(supabase, userId);
+  const activity = await getMemberWeeklyActivity(supabase, userId);
+  const member = activity?.member;
   if (!member)
     return { reply: "I don’t have an activity profile on file yet.", card: { kind: "notice", tone: "info", body: "I don’t have an activity profile on file yet." } };
-  const today = new Date();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  const date = (value: Date) => value.toISOString().slice(0, 10);
-  const { data } = await supabase
-    .from("bookings")
-    .select("id, classes!inner(class_date)")
-    .eq("user_id", userId)
-    .gte("classes.class_date", date(monday))
-    .lte("classes.class_date", date(sunday));
+  const data = { length: activity.classesThisWeek };
   const body = `You’ve booked ${data?.length ?? 0} classes this week (aim for 4). Your last visit was ${member.last_visit_date ?? "not recorded"}; you’ve been a ${member.membership_tier ?? "member"} tier member since ${member.join_date ?? "your join date isn’t recorded"}.`;
   return { reply: "Here’s your activity summary.", card: { kind: "notice", tone: "info", title: "Your activity", body } };
 }

@@ -1,16 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getUpcomingBookingsForUser } from "@/lib/members/queries";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
-
-type ClassRow = {
-  name: string;
-  type: string;
-  instructor: string;
-  class_date: string;
-  start_time: string;
-  capacity: number;
-  booked_count: number;
-};
 
 function formatDate(date: string) {
   const [year, month, day] = date.split("-").map(Number);
@@ -26,11 +17,6 @@ function formatTime(time: string) {
   return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
 }
 
-function todayDate() {
-  const today = new Date();
-  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-}
-
 export const myAppointmentsIntent: Intent = {
   id: "my-appointments",
   description: "Lists the current member's upcoming class bookings.",
@@ -43,31 +29,17 @@ export const myAppointmentsIntent: Intent = {
   handle: async (_message, session, pendingAnswer) => {
     void pendingAnswer;
     const supabase = await createSupabaseServerClient();
-    const { data, error } = await supabase
-      .from("bookings")
-      .select(
-        "created_at, classes!inner(name, type, instructor, class_date, start_time, capacity, booked_count)"
-      )
-      .eq("user_id", session.user.id)
-      .gte("classes.class_date", todayDate())
-      .order("created_at", { ascending: true });
+    let classes;
+    try {
+      classes = await getUpcomingBookingsForUser(supabase, session.user.id);
+    } catch (error) {
 
-    if (error) {
       console.error("Unable to query bookings", error);
       return {
         reply:
           "I couldn’t retrieve your upcoming bookings right now. Please try again shortly."
       };
     }
-
-    const classes = (data ?? [])
-      .map((booking) => booking.classes as unknown as ClassRow | null)
-      .filter((classRow): classRow is ClassRow => classRow !== null)
-      .sort((a, b) =>
-        `${a.class_date} ${a.start_time}`.localeCompare(
-          `${b.class_date} ${b.start_time}`
-        )
-      );
 
     if (classes.length === 0) {
       return {

@@ -4,7 +4,7 @@ import { MemberSearch } from "@/app/staff/member-search";
 import { StaffFitBotTiles } from "@/app/staff/fitbot-tiles";
 import { requireRoleOrRedirect } from "@/lib/auth/session";
 import { fillLevel } from "@/lib/classes/fill-level";
-import { isCurrentOrNext } from "@/lib/classes/current-or-next";
+import { getStudioDayStats } from "@/lib/classes/current-or-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type StudioClass = { id: string; name: string; instructor: string; class_date: string; start_time: string; duration_minutes: number; capacity: number; booked_count: number };
@@ -24,14 +24,7 @@ export default async function StaffPage() {
     classes = data ?? [];
   } catch (error) { console.error("Unable to load today's studio classes", error); }
 
-  const totalCapacity = classes.reduce((total, classRow) => total + classRow.capacity, 0);
-  const totalBooked = classes.reduce((total, classRow) => total + classRow.booked_count, 0);
-  const bookedPercent = totalCapacity ? Math.round((totalBooked / totalCapacity) * 100) : 0;
-  const currentClass = classes.find((classRow) => isCurrentOrNext(classRow, today));
-  const nextClass = currentClass ? undefined : classes.find((classRow) => {
-    const [hours, minutes] = classRow.start_time.split(":").map(Number);
-    return hours * 60 + minutes >= today.getHours() * 60 + today.getMinutes();
-  });
+  const { totalCapacity, totalBooked, bookedPercent, currentClass, nextClass } = getStudioDayStats(classes, today);
 
   return <div className="staff-console">
     <SiteNav />

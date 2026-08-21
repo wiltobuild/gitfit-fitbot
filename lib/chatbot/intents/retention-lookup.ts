@@ -1,4 +1,4 @@
-import { listMembersForStaff } from "@/lib/members/queries";
+import { getRetentionCandidates } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
@@ -11,19 +11,7 @@ const retentionPatterns = [
   /\binactive\s+members\b/i,
   /\bhaven['’]?t\s+attended\s+recently\b/i
 ];
-export async function getRetentionCandidates(
-  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>
-) {
-  const { data: members, error } = await listMembersForStaff(supabase);
-  return {
-    candidates: members.filter(
-      (member) =>
-        member.lifecycle_status === "at_risk" ||
-        member.lifecycle_status === "lapsed"
-    ),
-    error
-  };
-}
+export { getRetentionCandidates } from "@/lib/members/queries";
 export const retentionLookupIntent: Intent = {
   id: "retention-lookup",
   description: "Finds members needing re-engagement based on lifecycle status.",
