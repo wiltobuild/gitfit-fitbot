@@ -89,7 +89,7 @@ export default async function DashboardPage() {
 
     const totalCapacity = weeklyClasses.reduce((total, classRow) => total + classRow.capacity, 0);
     const totalBooked = weeklyClasses.reduce((total, classRow) => total + classRow.booked_count, 0);
-    return <AdminDashboard
+    return <div className="admin-dashboard-shell"><SiteNav /><AdminDashboard
       month={today.getMonth() + 1}
       monthClasses={monthClasses}
       pendingRequests={pendingRequests}
@@ -97,7 +97,7 @@ export default async function DashboardPage() {
       upcomingClasses={upcomingClasses}
       userEmail={user.email}
       year={today.getFullYear()}
-    />;
+    /></div>;
   }
 
   let bookedThisWeek: number | null = null;
