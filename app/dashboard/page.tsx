@@ -30,9 +30,14 @@ export default async function DashboardPage() {
   if (role === "admin") {
     const upcomingEnd = new Date(today);
     upcomingEnd.setDate(today.getDate() + 7);
+    const agendaStart = new Date(today);
+    agendaStart.setDate(today.getDate() - 8 * 7);
+    const agendaEnd = new Date(today);
+    agendaEnd.setDate(today.getDate() + 6 * 7);
     let weeklyClasses: StudioClass[] = [];
     let upcomingClasses: StudioClass[] = [];
     let monthClasses: StudioClass[] = [];
+    let agendaClasses: StudioClass[] = [];
     let lifecycleCounts: Record<string, number> = {};
     let tierCounts: Record<string, number> = {};
     let reengagementCount = 0;
@@ -51,6 +56,10 @@ export default async function DashboardPage() {
       const supabase = await createSupabaseServerClient();
       monthClasses = await getClassesForMonth(supabase, today.getFullYear(), today.getMonth() + 1);
     } catch (error) { console.error("Unable to load calendar classes for admin dashboard", error); }
+    try {
+      const supabase = await createSupabaseServerClient();
+      agendaClasses = await getUpcomingClasses(supabase, { from: formatDate(agendaStart), to: formatDate(agendaEnd) });
+    } catch (error) { console.error("Unable to load agenda classes for admin dashboard", error); }
     try {
       const supabase = await createSupabaseServerClient();
       const breakdown = await getMemberLifecycleBreakdown(supabase);
@@ -75,6 +84,7 @@ export default async function DashboardPage() {
     const totalCapacity = weeklyClasses.reduce((total, classRow) => total + classRow.capacity, 0);
     const totalBooked = weeklyClasses.reduce((total, classRow) => total + classRow.booked_count, 0);
     return <div className="admin-dashboard-shell"><SiteNav /><AdminDashboard
+      agendaClasses={agendaClasses}
       month={today.getMonth() + 1}
       monthClasses={monthClasses}
       pendingRequests={pendingRequests}
