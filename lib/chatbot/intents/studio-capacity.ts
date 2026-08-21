@@ -4,5 +4,60 @@ import type { Intent, IntentResult } from "@/lib/chatbot/types";
 import { fillLevel } from "@/lib/classes/fill-level";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function getStudioCapacity(message = "today"): Promise<IntentResult> { const supabase = await createSupabaseServerClient(); const date = resolveDate(message.toLowerCase(), { fallbackToToday: true }); const { data, error } = await supabase.from("classes").select("name, instructor, class_date, start_time, capacity, booked_count").eq("class_date", date!).order("start_time"); if (error) return { reply: "I couldn't retrieve studio capacity right now. Please try again shortly." }; const classes = data ?? []; if (!classes.length) return { reply: "There are no classes scheduled for that day." }; const filling = classes.filter((row) => fillLevel(row.booked_count, row.capacity) === "filling").length; const full = classes.filter((row) => fillLevel(row.booked_count, row.capacity) === "full").length; return { reply: `${classes.length} classes scheduled: ${filling} filling up, ${full} full.`, card: { kind: "capacity", title: "Studio capacity", rows: classes.map((row) => ({ className: row.name, instructor: row.instructor, time: row.start_time, bookedCount: row.booked_count, capacity: row.capacity, fillLevel: fillLevel(row.booked_count, row.capacity) })) } }; }
-export const studioCapacityIntent: Intent = { id: "studio-capacity", description: "Summarizes capacity for a day of classes.", roles: ["staff", "admin"], match: (message) => scoreTriggerFamily(message, [/\b(capacity|filling up|studio fullness|class fullness)\b/i]) * (1 + scoreEntity(message, [/\b(today|tomorrow|tonight|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i])), handle: async (message) => getStudioCapacity(message) };
+export async function getStudioCapacity(
+  message = "today"
+): Promise<IntentResult> {
+  const supabase = await createSupabaseServerClient();
+  const date = resolveDate(message.toLowerCase(), { fallbackToToday: true });
+  const { data, error } = await supabase
+    .from("classes")
+    .select("name, instructor, class_date, start_time, capacity, booked_count")
+    .eq("class_date", date!)
+    .order("start_time");
+  if (error)
+    return {
+      reply:
+        "I couldn't retrieve studio capacity right now. Please try again shortly."
+    };
+  const classes = data ?? [];
+  if (!classes.length)
+    return { reply: "There are no classes scheduled for that day." };
+  const filling = classes.filter(
+    (row) => fillLevel(row.booked_count, row.capacity) === "filling"
+  ).length;
+  const full = classes.filter(
+    (row) => fillLevel(row.booked_count, row.capacity) === "full"
+  ).length;
+  return {
+    reply: `${classes.length} classes scheduled: ${filling} filling up, ${full} full.`,
+    card: {
+      kind: "capacity",
+      title: "Studio capacity",
+      rows: classes.map((row) => ({
+        className: row.name,
+        instructor: row.instructor,
+        time: row.start_time,
+        bookedCount: row.booked_count,
+        capacity: row.capacity,
+        fillLevel: fillLevel(row.booked_count, row.capacity)
+      }))
+    }
+  };
+}
+export const studioCapacityIntent: Intent = {
+  id: "studio-capacity",
+  description: "Summarizes capacity for a day of classes.",
+  roles: ["staff", "admin"],
+  match: (message) =>
+    scoreTriggerFamily(message, [
+      /\b(capacity|filling up|studio fullness|class fullness)\b/i
+    ]) *
+    (1 +
+      scoreEntity(message, [
+        /\b(today|tomorrow|tonight|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i
+      ])),
+  handle: async (message, _session, pendingAnswer) => {
+    void pendingAnswer;
+    return getStudioCapacity(message);
+  }
+};

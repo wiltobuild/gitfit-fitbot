@@ -2,6 +2,89 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { listMembersForStaff } from "@/lib/members/queries";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
-function escapeRegExp(value: string) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); } function matchingInstructors(message: string, members: Awaited<ReturnType<typeof listMembersForStaff>>["data"]) { const normalized = message.toLowerCase(); return members.filter((member) => member.is_instructor && member.full_name && member.full_name.split(/\s+/).some((name) => new RegExp(`\\b${escapeRegExp(name)}\\b`, "i").test(normalized))); }
-export async function getInstructorClasses(message: string) { const supabase = await createSupabaseServerClient(); const { data: members, error: memberError } = await listMembersForStaff(supabase); if (memberError) return { reply: "I couldn't retrieve instructors right now. Please try again shortly." }; const matches = matchingInstructors(message, members); if (!matches.length) return { reply: "Tell me whose schedule you'd like to see." }; if (matches.length > 1) return { reply: `I found a few possible instructors. Please be more specific:\n${matches.map((member) => member.full_name || member.email).join("\n")}` }; const instructor = matches[0].full_name || matches[0].email; const { data, error } = await supabase.from("classes").select("name, type, instructor, class_date, start_time, capacity, booked_count").ilike("instructor", `%${instructor}%`).gte("class_date", new Date().toISOString().slice(0, 10)).order("class_date").order("start_time"); if (error) return { reply: "I couldn't retrieve that instructor's classes right now. Please try again shortly." }; const classes = data ?? []; if (!classes.length) return { reply: `${instructor} has no upcoming classes scheduled.` }; return { reply: `Upcoming classes for ${instructor}:\n${classes.map((row) => `${row.name} — ${row.class_date}, ${row.start_time}`).join("\n")}`, card: { kind: "schedule" as const, classes: classes.map((row) => ({ title: row.name, type: row.type, instructor: row.instructor, date: row.class_date, time: row.start_time, capacity: row.capacity, bookedCount: row.booked_count })) } }; }
-export const instructorClassesIntent: Intent = { id: "instructor-classes", description: "Lists an instructor's upcoming classes.", roles: ["client", "staff", "admin"], match: (message) => scoreTriggerFamily(message, [/\b(instructor|teach(?:es|ing)?|classes for|schedule for)\b/i]) * (1 + scoreEntity(message, [/\b(sofia|martinez|marcus|lee|avery|thompson|diego|reyes|elena|cruz|jordan|blake)\b/i])), handle: async (message) => getInstructorClasses(message) };
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function matchingInstructors(
+  message: string,
+  members: Awaited<ReturnType<typeof listMembersForStaff>>["data"]
+) {
+  const normalized = message.toLowerCase();
+  return members.filter(
+    (member) =>
+      member.is_instructor &&
+      member.full_name &&
+      member.full_name
+        .split(/\s+/)
+        .some((name) =>
+          new RegExp(`\\b${escapeRegExp(name)}\\b`, "i").test(normalized)
+        )
+  );
+}
+export async function getInstructorClasses(message: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data: members, error: memberError } =
+    await listMembersForStaff(supabase);
+  if (memberError)
+    return {
+      reply:
+        "I couldn't retrieve instructors right now. Please try again shortly."
+    };
+  const matches = matchingInstructors(message, members);
+  if (!matches.length)
+    return { reply: "Tell me whose schedule you'd like to see." };
+  if (matches.length > 1)
+    return {
+      reply: `I found a few possible instructors. Please be more specific:\n${matches.map((member) => member.full_name || member.email).join("\n")}`
+    };
+  const instructor = matches[0].full_name || matches[0].email;
+  const { data, error } = await supabase
+    .from("classes")
+    .select(
+      "name, type, instructor, class_date, start_time, capacity, booked_count"
+    )
+    .ilike("instructor", `%${instructor}%`)
+    .gte("class_date", new Date().toISOString().slice(0, 10))
+    .order("class_date")
+    .order("start_time");
+  if (error)
+    return {
+      reply:
+        "I couldn't retrieve that instructor's classes right now. Please try again shortly."
+    };
+  const classes = data ?? [];
+  if (!classes.length)
+    return { reply: `${instructor} has no upcoming classes scheduled.` };
+  return {
+    reply: `Upcoming classes for ${instructor}:\n${classes.map((row) => `${row.name} — ${row.class_date}, ${row.start_time}`).join("\n")}`,
+    card: {
+      kind: "schedule" as const,
+      classes: classes.map((row) => ({
+        title: row.name,
+        type: row.type,
+        instructor: row.instructor,
+        date: row.class_date,
+        time: row.start_time,
+        capacity: row.capacity,
+        bookedCount: row.booked_count
+      }))
+    }
+  };
+}
+export const instructorClassesIntent: Intent = {
+  id: "instructor-classes",
+  description: "Lists an instructor's upcoming classes.",
+  roles: ["client", "staff", "admin"],
+  match: (message) =>
+    scoreTriggerFamily(message, [
+      /\b(instructor|teach(?:es|ing)?|classes for|schedule for)\b/i
+    ]) *
+    (1 +
+      scoreEntity(message, [
+        /\b(sofia|martinez|marcus|lee|avery|thompson|diego|reyes|elena|cruz|jordan|blake)\b/i
+      ])),
+  handle: async (message, _session, pendingAnswer) => {
+    void pendingAnswer;
+    return getInstructorClasses(message);
+  }
+};

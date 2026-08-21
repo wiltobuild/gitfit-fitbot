@@ -1,10 +1,133 @@
-import { resolveClassType, resolveDate, resolveInstructor, resolveWeekday } from "@/lib/chatbot/entity-extraction";
+import {
+  resolveClassType,
+  resolveDate,
+  resolveInstructor,
+  resolveWeekday
+} from "@/lib/chatbot/entity-extraction";
 import type { Intent } from "@/lib/chatbot/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const strongScheduleKeywords = ["schedule", "class", "classes", "yoga", "cycling", "hiit", "spots", "spot", "full", "booked"];
+const strongScheduleKeywords = [
+  "schedule",
+  "class",
+  "classes",
+  "yoga",
+  "cycling",
+  "hiit",
+  "spots",
+  "spot",
+  "full",
+  "booked"
+];
 const otherIntentShaped = /\b(workout|exercise|training|off|pto)\b/i;
-type ClassRow = { name: string; type: string; instructor: string; class_date: string; start_time: string; capacity: number; booked_count: number };
-function formatDate(date: string) { const [year, month, day] = date.split("-").map(Number); return new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" }).format(new Date(year, month - 1, day)); }
-function formatTime(time: string) { const [hours, minutes] = time.split(":").map(Number); return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`; }
-export const scheduleIntent: Intent = { id: "schedule", description: "Lists classes and answers schedule availability questions.", roles: ["client", "staff", "admin"], match: (message) => { const normalized = message.toLowerCase(); if (strongScheduleKeywords.some((keyword) => normalized.includes(keyword)) || resolveInstructor(normalized)) return 1; if (otherIntentShaped.test(normalized)) return 0; return Number(Boolean(resolveDate(normalized) || resolveWeekday(normalized))); }, handle: async (message) => { const normalized = message.toLowerCase(); const dateFilter = resolveDate(normalized); const instructorFilter = resolveInstructor(normalized); const typeFilter = resolveClassType(normalized); const isAvailabilityQuery = ["spots", "spot", "full", "how many", "left"].some((keyword) => normalized.includes(keyword)); const supabase = await createSupabaseServerClient(); let query = supabase.from("classes").select("name, type, instructor, class_date, start_time, capacity, booked_count").order("class_date", { ascending: true }).order("start_time", { ascending: true }); if (dateFilter) query = query.eq("class_date", dateFilter); if (instructorFilter) query = query.ilike("instructor", `%${instructorFilter}%`); if (typeFilter) query = query.ilike("type", typeFilter); const { data, error } = await query; if (error) { console.error("Unable to query classes", error); return { reply: "I couldn’t retrieve the class schedule right now. Please try again shortly." }; } const classes = (data ?? []) as ClassRow[]; if (!classes.length) return { reply: "I couldn’t find any classes matching that schedule request." }; const visibleClasses = classes.slice(0, 8); const listings = visibleClasses.map((classRow) => { const time = formatTime(classRow.start_time); if (isAvailabilityQuery) { const spotsOpen = classRow.capacity - classRow.booked_count; const availability = spotsOpen === 0 ? "full" : `${spotsOpen} of ${classRow.capacity} spots open`; return `${classRow.name} (${classRow.type}) with ${classRow.instructor} — ${formatDate(classRow.class_date)}, ${time} — ${availability}.`; } const fullness = classRow.booked_count === classRow.capacity ? " (full)" : ""; return `${classRow.name} (${classRow.type}) with ${classRow.instructor} — ${formatDate(classRow.class_date)}, ${time} — ${classRow.booked_count}/${classRow.capacity} spots${fullness}.`; }); const remainingNote = classes.length > visibleClasses.length ? ` Showing the first ${visibleClasses.length} of ${classes.length} classes.` : ""; return { reply: `${isAvailabilityQuery ? "Here’s the current availability:" : "Here’s the matching schedule:"}\n${listings.join("\n")}${remainingNote}`, card: { kind: "schedule", classes: classes.map((classRow) => ({ title: classRow.name, type: classRow.type, instructor: classRow.instructor, date: classRow.class_date, time: classRow.start_time, capacity: classRow.capacity, bookedCount: classRow.booked_count })) } }; } };
+type ClassRow = {
+  name: string;
+  type: string;
+  instructor: string;
+  class_date: string;
+  start_time: string;
+  capacity: number;
+  booked_count: number;
+};
+function formatDate(date: string) {
+  const [year, month, day] = date.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  }).format(new Date(year, month - 1, day));
+}
+function formatTime(time: string) {
+  const [hours, minutes] = time.split(":").map(Number);
+  return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
+}
+export const scheduleIntent: Intent = {
+  id: "schedule",
+  description: "Lists classes and answers schedule availability questions.",
+  roles: ["client", "staff", "admin"],
+  match: (message) => {
+    const normalized = message.toLowerCase();
+    if (
+      strongScheduleKeywords.some((keyword) => normalized.includes(keyword)) ||
+      resolveInstructor(normalized)
+    )
+      return 1;
+    if (otherIntentShaped.test(normalized)) return 0;
+    return Number(
+      Boolean(resolveDate(normalized) || resolveWeekday(normalized))
+    );
+  },
+  handle: async (message, _session, pendingAnswer) => {
+    void pendingAnswer;
+    const normalized = message.toLowerCase();
+    const dateFilter = resolveDate(normalized);
+    const instructorFilter = resolveInstructor(normalized);
+    const typeFilter = resolveClassType(normalized);
+    const isAvailabilityQuery = [
+      "spots",
+      "spot",
+      "full",
+      "how many",
+      "left"
+    ].some((keyword) => normalized.includes(keyword));
+    const supabase = await createSupabaseServerClient();
+    let query = supabase
+      .from("classes")
+      .select(
+        "name, type, instructor, class_date, start_time, capacity, booked_count"
+      )
+      .order("class_date", { ascending: true })
+      .order("start_time", { ascending: true });
+    if (dateFilter) query = query.eq("class_date", dateFilter);
+    if (instructorFilter)
+      query = query.ilike("instructor", `%${instructorFilter}%`);
+    if (typeFilter) query = query.ilike("type", typeFilter);
+    const { data, error } = await query;
+    if (error) {
+      console.error("Unable to query classes", error);
+      return {
+        reply:
+          "I couldn’t retrieve the class schedule right now. Please try again shortly."
+      };
+    }
+    const classes = (data ?? []) as ClassRow[];
+    if (!classes.length)
+      return {
+        reply: "I couldn’t find any classes matching that schedule request."
+      };
+    const visibleClasses = classes.slice(0, 8);
+    const listings = visibleClasses.map((classRow) => {
+      const time = formatTime(classRow.start_time);
+      if (isAvailabilityQuery) {
+        const spotsOpen = classRow.capacity - classRow.booked_count;
+        const availability =
+          spotsOpen === 0
+            ? "full"
+            : `${spotsOpen} of ${classRow.capacity} spots open`;
+        return `${classRow.name} (${classRow.type}) with ${classRow.instructor} — ${formatDate(classRow.class_date)}, ${time} — ${availability}.`;
+      }
+      const fullness =
+        classRow.booked_count === classRow.capacity ? " (full)" : "";
+      return `${classRow.name} (${classRow.type}) with ${classRow.instructor} — ${formatDate(classRow.class_date)}, ${time} — ${classRow.booked_count}/${classRow.capacity} spots${fullness}.`;
+    });
+    const remainingNote =
+      classes.length > visibleClasses.length
+        ? ` Showing the first ${visibleClasses.length} of ${classes.length} classes.`
+        : "";
+    return {
+      reply: `${isAvailabilityQuery ? "Here’s the current availability:" : "Here’s the matching schedule:"}\n${listings.join("\n")}${remainingNote}`,
+      card: {
+        kind: "schedule",
+        classes: classes.map((classRow) => ({
+          title: classRow.name,
+          type: classRow.type,
+          instructor: classRow.instructor,
+          date: classRow.class_date,
+          time: classRow.start_time,
+          capacity: classRow.capacity,
+          bookedCount: classRow.booked_count
+        }))
+      }
+    };
+  }
+};

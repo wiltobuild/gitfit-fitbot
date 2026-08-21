@@ -25,7 +25,8 @@ export const outreachSendIntent: Intent = {
     "Marks the latest staff-reviewed outreach draft as sent for one member.",
   roles: ["staff", "admin"],
   match: (message) => Number(sendPattern.test(message)),
-  handle: async (message) => {
+  handle: async (message, _session, pendingAnswer) => {
+    void pendingAnswer;
     const searchTerm = extractSearchTerm(message);
     if (!searchTerm)
       return {
@@ -67,7 +68,10 @@ export const outreachSendIntent: Intent = {
       return {
         reply: `There's no draft outreach for ${name} yet — say 'draft outreach for ${name}' first.`
       };
-    const personalizedBody = personalizeOutreachBody(draft.body, member.full_name);
+    const personalizedBody = personalizeOutreachBody(
+      draft.body,
+      member.full_name
+    );
     const { data: sentData, error: updateError } = await supabase
       .from("outreach_messages")
       .update({ status: "sent", sent_at: new Date().toISOString() })

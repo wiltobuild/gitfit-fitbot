@@ -1,4 +1,71 @@
-import { getMemberForUser } from "@/lib/members/queries"; import { createSupabaseServerClient } from "@/lib/supabase/server"; import type { Intent, IntentResult } from "@/lib/chatbot/types";
+import { getMemberForUser } from "@/lib/members/queries";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { Intent, IntentResult } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
-export async function getMemberGoalsSummary(supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>, userId: string): Promise<IntentResult> { const { data: member, error } = await getMemberForUser(supabase, userId); if (error) return { reply: "I couldn’t retrieve your goals right now. Please try again shortly." }; if (!member) return { reply: "Your goals aren’t on file yet. Add them to your member profile and I’ll use them here." }; const preferred = member.preferred_class_types ?? "classes that feel right for you"; let query = supabase.from("classes").select("name, type, instructor, class_date, start_time, capacity, booked_count").gte("class_date", new Date().toISOString().slice(0, 10)).order("class_date").order("start_time").limit(3); if (member.preferred_class_types) query = query.ilike("type", `%${member.preferred_class_types.split(",")[0].trim()}%`); const { data: classes } = await query; return { reply: `Your goals: ${member.goals ?? "not specified"}. You’re currently at a ${member.fitness_level ?? "not specified"} fitness level and prefer ${preferred}.`, ...(classes?.length ? { card: { kind: "schedule", classes: classes.map((row) => ({ title: row.name, type: row.type, instructor: row.instructor, date: row.class_date, time: row.start_time, capacity: row.capacity, bookedCount: row.booked_count })) } } : {}) }; }
-export const myGoalsIntent: Intent = { id: "my-goals", description: "Summarizes the current member's goals.", roles: ["client"], match: (message) => Number(/\b(what should i train for|my goals|my fitness level|what are my goals)\b/i.test(message)), handle: async (_message, session) => getMemberGoalsSummary(await createSupabaseServerClient(), session.user.id) };
+export async function getMemberGoalsSummary(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  userId: string
+): Promise<IntentResult> {
+  const { data: member, error } = await getMemberForUser(supabase, userId);
+  if (error)
+    return {
+      reply:
+        "I couldn’t retrieve your goals right now. Please try again shortly."
+    };
+  if (!member)
+    return {
+      reply:
+        "Your goals aren’t on file yet. Add them to your member profile and I’ll use them here."
+    };
+  const preferred =
+    member.preferred_class_types ?? "classes that feel right for you";
+  let query = supabase
+    .from("classes")
+    .select(
+      "name, type, instructor, class_date, start_time, capacity, booked_count"
+    )
+    .gte("class_date", new Date().toISOString().slice(0, 10))
+    .order("class_date")
+    .order("start_time")
+    .limit(3);
+  if (member.preferred_class_types)
+    query = query.ilike(
+      "type",
+      `%${member.preferred_class_types.split(",")[0].trim()}%`
+    );
+  const { data: classes } = await query;
+  return {
+    reply: `Your goals: ${member.goals ?? "not specified"}. You’re currently at a ${member.fitness_level ?? "not specified"} fitness level and prefer ${preferred}.`,
+    ...(classes?.length
+      ? {
+          card: {
+            kind: "schedule",
+            classes: classes.map((row) => ({
+              title: row.name,
+              type: row.type,
+              instructor: row.instructor,
+              date: row.class_date,
+              time: row.start_time,
+              capacity: row.capacity,
+              bookedCount: row.booked_count
+            }))
+          }
+        }
+      : {})
+  };
+}
+export const myGoalsIntent: Intent = {
+  id: "my-goals",
+  description: "Summarizes the current member's goals.",
+  roles: ["client"],
+  match: (message) =>
+    Number(
+      /\b(what should i train for|my goals|my fitness level|what are my goals)\b/i.test(
+        message
+      )
+    ),
+  handle: async (_message, session, pendingAnswer) => {
+    void pendingAnswer;
+    return getMemberGoalsSummary(await createSupabaseServerClient(), session.user.id);
+  }
+};

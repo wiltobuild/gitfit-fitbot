@@ -3,7 +3,6 @@ import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 import { resolveDate, resolveWeekday } from "@/lib/chatbot/entity-extraction";
 
-
 const timeOffRequestPatterns = [
   /\bday(?:s)? off\b/i,
   /\btime off\b/i,
@@ -12,13 +11,13 @@ const timeOffRequestPatterns = [
   /\bpto\b/i,
   /\btake\s+(?:\w+\s+)?off\b/i,
   /\b(?:need|want)\s+(?:\w+\s+){0,3}off\b/i,
-  /\bwon(?:'t| not)\s+be\s+able\s+to\s+work\b/i,
+  /\bwon(?:'t| not)\s+be\s+able\s+to\s+work\b/i
 ];
 
 const timeOffLookupPatterns = [
   /\bmy time off(?: requests)?\b/i,
   /\bwhat time off(?: have i)?(?: requested)?\b/i,
-  /\bmy requests\b/i,
+  /\bmy requests\b/i
 ];
 
 type TimeOffRequestRow = {
@@ -38,7 +37,7 @@ function formatDate(date: string) {
     weekday: "long",
     month: "long",
     day: "numeric",
-    year: "numeric",
+    year: "numeric"
   }).format(new Date(year, month - 1, day));
 }
 
@@ -54,7 +53,9 @@ function extractReason(message: string) {
   }
 
   const reason = forMatch[1].trim();
-  return Boolean(resolveWeekday(reason)) || hasWord(reason, "today") || hasWord(reason, "tomorrow")
+  return Boolean(resolveWeekday(reason)) ||
+    hasWord(reason, "today") ||
+    hasWord(reason, "tomorrow")
     ? null
     : reason || null;
 }
@@ -67,8 +68,19 @@ export const timeOffIntent: Intent = {
   id: "time-off",
   description: "Lets staff submit and review their time-off requests.",
   roles: ["staff", "admin"],
-  match: (message) => !/\b(approve|approved|deny|denied|reject|rejected)\b/i.test(message) ? scoreTriggerFamily(message, [...timeOffLookupPatterns, ...timeOffRequestPatterns]) * (1 + scoreEntity(message, [/\b(today|tomorrow|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i])) : 0,
-  handle: async (message, session) => {
+  match: (message) =>
+    !/\b(approve|approved|deny|denied|reject|rejected)\b/i.test(message)
+      ? scoreTriggerFamily(message, [
+          ...timeOffLookupPatterns,
+          ...timeOffRequestPatterns
+        ]) *
+        (1 +
+          scoreEntity(message, [
+            /\b(today|tomorrow|sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/i
+          ]))
+      : 0,
+  handle: async (message, session, pendingAnswer) => {
+    void pendingAnswer;
     const supabase = await createSupabaseServerClient();
 
     if (isLookup(message)) {
@@ -80,7 +92,10 @@ export const timeOffIntent: Intent = {
 
       if (error) {
         console.error("Unable to query time-off requests", error);
-        return { reply: "I couldn’t retrieve your time-off requests right now. Please try again shortly." };
+        return {
+          reply:
+            "I couldn’t retrieve your time-off requests right now. Please try again shortly."
+        };
       }
 
       const requests = (data ?? []) as TimeOffRequestRow[];
@@ -90,28 +105,45 @@ export const timeOffIntent: Intent = {
 
       return {
         reply: `Here are your time-off requests:\n${requests
-          .map((request) => `${formatDate(request.requested_date)} — ${request.status}.`)
+          .map(
+            (request) =>
+              `${formatDate(request.requested_date)} — ${request.status}.`
+          )
           .join("\n")}`,
-        card: { kind: "time-off", requests: requests.map((request) => ({ date: request.requested_date, status: request.status })) },
+        card: {
+          kind: "time-off",
+          requests: requests.map((request) => ({
+            date: request.requested_date,
+            status: request.status
+          }))
+        }
       };
     }
 
     const requestedDate = resolveRequestedDate(message);
     if (!requestedDate) {
-      return { reply: "Please specify a day for your time off, such as this Friday, next Monday, or tomorrow." };
+      return {
+        reply:
+          "Please specify a day for your time off, such as this Friday, next Monday, or tomorrow."
+      };
     }
 
     const { error } = await supabase.from("time_off_requests").insert({
       user_id: session.user.id,
       requested_date: requestedDate,
-      reason: extractReason(message),
+      reason: extractReason(message)
     });
 
     if (error) {
       console.error("Unable to create time-off request", error);
-      return { reply: "I couldn’t submit your time-off request right now. Please try again shortly." };
+      return {
+        reply:
+          "I couldn’t submit your time-off request right now. Please try again shortly."
+      };
     }
 
-    return { reply: `Your time-off request for ${formatDate(requestedDate)} has been submitted and is pending review.` };
-  },
+    return {
+      reply: `Your time-off request for ${formatDate(requestedDate)} has been submitted and is pending review.`
+    };
+  }
 };
