@@ -3,6 +3,11 @@
 -- (Decision 1), and mark promotional chat messages for the future auto-popup
 -- behavior (Decision 10). All changes are additive and backward-compatible.
 
+-- Postgres treats a changed parameter list as a distinct overload, not a
+-- replacement — drop the old 3-arg signature first so this doesn't leave
+-- two versions of the function live side by side.
+drop function if exists public.search_members_by_attributes(text, text, int);
+
 create or replace function public.search_members_by_attributes(p_fitness_level text default null, p_preferred_class_type text default null, p_stale_after_days int default null, p_stale_before_days int default null)
 returns table (id uuid, email text, full_name text, auth_user_id uuid, lifecycle_status text, fitness_level text, preferred_class_types text, last_visit_date date, membership_tier text)
 language plpgsql security definer set search_path = public as $$
