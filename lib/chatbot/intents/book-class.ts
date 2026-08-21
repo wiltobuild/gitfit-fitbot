@@ -184,7 +184,11 @@ export const bookClassIntent: Intent = {
               available.classes[0],
               "failed",
               "You don't have a booking for that class."
-            )
+            ),
+            resolvedEntities: {
+              classId: available.classes[0].id,
+              date: available.classes[0].class_date
+            }
           };
       }
       return {
@@ -202,30 +206,41 @@ export const bookClassIntent: Intent = {
       return result.ok
         ? {
             reply: `Your booking for ${classLabel(classRow)} has been cancelled.`,
-            card: bookingCard(classRow, "cancelled")
+            card: bookingCard(classRow, "cancelled"),
+            resolvedEntities: {
+              classId: classRow.id,
+              date: classRow.class_date
+            }
           }
         : {
             reply:
               result.code === "not_booked"
                 ? "You don't have a booking for that class."
                 : "I couldn't cancel that booking right now. Please try again shortly.",
-            card: bookingCard(classRow, "failed", result.message)
+            card: bookingCard(classRow, "failed", result.message),
+            resolvedEntities: {
+              classId: classRow.id,
+              date: classRow.class_date
+            }
           };
     }
     const result = await reserveBooking(supabase, session.user.id, classRow.id);
     if (result.ok)
       return {
         reply: `You're booked for ${classLabel(classRow)}.`,
-        card: bookingCard(classRow, "confirmed")
+        card: bookingCard(classRow, "confirmed"),
+        resolvedEntities: { classId: classRow.id, date: classRow.class_date }
       };
     if (result.code === "already_booked")
       return {
         reply: `You're already booked into ${classLabel(classRow)}.`,
-        card: bookingCard(classRow, "failed", result.message)
+        card: bookingCard(classRow, "failed", result.message),
+        resolvedEntities: { classId: classRow.id, date: classRow.class_date }
       };
     return {
       reply: result.message,
-      card: bookingCard(classRow, "failed", result.message)
+      card: bookingCard(classRow, "failed", result.message),
+      resolvedEntities: { classId: classRow.id, date: classRow.class_date }
     };
   }
 };

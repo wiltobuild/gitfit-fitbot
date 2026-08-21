@@ -1,4 +1,9 @@
 import type { SessionUser } from "@/lib/auth/session";
+import {
+  resolveClassType,
+  resolveDate,
+  resolveInstructor
+} from "@/lib/chatbot/entity-extraction";
 import { intents } from "@/lib/chatbot/intents";
 import type { IntentResult } from "@/lib/chatbot/types";
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -11,6 +16,83 @@ type PendingClarification = {
   missing_slot: string;
   expires_at: string;
 };
+type ResolvedEntities = NonNullable<IntentResult["resolvedEntities"]>;
+type ChatMessage = {
+  role: string;
+  resolved_entities: unknown;
+};
+
+const shorthandReferencePattern =
+  /\b(that one|the other (one|class)|her too|him too|them too|that class|that member)\b/i;
+
+function readResolvedEntities(value: unknown): ResolvedEntities | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const entities = value as Record<string, unknown>;
+  const classId =
+    typeof entities.classId === "string" ? entities.classId : undefined;
+  const memberId =
+    typeof entities.memberId === "string" ? entities.memberId : undefined;
+  const date = typeof entities.date === "string" ? entities.date : undefined;
+  return classId || memberId || date ? { classId, memberId, date } : undefined;
+}
+
+async function enrichShorthandMessage(
+  message: string,
+  session: SessionUser,
+  supabase: SupabaseClient
+) {
+  if (!shorthandReferencePattern.test(message)) return message;
+
+  try {
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .select("role, content, resolved_entities, created_at")
+      .eq("user_id", session.user.id)
+      .order("created_at", { ascending: false })
+      .limit(6);
+    if (error) return message;
+
+    const recentAssistantMessage = (data as ChatMessage[] | null)?.find(
+      (chatMessage) =>
+        chatMessage.role === "assistant" &&
+        readResolvedEntities(chatMessage.resolved_entities)
+    );
+    const entities = recentAssistantMessage
+      ? readResolvedEntities(recentAssistantMessage.resolved_entities)
+      : undefined;
+    if (!entities) return message;
+
+    if (entities.classId) {
+      if (
+        resolveDate(message) ||
+        resolveClassType(message) ||
+        resolveInstructor(message)
+      )
+        return message;
+      const { data: classRow, error: classError } = await supabase
+        .from("classes")
+        .select("type, class_date, instructor")
+        .eq("id", entities.classId)
+        .maybeSingle();
+      if (classError || !classRow) return message;
+      return `${message} ${classRow.type} ${classRow.class_date} ${classRow.instructor}`;
+    }
+
+    if (entities.memberId) {
+      const { data: member, error: memberError } = await supabase
+        .from("members")
+        .select("full_name")
+        .eq("id", entities.memberId)
+        .maybeSingle();
+      if (memberError || !member?.full_name) return message;
+      return `${message} ${member.full_name}`;
+    }
+  } catch {
+    // Conversation lookback is optional; routing must continue without it.
+  }
+
+  return message;
+}
 
 function scoreIntents(message: string, session: SessionUser) {
   let matchedIntent: (typeof intents)[number] | undefined;
@@ -75,11 +157,15 @@ export async function routeMessage(
 
   const activePending =
     pending && new Date(pending.expires_at) >= new Date() ? pending : null;
-  const { matchedIntent, highestScore } = scoreIntents(message, session);
+  const {
+    matchedIntent: pendingMatchedIntent,
+    highestScore: pendingHighestScore
+  } = scoreIntents(message, session);
 
   if (
     activePending &&
-    (matchedIntent?.id === activePending.intent_id || highestScore === 0)
+    (pendingMatchedIntent?.id === activePending.intent_id ||
+      pendingHighestScore === 0)
   ) {
     const pendingIntent = intents.find(
       (intent) => intent.id === activePending.intent_id
@@ -109,8 +195,8 @@ export async function routeMessage(
 
   if (
     activePending &&
-    matchedIntent?.id !== activePending.intent_id &&
-    highestScore > 0
+    pendingMatchedIntent?.id !== activePending.intent_id &&
+    pendingHighestScore > 0
   ) {
     const { error: deleteError } = await supabase
       .from("chat_pending_clarifications")
@@ -119,8 +205,15 @@ export async function routeMessage(
     if (deleteError) throw deleteError;
   }
 
+  const routingMessage = await enrichShorthandMessage(
+    message,
+    session,
+    supabase
+  );
+  const { matchedIntent, highestScore } = scoreIntents(routingMessage, session);
+
   if (matchedIntent) {
-    const result = await matchedIntent.handle(message, session);
+    const result = await matchedIntent.handle(routingMessage, session);
     if (result.needsClarification) {
       await upsertPendingClarification(
         supabase,

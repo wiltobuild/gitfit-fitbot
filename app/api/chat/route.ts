@@ -58,7 +58,8 @@ export async function POST(request: Request) {
     .insert({
       user_id: session.user.id,
       role: "assistant",
-      content: result.reply
+      content: result.reply,
+      resolved_entities: result.resolvedEntities
     });
   if (assistantMessageError) throw assistantMessageError;
   return Response.json({

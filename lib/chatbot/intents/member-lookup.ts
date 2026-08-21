@@ -163,7 +163,8 @@ export const memberLookupIntent: Intent = {
             status: `${member.is_staff ? "staff" : "member"} · ${classes.length} upcoming booking${classes.length === 1 ? "" : "s"}`
           }
         ]
-      }
+      },
+      resolvedEntities: { memberId: member.id }
     };
   }
 };

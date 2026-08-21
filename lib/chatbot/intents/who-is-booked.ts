@@ -93,22 +93,21 @@ export const whoIsBookedIntent: Intent = {
         reply: `I found a few possible classes. Please be more specific:\n${classes.slice(0, 8).map(label).join("\n")}`,
         card: {
           kind: "schedule",
-          classes: classes
-            .slice(0, 8)
-            .map((classRow) => ({
-              title: classRow.name,
-              type: classRow.type,
-              instructor: classRow.instructor,
-              date: classRow.class_date,
-              time: classRow.start_time,
-              capacity: classRow.capacity,
-              bookedCount: classRow.booked_count
-            }))
+          classes: classes.slice(0, 8).map((classRow) => ({
+            title: classRow.name,
+            type: classRow.type,
+            instructor: classRow.instructor,
+            date: classRow.class_date,
+            time: classRow.start_time,
+            capacity: classRow.capacity,
+            bookedCount: classRow.booked_count
+          }))
         }
       };
     const classRow = classes[0];
     return {
-      reply: `${label(classRow)} has ${classRow.booked_count} of ${classRow.capacity} spots booked. Member names aren’t available in the current staff view yet.`
+      reply: `${label(classRow)} has ${classRow.booked_count} of ${classRow.capacity} spots booked. Member names aren’t available in the current staff view yet.`,
+      resolvedEntities: { classId: classRow.id, date: classRow.class_date }
     };
   }
 };

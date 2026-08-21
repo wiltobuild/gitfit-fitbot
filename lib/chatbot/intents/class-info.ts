@@ -8,7 +8,8 @@ import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 import type { Intent } from "@/lib/chatbot/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-const infoPattern = /\b(tell me about|what is|details on|who teaches)\b/i;
+const infoPattern =
+  /\b(tell me about|what is|details on|who teaches|who'?s teaching)\b/i;
 function pendingString(args: Record<string, unknown> | undefined, key: string) {
   const value = args?.[key];
   return typeof value === "string" ? value : undefined;
@@ -51,7 +52,7 @@ export const classInfoIntent: Intent = {
     let query = supabase
       .from("classes")
       .select(
-        "name, type, instructor, class_date, start_time, capacity, booked_count"
+        "id, name, type, instructor, class_date, start_time, capacity, booked_count"
       )
       .order("class_date")
       .order("start_time");
@@ -91,7 +92,8 @@ export const classInfoIntent: Intent = {
             bookedCount: row.booked_count
           }
         ]
-      }
+      },
+      resolvedEntities: { classId: row.id, date: row.class_date }
     };
   }
 };
