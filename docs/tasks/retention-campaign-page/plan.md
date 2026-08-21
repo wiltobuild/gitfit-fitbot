@@ -168,18 +168,37 @@ booking per week?) that doesn't exist today.
    clearly captioned as "Illustrative — trend tracking isn't wired up
    yet," not implying real numbers.
 
-### Recommendation
-Option 2 for this task's first version, with option 1 named as a natural
-follow-up. The user's core ask — "connect to the dataset and work as
-advertised" — is best honored by shipping fewer, fully-real pieces
-(cohorts, composer, batch-draft) rather than a fully-real page plus one
-still-fake decoration. Dropping it is more honest than option 3 and lower
-scope than option 1; it can be added later as its own small task once
-someone decides what "activity" should mean.
+### Decision (user confirmed: build it for real)
+Option 1. Concrete definition of "activity," resolving the open product
+question: **distinct members with ≥1 booking created that ISO week**,
+computed from `bookings.created_at` (not `classes.class_date` — booking
+activity is when a member engaged with the app, which is what this chart
+is meant to represent; class date would instead measure studio traffic on
+a given day, a different metric), grouped by ISO week (same Monday–Sunday
+boundary math already used elsewhere in this codebase, e.g.
+`app/dashboard/page.tsx`'s existing week calculation), over a trailing
+8-week window — matching the mockup's own "Last 8 weeks" label and its
+axis span (`Jun 25` through `Aug 20`, roughly 8 weeks apart).
 
-### Approval requested
-Confirm dropping the trend chart from this task (vs. building it for real
-now, which would be a real scope increase, or keeping it fake/labeled).
+New function, e.g. `getWeeklyActivityTrend(supabase, { weeks: 8 })` →
+`Array<{ weekStart: string; activeMembers: number }>`, a `count(distinct
+user_id)` grouped-by-week query against `bookings`. Rendered with the
+mockup's existing canvas-chart approach (`ActivityTrend` in `App.jsx`,
+ported and re-pointed at real data instead of the hardcoded `values`
+array) — the chart's visual design was already approved via `design-qa.md`
+and needs no rework, only a real data source.
+
+### Why
+Real member-activity trend is a genuinely useful, honest addition to an
+admin-facing retention tool — seeing the trend that justifies "this cohort
+is worth a campaign" is core to the page's stated purpose, not decoration.
+Defining "activity" as booking-creation events (not class attendance,
+which doesn't exist as trackable data per the investigation's earlier
+finding) keeps this buildable with zero new schema.
+
+### Approval requested (resolved)
+User confirmed: build for real, using distinct-members-with-a-booking-per-week
+as the activity definition.
 
 ---
 
@@ -436,10 +455,11 @@ one small migration. Isolated, reviewable alone before any application
 code depends on it.
 
 **Phase 2 — Data layer**: `getCohortMembers(supabase, { minDays, maxDays
-})` and `createBulkOutreachDrafts(supabase, { memberIds, subject, body,
-staffUserId })` in `lib/members/queries.ts` / a new
-`lib/outreach/queries.ts` — plain functions, no chatbot involvement,
-reusable if a future chatbot intent ever wants bulk drafting too.
+})`, `createBulkOutreachDrafts(supabase, { memberIds, subject, body,
+staffUserId })`, and `getWeeklyActivityTrend(supabase, { weeks: 8 })`
+(Decision 4) in `lib/members/queries.ts` / a new `lib/outreach/queries.ts`
+— plain functions, no chatbot involvement, reusable if a future chatbot
+intent ever wants bulk drafting or a trend summary too.
 
 **Phase 3 — Page shell**: `app/retention/page.tsx` server component
 (role gate, initial cohort-counts fetch), nav entry, route wiring — no
@@ -452,7 +472,9 @@ against real tokens.
 
 **Phase 5 — Interactive experience**: `retention-experience.tsx` — cohort
 selection (real counts), campaign field editing, composer, incentive
-toggle (message-copy-only), live preview (real cohort member, Decision 7).
+toggle (message-copy-only), live preview (real cohort member, Decision 7),
+and the activity trend chart wired to `getWeeklyActivityTrend` (Decision 4)
+instead of hardcoded values.
 
 **Phase 6 — Batch draft creation + real delivery**: wire "Launch" to
 Decision 1's bulk-draft creation, with honest UI copy distinguishing
@@ -498,6 +520,9 @@ flow), responsive check, branding audit (grep for any leftover
 - [ ] Page visually matches GitFit's existing token system (colors,
       radii, shadows) — spot-checkable against the GitFit Design project
       synced earlier this session.
+- [ ] The activity trend chart renders real weekly distinct-booking-member
+      counts from `getWeeklyActivityTrend`, not the mockup's hardcoded
+      11-point array.
 - [ ] The client dashboard's Promotions card shows real `outreach_messages`
       rows for the logged-in member, most recent first.
 - [ ] A newly-sent promotional message causes `ChatbotOverlay` to
@@ -507,5 +532,13 @@ flow), responsive check, branding audit (grep for any leftover
 
 ---
 
-Not implemented yet — stopping here for approval on Decisions 1–8 above,
-per the user's explicit "write no code yet."
+## Approval status
+
+All 10 decisions above are confirmed by the user, with one deviation from
+the original recommendation: **Decision 4 (activity trend chart) is
+building for real**, not dropped — see its updated section above for the
+concrete "distinct members with ≥1 booking per ISO week" definition. Every
+other decision (1–3, 5–10) is confirmed exactly as originally recommended.
+
+Ready for the EXECUTE phase (Codex handoff) whenever implementation
+begins — no code has been written yet.
