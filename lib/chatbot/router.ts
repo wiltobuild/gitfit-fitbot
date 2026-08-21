@@ -4,6 +4,8 @@ import {
   resolveDate,
   resolveInstructor
 } from "@/lib/chatbot/entity-extraction";
+import type { ChipId } from "@/lib/chatbot/chip-labels";
+import { INTENT_CHIP_MAP } from "@/lib/chatbot/intent-chip-map";
 import { intents } from "@/lib/chatbot/intents";
 import type { IntentResult } from "@/lib/chatbot/types";
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -134,6 +136,30 @@ async function upsertPendingClarification(
   if (error) throw error;
 }
 
+function findNearMissChips(message: string, session: SessionUser): ChipId[] {
+  const fragments = [
+    message,
+    ...message
+      .split(/[,.!?]|\band\b|\bor\b/i)
+      .map((fragment) => fragment.trim())
+      .filter(Boolean)
+  ];
+  const chips: ChipId[] = [];
+
+  for (const intent of intents) {
+    const chip = INTENT_CHIP_MAP[intent.id];
+    if (!chip || !intent.roles.includes(session.role)) continue;
+
+    const score = Math.max(
+      ...fragments.map((fragment) => intent.match(fragment, session))
+    );
+    if (score > 0 && !chips.includes(chip)) chips.push(chip);
+    if (chips.length === 3) break;
+  }
+
+  return chips;
+}
+
 export async function routeMessage(
   message: string,
   session: SessionUser,
@@ -225,8 +251,27 @@ export async function routeMessage(
     return { ...result, intentId: matchedIntent.id };
   }
 
+  const nearMissChips = findNearMissChips(message, session);
+  if (nearMissChips.length) {
+    return {
+      reply: "I'm not totally sure what you meant.",
+      card: {
+        kind: "notice",
+        tone: "info",
+        title: "Did you mean one of these?",
+        body: `You said: "${message}" — here are a few things I can help with instead:`
+      },
+      suggestedChips: nearMissChips,
+      intentId: "fallback"
+    };
+  }
+
   return {
     reply: `That’s a strong place to start. You said: “${message}” — what would make that feel like a win this week?`,
+    suggestedChips:
+      session.role === "client"
+        ? ["todays-schedule", "my-goals", "recommend-class", "menu"]
+        : ["todays-schedule", "studio-capacity", "member-lookup", "menu"],
     intentId: "fallback"
   };
 }
