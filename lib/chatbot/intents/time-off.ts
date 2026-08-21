@@ -1,16 +1,8 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
+import { resolveDate, resolveWeekday } from "@/lib/chatbot/entity-extraction";
 
-const weekdayNames = [
-  "sunday",
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-];
 
 const timeOffRequestPatterns = [
   /\bday(?:s)? off\b/i,
@@ -38,38 +30,7 @@ function hasWord(message: string, word: string) {
   return new RegExp(`\\b${word}\\b`, "i").test(message);
 }
 
-function toDateString(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
-export function resolveRequestedDate(message: string) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  if (hasWord(message, "today")) {
-    return toDateString(today);
-  }
-
-  if (hasWord(message, "tomorrow")) {
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    return toDateString(tomorrow);
-  }
-
-  const requestedWeekday = weekdayNames.find((weekday) => hasWord(message, weekday));
-  if (!requestedWeekday) {
-    return undefined;
-  }
-
-  const targetDay = weekdayNames.indexOf(requestedWeekday);
-  const date = new Date(today);
-  date.setDate(today.getDate() + ((targetDay - today.getDay() + 7) % 7));
-  return toDateString(date);
-}
+export const resolveRequestedDate = resolveDate;
 
 function formatDate(date: string) {
   const [year, month, day] = date.split("-").map(Number);
@@ -93,7 +54,7 @@ function extractReason(message: string) {
   }
 
   const reason = forMatch[1].trim();
-  return weekdayNames.some((weekday) => hasWord(reason, weekday)) || hasWord(reason, "today") || hasWord(reason, "tomorrow")
+  return Boolean(resolveWeekday(reason)) || hasWord(reason, "today") || hasWord(reason, "tomorrow")
     ? null
     : reason || null;
 }
