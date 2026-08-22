@@ -269,6 +269,11 @@ export function RetentionExperience({
           <span className="badge badge-brand">Campaign workspace</span>
         </div>
       </header>
+      <div className="retention-trend-section">
+        <section className="surface-card retention-panel retention-trend-panel">
+          <ActivityTrend points={initialTrend} />
+        </section>
+      </div>
       <div className="retention-layout">
         <section className="surface-card retention-panel">
           <p className="retention-panel-kicker">Audience</p>
@@ -414,7 +419,6 @@ export function RetentionExperience({
               </button>
             </div>
           </div>
-          <ActivityTrend points={initialTrend} />
         </section>
         <aside className="surface-card retention-panel">
           <p className="retention-panel-kicker">Preview</p>
