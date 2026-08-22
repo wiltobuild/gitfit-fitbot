@@ -12,9 +12,15 @@ export async function GET() {
     throw error;
   }
 
+  const today = new Date();
+  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const rangeEnd = new Date(today);
+  rangeEnd.setDate(today.getDate() + 27); // this week + next 3 weeks
+  const rangeEndKey = `${rangeEnd.getFullYear()}-${String(rangeEnd.getMonth() + 1).padStart(2, "0")}-${String(rangeEnd.getDate()).padStart(2, "0")}`;
+
   const supabase = await createSupabaseServerClient();
   const [{ data: classes, error: classesError }, { data: bookings, error: bookingsError }] = await Promise.all([
-    supabase.from("classes").select("id, name, type, instructor, class_date, start_time, duration_minutes, capacity, booked_count").order("class_date").order("start_time"),
+    supabase.from("classes").select("id, name, type, instructor, class_date, start_time, duration_minutes, capacity, booked_count").gte("class_date", todayKey).lte("class_date", rangeEndKey).order("class_date").order("start_time"),
     supabase.from("bookings").select("class_id").eq("user_id", session.user.id),
   ]);
 
