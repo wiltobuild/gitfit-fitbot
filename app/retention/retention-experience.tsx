@@ -116,6 +116,24 @@ function ActivityTrend({ points }: { points: TrendPoint[] }) {
         month: "short",
         day: "numeric"
       });
+      // Pick evenly-spaced label indices for the available width, always
+      // including the first and last point -- but if the step-based grid
+      // would otherwise land a label immediately next to the last one
+      // (crowding the right edge), drop that neighbor instead of keeping both.
+      const minLabelSpacingPx = 68;
+      const maxLabels = Math.max(2, Math.floor(cw / minLabelSpacingPx) + 1);
+      const step = Math.max(1, Math.ceil((points.length - 1) / (maxLabels - 1)));
+      const shownIndices = new Set<number>();
+      for (let i = 0; i < points.length; i += step) shownIndices.add(i);
+      shownIndices.add(points.length - 1);
+      const sortedIndices = [...shownIndices].sort((a, b) => a - b);
+      if (sortedIndices.length > 1) {
+        const lastIndex = sortedIndices[sortedIndices.length - 1];
+        const secondLastIndex = sortedIndices[sortedIndices.length - 2];
+        if (lastIndex - secondLastIndex < step && secondLastIndex !== 0) {
+          shownIndices.delete(secondLastIndex);
+        }
+      }
       coordinates.forEach((p, i) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
@@ -123,12 +141,7 @@ function ActivityTrend({ points }: { points: TrendPoint[] }) {
         ctx.fill();
         ctx.strokeStyle = violet;
         ctx.stroke();
-        if (
-          points.length <= 5 ||
-          i === 0 ||
-          i === points.length - 1 ||
-          i % 2 === 0
-        ) {
+        if (shownIndices.has(i)) {
           ctx.fillStyle = muted;
           ctx.textAlign =
             i === 0 ? "left" : i === points.length - 1 ? "right" : "center";
