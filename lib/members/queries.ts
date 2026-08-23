@@ -11,6 +11,7 @@ export type MemberRow = {
   is_staff: boolean; is_instructor?: boolean;
   created_at: string;
   fitness_level?: string | null; preferred_class_types?: string | null; last_visit_date?: string | null; membership_tier?: string | null; goals?: string | null; join_date?: string | null;
+  cert_tier?: string | null;
 };
 
 export type ClassRow = {
@@ -23,7 +24,7 @@ export type ClassRow = {
   booked_count: number;
 };
 
-const memberSelect = "id, email, first_name, last_name, full_name, birthdate, phone, auth_user_id, join_date, membership_tier, membership_status, last_visit_date, lifecycle_status, goals, preferred_class_types, fitness_level, is_instructor, created_at";
+const memberSelect = "id, email, first_name, last_name, full_name, birthdate, phone, auth_user_id, join_date, membership_tier, membership_status, last_visit_date, lifecycle_status, goals, preferred_class_types, fitness_level, is_instructor, cert_tier, created_at";
 
 export async function getMemberForUser(supabase: SupabaseServerClient, authUserId: string) {
   return supabase.from("members").select(memberSelect).eq("auth_user_id", authUserId).maybeSingle();

@@ -208,6 +208,23 @@
 .staff-panel-flagged-warning { border-top-color:var(--color-warning); }
 .staff-panel-flagged-danger { border-top-color:var(--color-danger); }
 
+/* Console vision — trainer's own schedule (calendar + roster drill-down +
+   swap/cancel) and profile card. Reuses .staff-class-row/.staff-class-list
+   exactly; only new pieces are the day grouping and the expandable roster
+   panel, which stacks as a second grid item rather than living inside the
+   flex row so it doesn't fight .staff-class-row's layout. */
+.staff-trainer-profile-email { margin:4px 0 0; color:var(--color-muted); font-size:13px; font-weight:600; }
+.staff-schedule-days { display:grid; gap:22px; }
+.staff-schedule-day-heading { margin:0 0 10px; color:var(--color-muted); font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+.staff-schedule-class-group { display:grid; gap:8px; }
+.staff-schedule-actions { display:flex; flex:0 0 auto; gap:8px; }
+.staff-schedule-roster { padding:13px 15px; border:1px solid var(--color-border); border-radius:var(--radius-sm); background:var(--color-surface-subtle); }
+.staff-schedule-roster ul { display:grid; gap:6px; margin:0; padding:0; list-style:none; }
+.staff-schedule-roster li { color:var(--color-ink-soft); font-size:12px; font-weight:600; }
+.staff-schedule-roster p { margin:0; color:var(--color-muted); font-size:12px; }
+.staff-trainer-console { display:grid; gap:20px; }
+.staff-trainer-side-stack { display:grid; gap:20px; }
+
 /* ---------------------------------------------------------------------
    Form fields
 --------------------------------------------------------------------- */

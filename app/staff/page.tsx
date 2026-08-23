@@ -7,8 +7,17 @@ import { MyRequests, type MyRequest } from "@/app/staff/my-requests";
 import { StudioPulse, type PulseStat, type TeachingLoadRow } from "@/app/staff/studio-pulse";
 import { AtRiskMembers, type AtRiskMember } from "@/app/staff/at-risk-members";
 import { ActivityLog, type ActivityEntry } from "@/app/staff/activity-log";
+import { TrainerProfile } from "@/app/staff/trainer-profile";
+import { MySchedule, type ScheduleClass } from "@/app/staff/my-schedule";
+import { ClassChangeStatus, type MyClassChangeRequest } from "@/app/staff/class-change-status";
+import { MyMembersRetention } from "@/app/staff/my-members-retention";
+import { ClassChangeInbox, type PendingClassChangeRequest } from "@/app/staff/class-change-inbox";
+import { InstructorLeaderboard, type LeaderboardRow } from "@/app/staff/instructor-leaderboard";
 import { requireRoleOrRedirect } from "@/lib/auth/session";
-import { listMembersForStaff } from "@/lib/members/queries";
+import { getMemberForUser, getMemberRetentionForInstructor, listMembersForStaff } from "@/lib/members/queries";
+import { getClassesForInstructorInRange, getInstructorLeaderboard } from "@/lib/classes/queries";
+import { getClassRoster } from "@/lib/classes/roster";
+import { listOwnClassChangeRequests, listPendingClassChangeRequests } from "@/lib/class-changes/queries";
 import { fillLevel } from "@/lib/classes/fill-level";
 import { getStudioDayStats } from "@/lib/classes/current-or-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -39,6 +48,17 @@ export default async function StaffPage() {
   let atRiskMembers: AtRiskMember[] = [];
   let atRiskMembersTotal = 0;
   let activityEntries: ActivityEntry[] = [];
+  let pendingClassChangeRequests: PendingClassChangeRequest[] = [];
+  let instructorLeaderboard: LeaderboardRow[] = [];
+  let trainerCertTier: string | null = null;
+  let scheduleClasses: ScheduleClass[] = [];
+  let myClassChangeRequests: MyClassChangeRequest[] = [];
+  let pendingRequestTypeByClassId: Record<string, "swap" | "cancel"> = {};
+  let retentionMembers: Awaited<ReturnType<typeof getMemberRetentionForInstructor>>["members"] = [];
+  let retentionCounts: Record<string, number> = {};
+  let classLabelById: Record<string, string> = {};
+  let isLinkedInstructor = false;
+  let trainerName = "Trainer";
 
   if (isManager) {
     let members: Awaited<ReturnType<typeof listMembersForStaff>>["data"] = [];
@@ -68,6 +88,31 @@ export default async function StaffPage() {
       pendingRequests = rows.map((row) => ({ ...row, requester_name: nameByUserId.get(row.user_id) ?? identify(row.user_id, null) }));
     } catch (error) { console.error("Unable to load pending time-off requests", error); }
 
+    const displayDate = (date: string) => new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T12:00:00`));
+    try {
+      const requests = await listPendingClassChangeRequests(supabase);
+      const classIds = [...new Set(requests.map((request) => request.class_id))];
+      const userIds = [...new Set(requests.map((request) => request.user_id))];
+      const [{ data: classesForLabels }, { data: profilesForNames, error: profilesError }] = await Promise.all([
+        classIds.length
+          ? supabase.from("classes").select("id, name, class_date, start_time").in("id", classIds)
+          : Promise.resolve({ data: [] as { id: string; name: string; class_date: string; start_time: string }[] }),
+        userIds.length
+          ? supabase.from("profiles").select("id, full_name").in("id", userIds)
+          : Promise.resolve({ data: [] as { id: string; full_name: string | null }[], error: null })
+      ]);
+      if (profilesError) throw profilesError;
+      const labelByClassId = new Map((classesForLabels ?? []).map((classRow) => [classRow.id, `${classRow.name} — ${displayDate(classRow.class_date)}, ${formatTime(classRow.start_time)}`]));
+      const nameByRequesterId = new Map((profilesForNames ?? []).map((profile) => [profile.id, identify(profile.id, profile.full_name)]));
+      pendingClassChangeRequests = requests.map((request) => ({
+        id: request.id,
+        requester_name: nameByRequesterId.get(request.user_id) ?? identify(request.user_id, null),
+        class_label: labelByClassId.get(request.class_id) ?? "Class no longer scheduled",
+        type: request.type,
+        reason: request.reason,
+      }));
+    } catch (error) { console.error("Unable to load pending class-change requests", error); }
+
     const mondayOffset = (today.getDay() + 6) % 7;
     const weekMonday = new Date(today); weekMonday.setDate(today.getDate() - mondayOffset); weekMonday.setHours(0, 0, 0, 0);
     const weekSunday = new Date(weekMonday); weekSunday.setDate(weekMonday.getDate() + 6);
@@ -78,6 +123,10 @@ export default async function StaffPage() {
       if (error) throw error;
       weekClasses = data ?? [];
     } catch (error) { console.error("Unable to load this week's classes for the studio pulse panel", error); }
+
+    try {
+      instructorLeaderboard = await getInstructorLeaderboard(supabase, { from: formatDate(weekMonday), to: formatDate(weekSunday) });
+    } catch (error) { console.error("Unable to load the instructor leaderboard", error); }
 
     const weekCapacity = weekClasses.reduce((total, row) => total + row.capacity, 0);
     const weekBooked = weekClasses.reduce((total, row) => total + row.booked_count, 0);
@@ -132,6 +181,45 @@ export default async function StaffPage() {
       if (error) throw error;
       myRequests = (data ?? []) as MyRequest[];
     } catch (error) { console.error("Unable to load your time-off requests", error); }
+
+    let instructorMember: Awaited<ReturnType<typeof getMemberForUser>>["data"] = null;
+    try {
+      const { data, error } = await getMemberForUser(supabase, user.id);
+      if (error) throw error;
+      instructorMember = data;
+    } catch (error) { console.error("Unable to resolve instructor profile for the trainer console", error); }
+
+    if (instructorMember?.is_instructor) {
+      isLinkedInstructor = true;
+      trainerName = instructorMember.full_name || "Trainer";
+      trainerCertTier = instructorMember.cert_tier ?? null;
+      const scheduleEnd = new Date(today); scheduleEnd.setDate(today.getDate() + 13);
+
+      try {
+        const upcoming = await getClassesForInstructorInRange(supabase, instructorMember.id, { from: todayString, to: formatDate(scheduleEnd) });
+        const rosters = await Promise.all(upcoming.map((classRow) => getClassRoster(supabase, classRow.id).catch(() => [])));
+        scheduleClasses = upcoming.map((classRow, index) => ({ ...classRow, attendees: rosters[index] }));
+        for (const classRow of scheduleClasses) classLabelById[classRow.id] = `${classRow.name} — ${formatTime(classRow.start_time)}`;
+      } catch (error) { console.error("Unable to load the trainer's schedule", error); }
+
+      try {
+        const retention = await getMemberRetentionForInstructor(supabase, instructorMember.id);
+        retentionMembers = retention.members;
+        retentionCounts = retention.lifecycleCounts;
+      } catch (error) { console.error("Unable to load member retention for this instructor", error); }
+
+      try {
+        const requests = await listOwnClassChangeRequests(supabase, user.id);
+        myClassChangeRequests = requests.map((request) => ({ id: request.id, class_id: request.class_id, type: request.type, status: request.status, created_at: request.created_at }));
+        for (const request of requests) if (request.status === "pending") pendingRequestTypeByClassId[request.class_id] = request.type;
+
+        const missingIds = [...new Set(requests.map((request) => request.class_id))].filter((id) => !classLabelById[id]);
+        if (missingIds.length) {
+          const { data: pastClasses } = await supabase.from("classes").select("id, name, start_time").in("id", missingIds);
+          for (const classRow of pastClasses ?? []) classLabelById[classRow.id] = `${classRow.name} — ${formatTime(classRow.start_time)}`;
+        }
+      } catch (error) { console.error("Unable to load this trainer's class-change requests", error); }
+    }
   }
 
   const { totalCapacity, totalBooked, bookedPercent, currentClass, nextClass } = getStudioDayStats(classes, today);
@@ -151,8 +239,21 @@ export default async function StaffPage() {
           <section className="surface-card staff-today-panel animate-fade-up" style={{ animationDelay: "60ms" }} aria-labelledby="today-studio-title"><div className="staff-panel-heading"><div><p className="eyebrow"><span /> Live register</p><h2 id="today-studio-title">Today at the studio</h2></div><p>{classes.length ? `${classes.length} classes scheduled` : "No schedule to review"}</p></div>
             {classes.length ? <ul className="staff-class-list">{classes.map((classRow) => { const level = fillLevel(classRow.booked_count, classRow.capacity); const isPriority = classRow.id === currentClass?.id || classRow.id === nextClass?.id; const spots = classRow.capacity - classRow.booked_count; const statusText = spots <= 0 ? "Class full" : spots === 1 ? "Only 1 spot left" : `${spots} spots open`; return <li className={`staff-class-row staff-fill-${level}${isPriority ? " staff-class-priority" : ""}`} key={classRow.id}><InstructorAvatar name={classRow.instructor} size={40} /><div className="staff-class-summary"><strong>{classRow.name}</strong><span>{formatTime(classRow.start_time)} · {classRow.instructor}</span></div><div className="staff-fill-unit"><div className="staff-fill-label"><span className="staff-fill-status">{statusText}</span><strong>{classRow.booked_count}/{classRow.capacity}</strong></div><span className="staff-fill-track" aria-label={`${classRow.booked_count} of ${classRow.capacity} spots booked`}><span style={{ width: `${Math.min(100, classRow.capacity ? (classRow.booked_count / classRow.capacity) * 100 : 0)}%` }} /></span></div></li>; })}</ul> : <div className="empty-state"><h3>No classes scheduled today</h3><p>There are no capacity or instructor details to monitor yet.</p></div>}</section>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} /></div>
-        </> : <div className="animate-fade-up"><MyRequests requests={myRequests} /></div>}
-        <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: isManager ? "180ms" : "60ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>
+          <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "180ms" }}><ClassChangeInbox initialRequests={pendingClassChangeRequests} /><InstructorLeaderboard rows={instructorLeaderboard} /></div>
+        </> : <div className="animate-fade-up">
+          {isLinkedInstructor ? <div className="staff-trainer-console">
+            <TrainerProfile name={trainerName} email={user.email ?? ""} certTier={trainerCertTier} />
+            <div className="staff-lower-grid">
+              <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} />
+              <div className="staff-trainer-side-stack">
+                <MyMembersRetention members={retentionMembers} lifecycleCounts={retentionCounts} />
+                <ClassChangeStatus requests={myClassChangeRequests} classLabelById={classLabelById} />
+              </div>
+            </div>
+            <MyRequests requests={myRequests} />
+          </div> : <MyRequests requests={myRequests} />}
+        </div>}
+        <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: isManager ? "240ms" : "60ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>
       </div>
     </main>
   </div>;
