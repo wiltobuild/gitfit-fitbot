@@ -4,6 +4,7 @@ import { MemberSearch } from "@/app/staff/member-search";
 import { StaffFitBotTiles } from "@/app/staff/fitbot-tiles";
 import { RequestsInbox, type PendingRequest } from "@/app/staff/requests-inbox";
 import { MyRequests, type MyRequest } from "@/app/staff/my-requests";
+import { RequestTimeOff } from "@/app/staff/request-time-off";
 import { StudioPulse, type PulseStat, type TeachingLoadRow } from "@/app/staff/studio-pulse";
 import { AtRiskMembers, type AtRiskMember } from "@/app/staff/at-risk-members";
 import { ActivityLog, type ActivityEntry } from "@/app/staff/activity-log";
@@ -251,8 +252,8 @@ export default async function StaffPage() {
                 <ClassChangeStatus requests={myClassChangeRequests} classLabelById={classLabelById} />
               </div>
             </div>
-            <MyRequests requests={myRequests} />
-          </div> : <MyRequests requests={myRequests} />}
+            <div className="staff-lower-grid"><RequestTimeOff /><MyRequests requests={myRequests} /></div>
+          </div> : <div className="staff-lower-grid"><RequestTimeOff /><MyRequests requests={myRequests} /></div>}
         </div>}
         <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: isManager ? "240ms" : "60ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>
       </div>

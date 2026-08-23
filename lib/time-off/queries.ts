@@ -51,3 +51,13 @@ export async function getPendingTimeOffCount(supabase: SupabaseServerClient) {
   if (error) throw error;
   return count ?? 0;
 }
+
+// Direct UI submission path -- previously time off could only be requested by
+// asking Fitbot in chat, with no native form on the trainer console itself.
+export async function submitTimeOffRequest(
+  supabase: SupabaseServerClient,
+  { userId, requestedDate, reason }: { userId: string; requestedDate: string; reason: string | null }
+) {
+  const { error } = await supabase.from("time_off_requests").insert({ user_id: userId, requested_date: requestedDate, reason });
+  if (error) throw error;
+}

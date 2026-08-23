@@ -224,6 +224,8 @@
 .staff-schedule-roster p { margin:0; color:var(--color-muted); font-size:12px; }
 .staff-trainer-console { display:grid; gap:20px; }
 .staff-trainer-side-stack { display:grid; gap:20px; }
+.staff-request-form { display:grid; gap:14px; margin-bottom:4px; }
+.staff-fitbot-text-hint { margin:14px 0 0; color:var(--color-muted); font-size:12px; }
 
 /* ---------------------------------------------------------------------
    Form fields
