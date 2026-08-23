@@ -76,6 +76,38 @@ export async function getRetentionCandidates(supabase: SupabaseServerClient) {
   };
 }
 
+export type InstructorMemberRow = { id: string; full_name: string | null; email: string; lifecycle_status: string; last_visit_date: string | null };
+
+// Retention scoped to a trainer's own world: members who've booked at least
+// one of their classes, bucketed by lifecycle status. Distinct from
+// getMemberLifecycleBreakdown, which is suite-wide (manager-only today).
+export async function getMemberRetentionForInstructor(
+  supabase: SupabaseServerClient,
+  instructorMemberId: string
+): Promise<{ members: InstructorMemberRow[]; lifecycleCounts: Record<string, number> }> {
+  const { data: classes, error: classError } = await supabase.from("classes").select("id").eq("instructor_member_id", instructorMemberId);
+  if (classError) throw classError;
+  const classIds = (classes ?? []).map((classRow) => classRow.id);
+  if (!classIds.length) return { members: [], lifecycleCounts: {} };
+
+  const { data: bookings, error: bookingError } = await supabase.from("bookings").select("user_id").in("class_id", classIds);
+  if (bookingError) throw bookingError;
+  const userIds = [...new Set((bookings ?? []).map((booking) => booking.user_id))];
+  if (!userIds.length) return { members: [], lifecycleCounts: {} };
+
+  const { data: members, error: memberError } = await supabase
+    .from("members")
+    .select("id, full_name, email, lifecycle_status, last_visit_date")
+    .in("auth_user_id", userIds);
+  if (memberError) throw memberError;
+
+  const rows = (members ?? []) as InstructorMemberRow[];
+  const lifecycleCounts: Record<string, number> = {};
+  for (const member of rows) lifecycleCounts[member.lifecycle_status] = (lifecycleCounts[member.lifecycle_status] ?? 0) + 1;
+
+  return { members: rows, lifecycleCounts };
+}
+
 export async function getMemberWeeklyActivity(
   supabase: SupabaseServerClient,
   userId: string

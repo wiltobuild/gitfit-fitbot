@@ -66,6 +66,89 @@ export async function getClassesForInstructor(
   return (data ?? []) as StudioClass[];
 }
 
+export async function getClassesForInstructorInRange(
+  supabase: SupabaseServerClient,
+  memberId: string,
+  { from, to }: { from: string; to: string }
+) {
+  const { data, error } = await supabase
+    .from("classes")
+    .select(classSelect)
+    .eq("instructor_member_id", memberId)
+    .gte("class_date", from)
+    .lte("class_date", to)
+    .order("class_date")
+    .order("start_time");
+
+  if (error) throw error;
+  return (data ?? []) as StudioClass[];
+}
+
+export type InstructorLeaderboardRow = {
+  instructorMemberId: string;
+  instructorName: string;
+  classCount: number;
+  totalCapacity: number;
+  totalBooked: number;
+  fillRatePercent: number;
+  uniqueMembers: number;
+};
+
+// "Staff retention" per the product's definition: which instructors keep
+// members coming back, measured as unique members served (breadth) and fill
+// rate (demand), not employment tenure.
+export async function getInstructorLeaderboard(
+  supabase: SupabaseServerClient,
+  { from, to }: { from: string; to: string }
+): Promise<InstructorLeaderboardRow[]> {
+  const { data: classes, error } = await supabase
+    .from("classes")
+    .select("id, instructor, instructor_member_id, capacity, booked_count")
+    .gte("class_date", from)
+    .lte("class_date", to)
+    .not("instructor_member_id", "is", null);
+  if (error) throw error;
+
+  const classRows = classes ?? [];
+  const classIds = classRows.map((classRow) => classRow.id);
+
+  const { data: bookings, error: bookingError } = classIds.length
+    ? await supabase.from("bookings").select("class_id, user_id").in("class_id", classIds)
+    : { data: [] as { class_id: string; user_id: string }[], error: null };
+  if (bookingError) throw bookingError;
+
+  const membersByClass = new Map<string, Set<string>>();
+  for (const booking of bookings ?? []) {
+    if (!membersByClass.has(booking.class_id)) membersByClass.set(booking.class_id, new Set());
+    membersByClass.get(booking.class_id)!.add(booking.user_id);
+  }
+
+  const byInstructor = new Map<string, { name: string; classCount: number; totalCapacity: number; totalBooked: number; members: Set<string> }>();
+  for (const classRow of classRows) {
+    const instructorMemberId = classRow.instructor_member_id as string;
+    if (!byInstructor.has(instructorMemberId)) {
+      byInstructor.set(instructorMemberId, { name: classRow.instructor, classCount: 0, totalCapacity: 0, totalBooked: 0, members: new Set() });
+    }
+    const entry = byInstructor.get(instructorMemberId)!;
+    entry.classCount += 1;
+    entry.totalCapacity += classRow.capacity;
+    entry.totalBooked += classRow.booked_count;
+    for (const userId of membersByClass.get(classRow.id) ?? []) entry.members.add(userId);
+  }
+
+  return [...byInstructor.entries()]
+    .map(([instructorMemberId, entry]) => ({
+      instructorMemberId,
+      instructorName: entry.name,
+      classCount: entry.classCount,
+      totalCapacity: entry.totalCapacity,
+      totalBooked: entry.totalBooked,
+      fillRatePercent: entry.totalCapacity ? Math.round((entry.totalBooked / entry.totalCapacity) * 100) : 0,
+      uniqueMembers: entry.members.size
+    }))
+    .sort((a, b) => b.uniqueMembers - a.uniqueMembers || b.fillRatePercent - a.fillRatePercent);
+}
+
 export async function getInstructorBookingRateTrend(
   supabase: SupabaseServerClient,
   memberId: string
