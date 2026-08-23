@@ -15,6 +15,15 @@ export function ClassChangeInbox({ initialRequests }: { initialRequests: Pending
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
+  // See requests-inbox.tsx for why this is needed: useState's initial value
+  // only applies on mount, so a realtime-driven prop update would otherwise
+  // never reach this list.
+  const [prevInitialRequests, setPrevInitialRequests] = useState(initialRequests);
+  if (initialRequests !== prevInitialRequests) {
+    setPrevInitialRequests(initialRequests);
+    setRequests(initialRequests);
+  }
+
   async function resolve(id: string, decision: "approved" | "denied") {
     setPendingId(id);
     setError("");

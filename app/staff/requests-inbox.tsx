@@ -18,6 +18,17 @@ export function RequestsInbox({ initialRequests }: { initialRequests: PendingReq
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
+  // initialRequests only seeds state on mount -- without this, a realtime
+  // refresh that brings a newly-submitted request never reaches this list,
+  // since React ignores prop changes for values already used as useState's
+  // initial argument. Adjusting state during render (not in an effect) is
+  // the pattern React recommends for this exact case.
+  const [prevInitialRequests, setPrevInitialRequests] = useState(initialRequests);
+  if (initialRequests !== prevInitialRequests) {
+    setPrevInitialRequests(initialRequests);
+    setRequests(initialRequests);
+  }
+
   async function resolve(id: string, decision: "approved" | "denied") {
     setPendingId(id);
     setError("");

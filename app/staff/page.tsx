@@ -251,7 +251,7 @@ export default async function StaffPage() {
             <RealtimeRefresh table="class_change_requests" filter={`user_id=eq.${user.id}`} />
             <TrainerProfile name={trainerName} email={user.email ?? ""} certTier={trainerCertTier} />
             <div className="staff-lower-grid">
-              <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} />
+              <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} today={todayString} />
               <div className="staff-trainer-side-stack">
                 <MyMembersRetention members={retentionMembers} lifecycleCounts={retentionCounts} />
                 <ClassChangeStatus requests={myClassChangeRequests} classLabelById={classLabelById} />
