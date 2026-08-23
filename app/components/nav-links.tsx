@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { IconCalendar, IconDashboard, IconShield, IconSparkle } from "@/app/components/icons";
+import { IconCalendar, IconDashboard, IconShield, IconSparkle, IconUsers } from "@/app/components/icons";
 
 type NavLinksProps = {
   role: string;
@@ -17,7 +17,7 @@ const links = [
 
 export default function NavLinks({ role }: NavLinksProps) {
   const pathname = usePathname();
-  const navLinks = role === "staff" || role === "admin" ? [...links, { href: "/staff", label: "Staff", icon: IconShield }] : links;
+  const navLinks = role === "staff" || role === "admin" ? [...links, { href: "/staff", label: "Staff", icon: IconShield }, { href: "/retention", label: "Retention", icon: IconUsers }] : links;
 
   return (
     <div className="nav-links">

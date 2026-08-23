@@ -1,34 +1,36 @@
 import type { Intent } from "@/lib/chatbot/types";
-
+import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 const helpKeywords = ["help", "what can you do", "what can you help with"];
-
 export const helpIntent: Intent = {
   id: "help",
   description: "Explains the chatbot's current capabilities.",
   roles: ["client", "staff", "admin"],
   match: (message) => {
-    const normalizedMessage = message.toLowerCase();
-
-    return !/\bplan\b.*\b(week|workout)\b|\b(workout|week)\b.*\bplan\b/.test(normalizedMessage) && helpKeywords.some((keyword) => normalizedMessage.includes(keyword));
+    const normalized = message.toLowerCase();
+    return /\bplan\b.*\b(week|workout)\b|\b(workout|week)\b.*\bplan\b/.test(
+      normalized
+    )
+      ? 0
+      : scoreTriggerFamily(
+          normalized,
+          helpKeywords.map((keyword) => new RegExp(keyword, "i"))
+        );
   },
-  handle: (_message, session) => {
-    if (session.role === "admin") {
+  handle: (_message, session, pendingAnswer) => {
+    void pendingAnswer;
+    if (session.role === "admin")
       return {
-        reply:
-          "I’m here to help you run the studio as well as support your own fitness routine. You have all staff capabilities, including schedule questions, member lookup, outreach, and time-off tools. You can also approve or deny a pending staff time-off request by naming the person and date, alongside class booking and workout guidance.",
+        reply: "Here’s what I can help with.",
+        card: { kind: "notice", tone: "info", title: "Fitbot for admins", body: "I can help run the studio and support your fitness routine: schedules, class details, instructor lookups, booking, studio capacity, roster summaries, member lookup, outreach, and time-off tools. You can also approve or deny pending staff time-off by naming the person and date." }
       };
-    }
-
-    if (session.role === "staff") {
+    if (session.role === "staff")
       return {
-        reply:
-          "I’m here to help you stay connected to your fitness routine. Right now, I can chat through your fitness goals, point you to the Book a Class module to reserve a class, help you check your dashboard, and answer schedule questions — ask about a day, an instructor, a class type, or how full a class is. Member lookup and more staff tools are coming soon.",
+        reply: "Here’s what I can help with.",
+        card: { kind: "notice", tone: "info", title: "Fitbot for staff", body: "I can help with fitness goals, booking, schedule questions, class details, instructor lookups, today's studio capacity, roster summaries, member lookup, outreach, and time-off coverage." }
       };
-    }
-
     return {
-      reply:
-        "I’m here to help you keep moving. Right now, we can talk through your fitness goals, I can point you to the Book a Class module to reserve a class, help you check your dashboard, and answer schedule questions — ask about a day, an instructor, a class type, or how full a class is. Let’s make this week count.",
+      reply: "Here’s what I can help with.",
+      card: { kind: "notice", tone: "info", title: "What Fitbot can do", body: "I can help with fitness goals, booking, schedule questions, class details, and instructor class lookups. Ask about a day, instructor, or class type to get started." }
     };
-  },
+  }
 };

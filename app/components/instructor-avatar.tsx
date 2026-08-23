@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 
 type InstructorAvatarProps = { name: string; size: 32 | 40 | 64; loading?: "eager" | "lazy" };
 
-const instructorPhotoNames = new Set(["sofia martinez", "marcus lee", "avery thompson"]);
+const instructorPhotoNames = new Set(["sofia martinez", "marcus lee", "avery thompson", "diego reyes", "elena cruz", "jordan blake"]);
 
 function initials(name: string) {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "?";

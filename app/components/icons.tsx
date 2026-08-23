@@ -92,6 +92,78 @@ export function IconUser(props: IconProps) {
   );
 }
 
+export function IconUsers(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 20c.6-3.25 2.65-5 5.5-5s4.9 1.75 5.5 5M15.5 5.5a3 3 0 0 1 0 5.8M17 15c2 0 3.5 1.65 4 4" />
+    </IconBase>
+  );
+}
+
+export function IconTarget(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4.25" />
+      <circle cx="12" cy="12" r=".75" />
+    </IconBase>
+  );
+}
+
+export function IconSend(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m20.5 3.5-7.1 17-3.1-7-6.8-3 17-7Z" />
+      <path d="m10.3 13.5 4.6-4.5" />
+    </IconBase>
+  );
+}
+
+export function IconPhone(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="7" y="3" width="10" height="18" rx="1.75" />
+      <path d="M10.5 17.75h3" />
+    </IconBase>
+  );
+}
+
+export function IconEnvelope(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3.5" y="5.5" width="17" height="13" rx="2" />
+      <path d="m4.5 7 7.5 5.75L19.5 7" />
+    </IconBase>
+  );
+}
+
+export function IconCheck(props: IconProps) {
+  return <IconBase {...props}><path d="m5 12.5 4.25 4.25L19 7" /></IconBase>;
+}
+
+export function IconInfo(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 11v5M12 8h.01" />
+    </IconBase>
+  );
+}
+
+export function IconPencil(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="m5 19 3.3-.7L19 7.6a2.1 2.1 0 0 0-3-3L5.3 15.3 5 19Z" />
+      <path d="m14.5 6.1 3 3" />
+    </IconBase>
+  );
+}
+
+export function IconChevronRight(props: IconProps) {
+  return <IconBase {...props}><path d="m9 5 7 7-7 7" /></IconBase>;
+}
+
 export function MomentumArc({ className, ...props }: IconProps) {
   return (
     <svg aria-hidden="true" className={className} viewBox="0 0 120 120" fill="none" {...props}>
