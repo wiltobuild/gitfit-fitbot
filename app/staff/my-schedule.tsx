@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export type ScheduleAttendee = { userId: string; name: string | null; email: string | null };
@@ -27,6 +28,7 @@ function fillLevel(booked: number, capacity: number) {
 }
 
 export function MySchedule({ classes, pendingRequestTypeByClassId }: { classes: ScheduleClass[]; pendingRequestTypeByClassId: Record<string, "swap" | "cancel"> }) {
+  const router = useRouter();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [actionState, setActionState] = useState<{ id: string; type: "swap" | "cancel" } | null>(null);
   const [error, setError] = useState("");
@@ -44,6 +46,7 @@ export function MySchedule({ classes, pendingRequestTypeByClassId }: { classes: 
       const payload = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
       if (!response.ok) throw new Error(payload.error?.message ?? "Unable to submit this request.");
       setSubmitted((current) => ({ ...current, [classId]: type }));
+      router.refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to submit this request.");
     } finally {
