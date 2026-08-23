@@ -5,6 +5,7 @@ import { StaffFitBotTiles } from "@/app/staff/fitbot-tiles";
 import { RequestsInbox, type PendingRequest } from "@/app/staff/requests-inbox";
 import { MyRequests, type MyRequest } from "@/app/staff/my-requests";
 import { RequestTimeOff } from "@/app/staff/request-time-off";
+import { RealtimeRefresh } from "@/app/components/realtime-refresh";
 import { StudioPulse, type PulseStat, type TeachingLoadRow } from "@/app/staff/studio-pulse";
 import { AtRiskMembers, type AtRiskMember } from "@/app/staff/at-risk-members";
 import { ActivityLog, type ActivityEntry } from "@/app/staff/activity-log";
@@ -237,13 +238,17 @@ export default async function StaffPage() {
       </div><div className="staff-capacity-stat">{classes.length ? <><strong>{bookedPercent}%</strong><span>booked today</span><small>{totalBooked}/{totalCapacity} total spots</small></> : <><strong>No classes scheduled today</strong><span>The studio register is clear.</span></>}</div></div></header>
       <div className="staff-console-content">
         {isManager ? <>
+          <RealtimeRefresh table="time_off_requests" />
+          <RealtimeRefresh table="class_change_requests" />
           <div className="staff-lower-grid animate-fade-up"><RequestsInbox initialRequests={pendingRequests} /><ClassChangeInbox initialRequests={pendingClassChangeRequests} /></div>
           <section className="surface-card staff-today-panel animate-fade-up" style={{ animationDelay: "60ms" }} aria-labelledby="today-studio-title"><div className="staff-panel-heading"><div><p className="eyebrow"><span /> Live register</p><h2 id="today-studio-title">Today at the studio</h2></div><p>{classes.length ? `${classes.length} classes scheduled` : "No schedule to review"}</p></div>
             {classes.length ? <ul className="staff-class-list">{classes.map((classRow) => { const level = fillLevel(classRow.booked_count, classRow.capacity); const isPriority = classRow.id === currentClass?.id || classRow.id === nextClass?.id; const spots = classRow.capacity - classRow.booked_count; const statusText = spots <= 0 ? "Class full" : spots === 1 ? "Only 1 spot left" : `${spots} spots open`; return <li className={`staff-class-row staff-fill-${level}${isPriority ? " staff-class-priority" : ""}`} key={classRow.id}><InstructorAvatar name={classRow.instructor} size={40} /><div className="staff-class-summary"><strong>{classRow.name}</strong><span>{formatTime(classRow.start_time)} · {classRow.instructor}</span></div><div className="staff-fill-unit"><div className="staff-fill-label"><span className="staff-fill-status">{statusText}</span><strong>{classRow.booked_count}/{classRow.capacity}</strong></div><span className="staff-fill-track" aria-label={`${classRow.booked_count} of ${classRow.capacity} spots booked`}><span style={{ width: `${Math.min(100, classRow.capacity ? (classRow.booked_count / classRow.capacity) * 100 : 0)}%` }} /></span></div></li>; })}</ul> : <div className="empty-state"><h3>No classes scheduled today</h3><p>There are no capacity or instructor details to monitor yet.</p></div>}</section>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "180ms" }}><StudioPulse stats={pulseStats} teachingLoad={teachingLoad} /><InstructorLeaderboard rows={instructorLeaderboard} /></div>
         </> : <div className="animate-fade-up">
+          <RealtimeRefresh table="time_off_requests" filter={`user_id=eq.${user.id}`} />
           {isLinkedInstructor ? <div className="staff-trainer-console">
+            <RealtimeRefresh table="class_change_requests" filter={`user_id=eq.${user.id}`} />
             <TrainerProfile name={trainerName} email={user.email ?? ""} certTier={trainerCertTier} />
             <div className="staff-lower-grid">
               <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} />
