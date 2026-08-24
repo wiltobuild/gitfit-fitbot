@@ -20,6 +20,7 @@ import { getMemberForUser, getMemberRetentionForInstructor, listInstructors, lis
 import { getClassesForInstructorInRange, getInstructorLeaderboard } from "@/lib/classes/queries";
 import { getClassRoster } from "@/lib/classes/roster";
 import { listOwnClassChangeRequests, listPendingClassChangeRequests } from "@/lib/class-changes/queries";
+import { listLatestPromoEvents } from "@/lib/promo-events/queries";
 import { getStudioDayStats } from "@/lib/classes/current-or-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -61,6 +62,7 @@ export default async function StaffPage() {
   let isLinkedInstructor = false;
   let trainerName = "Trainer";
   let instructors: InstructorOption[] = [];
+  let promoLabelByClassId: Record<string, string> = {};
 
   if (isManager) {
     try {
@@ -79,6 +81,19 @@ export default async function StaffPage() {
     const emailByAuthUserId = new Map<string, string>();
     for (const member of members) if (member.auth_user_id) emailByAuthUserId.set(member.auth_user_id, member.email);
     const identify = (id: string, profileName: string | null | undefined) => profileName || emailByAuthUserId.get(id) || "Team member";
+
+    try {
+      const events = await listLatestPromoEvents(supabase, classes.map((classRow) => classRow.id));
+      const promoterIds = [...new Set(events.map((event) => event.promotedBy))];
+      const nameByPromoterId = new Map<string, string>();
+      if (promoterIds.length) {
+        const { data: profiles, error: profilesError } = await supabase.from("profiles").select("id, full_name").in("id", promoterIds);
+        if (profilesError) throw profilesError;
+        for (const profile of profiles ?? []) nameByPromoterId.set(profile.id, identify(profile.id, profile.full_name));
+      }
+      const displayDateForPromo = (iso: string) => new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(iso));
+      promoLabelByClassId = Object.fromEntries(events.map((event) => [event.classId, `Promoted by ${nameByPromoterId.get(event.promotedBy) ?? identify(event.promotedBy, null)} · ${displayDateForPromo(event.createdAt)}`]));
+    } catch (error) { console.error("Unable to load promotion history", error); }
 
     try {
       const { data, error } = await supabase.from("time_off_requests").select("id, user_id, requested_date, reason").eq("status", "pending").order("created_at");
@@ -245,7 +260,7 @@ export default async function StaffPage() {
           <RealtimeRefresh table="time_off_requests" />
           <RealtimeRefresh table="class_change_requests" />
           <div className="staff-lower-grid animate-fade-up"><RequestsInbox initialRequests={pendingRequests} /><ClassChangeInbox initialRequests={pendingClassChangeRequests} /></div>
-          <LiveRegister classes={classes} instructors={instructors} currentClassId={currentClass?.id ?? null} nextClassId={nextClass?.id ?? null} today={todayString} />
+          <LiveRegister classes={classes} instructors={instructors} currentClassId={currentClass?.id ?? null} nextClassId={nextClass?.id ?? null} today={todayString} promoLabelByClassId={promoLabelByClassId} />
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "180ms" }}><StudioPulse stats={pulseStats} teachingLoad={teachingLoad} /><InstructorLeaderboard rows={instructorLeaderboard} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "240ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>

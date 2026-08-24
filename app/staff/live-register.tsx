@@ -79,7 +79,7 @@ function ClassForm({ instructors, initial, submitLabel, onCancel, onSubmit }: { 
   );
 }
 
-export function LiveRegister({ classes, instructors, currentClassId, nextClassId, today }: { classes: RegisterClass[]; instructors: InstructorOption[]; currentClassId: string | null; nextClassId: string | null; today: string }) {
+export function LiveRegister({ classes, instructors, currentClassId, nextClassId, today, promoLabelByClassId }: { classes: RegisterClass[]; instructors: InstructorOption[]; currentClassId: string | null; nextClassId: string | null; today: string; promoLabelByClassId: Record<string, string> }) {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -184,6 +184,7 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
                 <div className="staff-class-summary">
                   <strong>{classRow.name}{classRow.promoted ? <span className="badge badge-brand staff-class-promoted-badge">Promoted</span> : null}</strong>
                   <span>{formatTime(classRow.start_time)} · {classRow.instructor}</span>
+                  {classRow.promoted && promoLabelByClassId[classRow.id] ? <small className="staff-class-promo-trace">{promoLabelByClassId[classRow.id]}</small> : null}
                 </div>
                 <div className="staff-fill-unit">
                   <div className="staff-fill-label"><span className="staff-fill-status">{statusText}</span><strong>{classRow.booked_count}/{classRow.capacity}</strong></div>
