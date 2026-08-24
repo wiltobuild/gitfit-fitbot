@@ -251,13 +251,16 @@ export default async function StaffPage() {
             <RealtimeRefresh table="class_change_requests" filter={`user_id=eq.${user.id}`} />
             <TrainerProfile name={trainerName} email={user.email ?? ""} certTier={trainerCertTier} />
             <div className="staff-lower-grid">
-              <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} today={todayString} />
+              <div className="staff-trainer-side-stack">
+                <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} today={todayString} />
+                <RequestTimeOff />
+                <MyRequests requests={myRequests} />
+              </div>
               <div className="staff-trainer-side-stack">
                 <MyMembersRetention members={retentionMembers} lifecycleCounts={retentionCounts} />
                 <ClassChangeStatus requests={myClassChangeRequests} classLabelById={classLabelById} />
               </div>
             </div>
-            <div className="staff-lower-grid"><RequestTimeOff /><MyRequests requests={myRequests} /></div>
           </div> : <div className="staff-lower-grid"><RequestTimeOff /><MyRequests requests={myRequests} /></div>}
         </div>}
         <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: isManager ? "240ms" : "60ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>
