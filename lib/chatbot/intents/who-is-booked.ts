@@ -1,6 +1,7 @@
 import { resolveClassType, resolveDate, resolveInstructor, resolveTime } from "@/lib/chatbot/entity-extraction";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 import type { Intent } from "@/lib/chatbot/types";
+import { getClassRoster } from "@/lib/classes/roster";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type ClassRow = { id: string; name: string; type: string; instructor: string; class_date: string; start_time: string; capacity: number; booked_count: number };
@@ -35,17 +36,13 @@ export const whoIsBookedIntent: Intent = {
     if (error) return { reply: "I couldn't retrieve class bookings right now. Please try again shortly." }; if (!classes.length) return { reply: "I couldn't find a class matching that request." };
     if (classes.length > 1) return { reply: "I found a few possible classes.", card: { kind: "disambiguation", prompt: "Which class would you like the roster for?", options: classes.slice(0, 8).map((classRow) => ({ label: label(classRow), detail: `with ${classRow.instructor}`, sendMessage: `who is booked for ${classRow.type} on ${classRow.class_date} at ${label(classRow).split(", ")[1]} with ${classRow.instructor}` })) } };
     const classRow = classes[0];
-    const { data: bookings, error: bookingError } = await supabase.from("bookings").select("user_id").eq("class_id", classRow.id);
-    if (bookingError) return { reply: "I couldn't retrieve attendee names right now. Please try again shortly." };
-    const userIds = [...new Set((bookings ?? []).map((booking) => booking.user_id))];
-    const [{ data: members, error: memberError }, { data: profiles, error: profileError }] = await Promise.all([
-      userIds.length ? supabase.from("members").select("auth_user_id, full_name").in("auth_user_id", userIds) : Promise.resolve({ data: [], error: null }),
-      userIds.length ? supabase.from("profiles").select("id, full_name").in("id", userIds) : Promise.resolve({ data: [], error: null })
-    ]);
-    if (memberError || profileError) return { reply: "I couldn't retrieve attendee names right now. Please try again shortly." };
-    const memberNames = new Map((members ?? []).filter((member) => member.auth_user_id && member.full_name).map((member) => [member.auth_user_id!, member.full_name!]));
-    const profileNames = new Map((profiles ?? []).filter((profile) => profile.full_name).map((profile) => [profile.id, profile.full_name!]));
-    const names = (bookings ?? []).map((booking) => memberNames.get(booking.user_id) ?? profileNames.get(booking.user_id)).filter((name): name is string => Boolean(name));
+    let attendees;
+    try {
+      attendees = await getClassRoster(supabase, classRow.id);
+    } catch {
+      return { reply: "I couldn't retrieve attendee names right now. Please try again shortly." };
+    }
+    const names = attendees.map((attendee) => attendee.name).filter((name): name is string => Boolean(name));
     const namedCount = names.length; const bookingSummary = `${label(classRow)} has ${classRow.booked_count} of ${classRow.capacity} spots booked`;
     const reply = namedCount === classRow.booked_count ? (namedCount ? `${bookingSummary}. Attendees: ${names.join(", ")}.` : `${bookingSummary}.`) : namedCount > 0 ? `${bookingSummary}. ${namedCount} attendee(s) on record: ${names.join(", ")}.` : `${bookingSummary}, but no attendee names are on record for this class.`;
     return { reply, resolvedEntities: { classId: classRow.id, date: classRow.class_date } };
