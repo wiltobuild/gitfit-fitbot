@@ -1,4 +1,3 @@
-import { InstructorAvatar } from "@/app/components/instructor-avatar";
 import SiteNav from "@/app/components/site-nav";
 import { MemberSearch } from "@/app/staff/member-search";
 import { StaffFitBotTiles } from "@/app/staff/fitbot-tiles";
@@ -15,16 +14,16 @@ import { ClassChangeStatus, type MyClassChangeRequest } from "@/app/staff/class-
 import { MyMembersRetention } from "@/app/staff/my-members-retention";
 import { ClassChangeInbox, type PendingClassChangeRequest } from "@/app/staff/class-change-inbox";
 import { InstructorLeaderboard, type LeaderboardRow } from "@/app/staff/instructor-leaderboard";
+import { LiveRegister, type InstructorOption, type RegisterClass } from "@/app/staff/live-register";
 import { requireRoleOrRedirect } from "@/lib/auth/session";
-import { getMemberForUser, getMemberRetentionForInstructor, listMembersForStaff } from "@/lib/members/queries";
+import { getMemberForUser, getMemberRetentionForInstructor, listInstructors, listMembersForStaff } from "@/lib/members/queries";
 import { getClassesForInstructorInRange, getInstructorLeaderboard } from "@/lib/classes/queries";
 import { getClassRoster } from "@/lib/classes/roster";
 import { listOwnClassChangeRequests, listPendingClassChangeRequests } from "@/lib/class-changes/queries";
-import { fillLevel } from "@/lib/classes/fill-level";
 import { getStudioDayStats } from "@/lib/classes/current-or-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type StudioClass = { id: string; name: string; instructor: string; class_date: string; start_time: string; duration_minutes: number; capacity: number; booked_count: number };
+type StudioClass = RegisterClass;
 type WeekClass = { instructor: string; capacity: number; booked_count: number };
 
 function formatDate(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
@@ -38,7 +37,7 @@ export default async function StaffPage() {
   let classes: StudioClass[] = [];
 
   try {
-    const { data, error } = await supabase.from("classes").select("id, name, instructor, class_date, start_time, duration_minutes, capacity, booked_count").eq("class_date", todayString).order("start_time");
+    const { data, error } = await supabase.from("classes").select("id, name, type, instructor, instructor_member_id, class_date, start_time, duration_minutes, capacity, booked_count, promoted").eq("class_date", todayString).order("start_time");
     if (error) throw error;
     classes = data ?? [];
   } catch (error) { console.error("Unable to load today's studio classes", error); }
@@ -61,8 +60,13 @@ export default async function StaffPage() {
   let classLabelById: Record<string, string> = {};
   let isLinkedInstructor = false;
   let trainerName = "Trainer";
+  let instructors: InstructorOption[] = [];
 
   if (isManager) {
+    try {
+      instructors = await listInstructors(supabase);
+    } catch (error) { console.error("Unable to load instructors for class management", error); }
+
     let members: Awaited<ReturnType<typeof listMembersForStaff>>["data"] = [];
     try {
       const { data, error } = await listMembersForStaff(supabase);
@@ -241,8 +245,7 @@ export default async function StaffPage() {
           <RealtimeRefresh table="time_off_requests" />
           <RealtimeRefresh table="class_change_requests" />
           <div className="staff-lower-grid animate-fade-up"><RequestsInbox initialRequests={pendingRequests} /><ClassChangeInbox initialRequests={pendingClassChangeRequests} /></div>
-          <section className="surface-card staff-today-panel animate-fade-up" style={{ animationDelay: "60ms" }} aria-labelledby="today-studio-title"><div className="staff-panel-heading"><div><p className="eyebrow"><span /> Live register</p><h2 id="today-studio-title">Today at the studio</h2></div><p>{classes.length ? `${classes.length} classes scheduled` : "No schedule to review"}</p></div>
-            {classes.length ? <ul className="staff-class-list">{classes.map((classRow) => { const level = fillLevel(classRow.booked_count, classRow.capacity); const isPriority = classRow.id === currentClass?.id || classRow.id === nextClass?.id; const spots = classRow.capacity - classRow.booked_count; const statusText = spots <= 0 ? "Class full" : spots === 1 ? "Only 1 spot left" : `${spots} spots open`; return <li className={`staff-class-row staff-fill-${level}${isPriority ? " staff-class-priority" : ""}`} key={classRow.id}><InstructorAvatar name={classRow.instructor} size={40} /><div className="staff-class-summary"><strong>{classRow.name}</strong><span>{formatTime(classRow.start_time)} · {classRow.instructor}</span></div><div className="staff-fill-unit"><div className="staff-fill-label"><span className="staff-fill-status">{statusText}</span><strong>{classRow.booked_count}/{classRow.capacity}</strong></div><span className="staff-fill-track" aria-label={`${classRow.booked_count} of ${classRow.capacity} spots booked`}><span style={{ width: `${Math.min(100, classRow.capacity ? (classRow.booked_count / classRow.capacity) * 100 : 0)}%` }} /></span></div></li>; })}</ul> : <div className="empty-state"><h3>No classes scheduled today</h3><p>There are no capacity or instructor details to monitor yet.</p></div>}</section>
+          <LiveRegister classes={classes} instructors={instructors} currentClassId={currentClass?.id ?? null} nextClassId={nextClass?.id ?? null} today={todayString} />
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "180ms" }}><StudioPulse stats={pulseStats} teachingLoad={teachingLoad} /><InstructorLeaderboard rows={instructorLeaderboard} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "240ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>

@@ -13,10 +13,11 @@ export type StudioClass = {
   capacity: number;
   booked_count: number;
   instructor_member_id: string | null;
+  promoted: boolean;
 };
 
 const classSelect =
-  "id, name, type, instructor, class_date, start_time, duration_minutes, capacity, booked_count, instructor_member_id";
+  "id, name, type, instructor, class_date, start_time, duration_minutes, capacity, booked_count, instructor_member_id, promoted";
 
 export async function getUpcomingClasses(
   supabase: SupabaseServerClient,
@@ -185,4 +186,59 @@ export async function getInstructorBookingRateTrend(
     thisWeekFillPercent: fillPercent(thisWeekMonday, thisWeekSunday),
     lastWeekFillPercent: fillPercent(lastWeekMonday, lastWeekSunday)
   };
+}
+
+export type ClassInput = {
+  name: string;
+  type: string;
+  instructorMemberId: string;
+  instructorName: string;
+  classDate: string;
+  startTime: string;
+  durationMinutes: number;
+  capacity: number;
+};
+
+export async function createClass(supabase: SupabaseServerClient, input: ClassInput) {
+  const id = `class_${crypto.randomUUID()}`;
+  const { error } = await supabase.from("classes").insert({
+    id,
+    name: input.name,
+    type: input.type,
+    instructor: input.instructorName,
+    instructor_member_id: input.instructorMemberId,
+    class_date: input.classDate,
+    start_time: input.startTime,
+    duration_minutes: input.durationMinutes,
+    capacity: input.capacity
+  });
+  if (error) throw error;
+  return id;
+}
+
+export async function updateClass(supabase: SupabaseServerClient, classId: string, input: ClassInput) {
+  const { error } = await supabase
+    .from("classes")
+    .update({
+      name: input.name,
+      type: input.type,
+      instructor: input.instructorName,
+      instructor_member_id: input.instructorMemberId,
+      class_date: input.classDate,
+      start_time: input.startTime,
+      duration_minutes: input.durationMinutes,
+      capacity: input.capacity
+    })
+    .eq("id", classId);
+  if (error) throw error;
+}
+
+export async function deleteClass(supabase: SupabaseServerClient, classId: string) {
+  const { error } = await supabase.from("classes").delete().eq("id", classId);
+  if (error) throw error;
+}
+
+export async function setClassPromoted(supabase: SupabaseServerClient, classId: string, promoted: boolean) {
+  const { error } = await supabase.from("classes").update({ promoted }).eq("id", classId);
+  if (error) throw error;
 }

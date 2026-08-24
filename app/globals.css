@@ -237,6 +237,15 @@
 .staff-request-form { display:grid; gap:14px; margin-bottom:4px; }
 .staff-fitbot-text-hint { margin:14px 0 0; color:var(--color-muted); font-size:12px; }
 
+/* Phase C — class create/edit form, shared between the "Create class"
+   toggle and each row's inline "Edit" state. */
+.staff-class-form { display:grid; gap:14px; padding:18px; margin-bottom:16px; border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface-subtle); }
+.staff-class-form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+.staff-class-form-actions { display:flex; justify-content:flex-end; gap:8px; }
+.staff-class-form-row { padding:0; border:0; background:transparent; }
+.staff-class-form-row .staff-class-form { margin-bottom:0; }
+.staff-class-promoted-badge { margin-left:8px; vertical-align:middle; }
+
 /* ---------------------------------------------------------------------
    Form fields
 --------------------------------------------------------------------- */

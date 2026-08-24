@@ -34,6 +34,14 @@ export async function getMemberById(supabase: SupabaseServerClient, memberId: st
   return supabase.from("members").select(memberSelect).eq("id", memberId).maybeSingle();
 }
 
+export type InstructorOption = { id: string; full_name: string | null };
+
+export async function listInstructors(supabase: SupabaseServerClient) {
+  const { data, error } = await supabase.from("members").select("id, full_name").eq("is_instructor", true).order("full_name");
+  if (error) throw error;
+  return (data ?? []) as InstructorOption[];
+}
+
 export async function searchMembers(supabase: SupabaseServerClient, searchTerm: string) {
   const { data, error } = await supabase.rpc("search_members", { search_term: searchTerm });
   return { data: (data ?? []) as MemberRow[], error };
