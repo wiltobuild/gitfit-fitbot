@@ -143,6 +143,8 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
                           <li key={attendee.userId}>{attendee.name ?? attendee.email ?? "Member"}</li>
                         ))}
                       </ul>
+                    ) : classRow.booked_count > 0 ? (
+                      <p>{classRow.booked_count} {classRow.booked_count === 1 ? "spot is" : "spots are"} booked, but no attendee records are on file for this class.</p>
                     ) : (
                       <p>No attendees booked yet.</p>
                     )}
