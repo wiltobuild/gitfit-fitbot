@@ -13,3 +13,7 @@ supabase/.temp
 # Design reference only — not part of this app, delete once the visual
 # redirect is done (see docs/agent/decisions.md, 2026-08-19).
 gitfit-booking-static-package/
+
+# Local handoff/context doc for the agent working this branch — never
+# existed on main, kept out so merging doesn't introduce it there.
+GitFit Product B - Context for Claude Code.md

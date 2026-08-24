@@ -18,7 +18,6 @@ import { LiveRegister, type InstructorOption, type RegisterClass } from "@/app/s
 import { requireRoleOrRedirect } from "@/lib/auth/session";
 import { getMemberForUser, getMemberRetentionForInstructor, listInstructors, listMembersForStaff } from "@/lib/members/queries";
 import { getClassesForInstructorInRange, getInstructorLeaderboard } from "@/lib/classes/queries";
-import { getClassRoster } from "@/lib/classes/roster";
 import { listOwnClassChangeRequests, listPendingClassChangeRequests } from "@/lib/class-changes/queries";
 import { listLatestPromoEvents } from "@/lib/promo-events/queries";
 import { getStudioDayStats } from "@/lib/classes/current-or-next";
@@ -217,9 +216,10 @@ export default async function StaffPage() {
       const scheduleEnd = new Date(today); scheduleEnd.setDate(today.getDate() + 13);
 
       try {
-        const upcoming = await getClassesForInstructorInRange(supabase, instructorMember.id, { from: todayString, to: formatDate(scheduleEnd) });
-        const rosters = await Promise.all(upcoming.map((classRow) => getClassRoster(supabase, classRow.id).catch(() => [])));
-        scheduleClasses = upcoming.map((classRow, index) => ({ ...classRow, attendees: rosters[index] }));
+        // Rosters are fetched on demand (see MySchedule) when a trainer
+        // actually expands a class, not pre-fetched here for all ~20-30
+        // classes in the window on every page load.
+        scheduleClasses = await getClassesForInstructorInRange(supabase, instructorMember.id, { from: todayString, to: formatDate(scheduleEnd) });
         for (const classRow of scheduleClasses) classLabelById[classRow.id] = `${classRow.name} — ${formatTime(classRow.start_time)}`;
       } catch (error) { console.error("Unable to load the trainer's schedule", error); }
 
