@@ -12,8 +12,8 @@ export type ScheduleClass = {
   start_time: string;
   capacity: number;
   booked_count: number;
-  attendees: ScheduleAttendee[];
 };
+type RosterState = { status: "loading" } | { status: "loaded"; attendees: ScheduleAttendee[] } | { status: "error" };
 
 function formatDayShort(date: string) {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(new Date(`${date}T12:00:00`));
@@ -44,12 +44,28 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
   const [showSecondWeek, setShowSecondWeek] = useState(false);
   const [activeDate, setActiveDate] = useState(today);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [rosterByClassId, setRosterByClassId] = useState<Record<string, RosterState>>({});
   const [actionState, setActionState] = useState<{ id: string; type: "swap" | "cancel" } | null>(null);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState<Record<string, "swap" | "cancel">>({});
 
   const visibleDates = showSecondWeek ? dates : dates.slice(0, 7);
   const classesForDay = classes.filter((classRow) => classRow.class_date === activeDate);
+
+  async function toggleRoster(classId: string) {
+    if (expandedId === classId) { setExpandedId(null); return; }
+    setExpandedId(classId);
+    if (rosterByClassId[classId]) return;
+    setRosterByClassId((current) => ({ ...current, [classId]: { status: "loading" } }));
+    try {
+      const response = await fetch(`/api/staff/classes/${classId}/roster`);
+      if (!response.ok) throw new Error("Unable to load roster");
+      const data = (await response.json()) as { attendees: ScheduleAttendee[] };
+      setRosterByClassId((current) => ({ ...current, [classId]: { status: "loaded", attendees: data.attendees } }));
+    } catch {
+      setRosterByClassId((current) => ({ ...current, [classId]: { status: "error" } }));
+    }
+  }
 
   async function requestChange(classId: string, type: "swap" | "cancel") {
     setActionState({ id: classId, type });
@@ -101,6 +117,7 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
           {classesForDay.map((classRow) => {
             const level = fillLevel(classRow.booked_count, classRow.capacity);
             const isExpanded = expandedId === classRow.id;
+            const roster = rosterByClassId[classRow.id];
             const requestedType = submitted[classRow.id] ?? pendingRequestTypeByClassId[classRow.id];
             const isActing = actionState?.id === classRow.id;
             return (
@@ -112,7 +129,7 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
                   </div>
                   <div className="staff-fill-unit">
                     <div className="staff-fill-label">
-                      <button type="button" className="staff-fitbot-text" onClick={() => setExpandedId(isExpanded ? null : classRow.id)}>
+                      <button type="button" className="staff-fitbot-text" onClick={() => void toggleRoster(classRow.id)}>
                         {classRow.booked_count}/{classRow.capacity} booked
                       </button>
                     </div>
@@ -137,9 +154,13 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
                 </div>
                 {isExpanded ? (
                   <div className="staff-schedule-roster" aria-label={`Attendees for ${classRow.name}`}>
-                    {classRow.attendees.length ? (
+                    {!roster || roster.status === "loading" ? (
+                      <p>Loading attendees…</p>
+                    ) : roster.status === "error" ? (
+                      <p>Unable to load attendees right now.</p>
+                    ) : roster.attendees.length ? (
                       <ul>
-                        {classRow.attendees.map((attendee) => (
+                        {roster.attendees.map((attendee) => (
                           <li key={attendee.userId}>{attendee.name ?? attendee.email ?? "Member"}</li>
                         ))}
                       </ul>
