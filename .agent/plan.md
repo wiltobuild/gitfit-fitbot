@@ -87,7 +87,7 @@ also cascades away pending class_change_requests silently.
     lib/classes/roster.ts.
   - Requirement test: tests/agent_requirements/log-class-cancellation.test.ts (GREEN)
 
-- [ ] 5. Auto-resolve pending class_change_requests before a class is deleted
+- [x] 5. Auto-resolve pending class_change_requests before a class is deleted
   - Do: Add a query helper that, given a class id and reviewer (admin) user
     id, denies every still-pending class_change_requests row for that class
     with a reason noting the class was canceled (overwrite the reason field
@@ -106,7 +106,7 @@ also cascades away pending class_change_requests silently.
     no pending requests asserts helper completes reporting 0, no error.
     `npm test` passes.
   - Touches: lib/class-changes/queries.ts (add function) or new file.
-  - Requirement test: (set by Author)
+  - Requirement test: tests/agent_requirements/deny-pending-requests-on-cancel.test.ts (GREEN)
 
 - [ ] 6. Wire cancellation flow into the delete route (log -> deny -> delete, in order)
   - Do: Change the delete route so before hard-deleting the class it (a)

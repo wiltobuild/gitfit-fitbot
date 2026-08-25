@@ -19,3 +19,9 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-24 22:03] [ORCHESTRATOR] step 4 — invoking cas VERIFY
 [2026-08-24 22:04] [CAS] step 4 verify — PASS, no blocking findings
 [2026-08-24 22:04] [ORCHESTRATOR] step 4 DONE, checkpointing
+[2026-08-24 22:06] [CAS] step 5 author — wrote tests/agent_requirements/deny-pending-requests-on-cancel.test.ts, confirmed RED
+[2026-08-24 22:06] [ORCHESTRATOR] step 5 attempt 1 — invoking dean
+[2026-08-24 22:06] [DEAN] step 5 attempt 1 — added denyPendingRequestsForCanceledClass to lib/class-changes/queries.ts
+[2026-08-24 22:06] [ORCHESTRATOR] step 5 — invoking cas VERIFY
+[2026-08-24 22:08] [CAS] step 5 verify — PASS, no blocking findings
+[2026-08-24 22:08] [ORCHESTRATOR] step 5 DONE, checkpointing
