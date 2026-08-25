@@ -134,7 +134,7 @@ also cascades away pending class_change_requests silently.
     composes helpers). Reuses steps 4 and 5.
   - Requirement test: tests/agent_requirements/cancel-flow-order.test.ts (GREEN)
 
-- [ ] 7. Surface canceled classes in the manager Activity Log
+- [x] 7. Surface canceled classes in the manager Activity Log
   - Do: Extend the manager Activity Log so canceled classes appear
     alongside resolved time-off requests: load recent class_cancellations
     rows in the staff page's manager branch, pass to ActivityLog, render
@@ -154,7 +154,7 @@ also cascades away pending class_change_requests silently.
     count, and time, without breaking existing time-off rendering.
   - Touches: app/staff/page.tsx, app/staff/activity-log.tsx. Possibly a
     small pure helper module.
-  - Requirement test: (set by Author, if applicable)
+  - Requirement test: tests/agent_requirements/activity-log-merge.test.ts (GREEN)
 
 ## Notes carried from planning
 - No existing test harness for DB-backed code (no live DB in CI, no mock

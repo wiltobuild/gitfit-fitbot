@@ -31,3 +31,9 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-24 22:11] [ORCHESTRATOR] step 6 — invoking cas VERIFY
 [2026-08-24 22:12] [CAS] step 6 verify — PASS; noted swallowed-error observability gap (pre-existing pattern, not blocking)
 [2026-08-24 22:12] [ORCHESTRATOR] step 6 DONE, checkpointing
+[2026-08-24 22:14] [CAS] step 7 author — found genuine seam, wrote tests/agent_requirements/activity-log-merge.test.ts, confirmed RED
+[2026-08-24 22:14] [ORCHESTRATOR] step 7 attempt 1 — invoking dean
+[2026-08-24 22:16] [DEAN] step 7 attempt 1 — added mergeActivityItems, wired class_cancellations into staff page + ActivityLog
+[2026-08-24 22:16] [ORCHESTRATOR] step 7 — invoking cas VERIFY
+[2026-08-24 22:17] [CAS] step 7 verify — PASS, all 5 requirement tests green, no blocking findings
+[2026-08-24 22:17] [ORCHESTRATOR] step 7 DONE, checkpointing — all 7 steps of batch 1 complete

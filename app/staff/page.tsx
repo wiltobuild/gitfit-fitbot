@@ -7,7 +7,7 @@ import { RequestTimeOff } from "@/app/staff/request-time-off";
 import { RealtimeRefresh } from "@/app/components/realtime-refresh";
 import { StudioPulse, type PulseStat, type TeachingLoadRow } from "@/app/staff/studio-pulse";
 import { AtRiskMembers, type AtRiskMember } from "@/app/staff/at-risk-members";
-import { ActivityLog, type ActivityEntry } from "@/app/staff/activity-log";
+import { ActivityLog, type ActivityEntry, type CancellationEntry } from "@/app/staff/activity-log";
 import { TrainerProfile } from "@/app/staff/trainer-profile";
 import { MySchedule, type ScheduleClass } from "@/app/staff/my-schedule";
 import { ClassChangeStatus, type MyClassChangeRequest } from "@/app/staff/class-change-status";
@@ -49,6 +49,7 @@ export default async function StaffPage() {
   let atRiskMembers: AtRiskMember[] = [];
   let atRiskMembersTotal = 0;
   let activityEntries: ActivityEntry[] = [];
+  let cancellationEntries: CancellationEntry[] = [];
   let pendingClassChangeRequests: PendingClassChangeRequest[] = [];
   let instructorLeaderboard: LeaderboardRow[] = [];
   let trainerCertTier: string | null = null;
@@ -195,6 +196,26 @@ export default async function StaffPage() {
         reviewed_at: row.reviewed_at,
       }));
     } catch (error) { console.error("Unable to load the activity log", error); }
+
+    try {
+      const { data, error } = await supabase.from("class_cancellations").select("id, class_id, class_name, class_date, start_time, canceled_by, booked_count, roster, created_at").order("created_at", { ascending: false }).limit(10);
+      if (error) throw error;
+      const rows = data ?? [];
+      const cancelerIds = [...new Set(rows.map((row) => row.canceled_by))];
+      const nameByCancelerId = new Map<string, string>();
+      if (cancelerIds.length) {
+        const { data: profiles, error: profilesError } = await supabase.from("profiles").select("id, full_name").in("id", cancelerIds);
+        if (profilesError) throw profilesError;
+        for (const profile of profiles ?? []) nameByCancelerId.set(profile.id, identify(profile.id, profile.full_name));
+      }
+      cancellationEntries = rows.map((row) => ({
+        id: row.id,
+        class_label: `${row.class_name} — ${displayDate(row.class_date)}, ${formatTime(row.start_time)}`,
+        canceler_name: nameByCancelerId.get(row.canceled_by) ?? identify(row.canceled_by, null),
+        booked_count: row.booked_count,
+        created_at: row.created_at,
+      }));
+    } catch (error) { console.error("Unable to load canceled class history", error); }
   } else {
     try {
       const { data, error } = await supabase.from("time_off_requests").select("id, requested_date, reason, status").eq("user_id", user.id).order("created_at", { ascending: false });
@@ -261,7 +282,7 @@ export default async function StaffPage() {
           <RealtimeRefresh table="class_change_requests" />
           <div className="staff-lower-grid animate-fade-up"><RequestsInbox initialRequests={pendingRequests} /><ClassChangeInbox initialRequests={pendingClassChangeRequests} /></div>
           <LiveRegister classes={classes} instructors={instructors} currentClassId={currentClass?.id ?? null} nextClassId={nextClass?.id ?? null} today={todayString} promoLabelByClassId={promoLabelByClassId} />
-          <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} /></div>
+          <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} cancellations={cancellationEntries} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "180ms" }}><StudioPulse stats={pulseStats} teachingLoad={teachingLoad} /><InstructorLeaderboard rows={instructorLeaderboard} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "240ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>
         </> : <div className="animate-fade-up">
