@@ -280,6 +280,7 @@ export default async function StaffPage() {
         {isManager ? <>
           <RealtimeRefresh table="time_off_requests" />
           <RealtimeRefresh table="class_change_requests" />
+          <RealtimeRefresh table="classes" />
           <div className="staff-lower-grid animate-fade-up"><RequestsInbox initialRequests={pendingRequests} /><ClassChangeInbox initialRequests={pendingClassChangeRequests} /></div>
           <LiveRegister classes={classes} instructors={instructors} currentClassId={currentClass?.id ?? null} nextClassId={nextClass?.id ?? null} today={todayString} promoLabelByClassId={promoLabelByClassId} />
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} cancellations={cancellationEntries} /></div>

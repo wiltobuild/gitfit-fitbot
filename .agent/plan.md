@@ -21,7 +21,7 @@ manual reload. Dashboards explicitly out of scope per user decision.
     build passes.
   - Touches: supabase/migrations/0025_realtime_classes.sql (new).
 
-- [ ] 2. Wire live refresh into the Admin Live Register (unfiltered)
+- [x] 2. Wire live refresh into the Admin Live Register (unfiltered)
   - Do: In app/staff/page.tsx manager branch (isManager block, alongside
     existing RealtimeRefresh time_off_requests/class_change_requests
     instances), render `<RealtimeRefresh table="classes" />` (no filter).

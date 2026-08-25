@@ -65,3 +65,7 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-25 11:15] [ORCHESTRATOR] step 1 — invoking cas VERIFY
 [2026-08-25 11:16] [CAS] step 1 verify — PASS, no blocking findings
 [2026-08-25 11:16] [ORCHESTRATOR] step 1 DONE, checkpointing
+[2026-08-25 11:17] [DEAN] step 2 attempt 1 — added RealtimeRefresh table=classes to manager branch
+[2026-08-25 11:17] [ORCHESTRATOR] step 2 — invoking cas VERIFY
+[2026-08-25 11:18] [CAS] step 2 verify — PASS; noted migration 0025 must actually be applied to the live DB for this to work end-to-end (check before final live-check)
+[2026-08-25 11:18] [ORCHESTRATOR] step 2 DONE, checkpointing
