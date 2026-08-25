@@ -60,3 +60,8 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-25 10:41] [ORCHESTRATOR] batch4 (manual) — extracted cohortBoundaries to lib/retention/cohort-boundaries.ts, fixed day-14 overlap (cohort 2 minDays 14->15); npm test 27/27, build/lint clean
 [2026-08-25 10:41] [ORCHESTRATOR] batch 4 STATUS: COMPLETE — all 4 audit batches done
 [2026-08-25 10:56] [ORCHESTRATOR] fixed .staff-activity-text truncation (nowrap+ellipsis -> normal+break-word), align-items center->flex-start; build/lint clean
+[2026-08-25 11:14] [ORCHESTRATOR] realtime-booking-updates plan transcribed (5 steps), STATUS: ACTIVE, starting step 1 (DDL, no author needed)
+[2026-08-25 11:15] [DEAN] step 1 attempt 1 — wrote supabase/migrations/0025_realtime_classes.sql
+[2026-08-25 11:15] [ORCHESTRATOR] step 1 — invoking cas VERIFY
+[2026-08-25 11:16] [CAS] step 1 verify — PASS, no blocking findings
+[2026-08-25 11:16] [ORCHESTRATOR] step 1 DONE, checkpointing
