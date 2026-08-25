@@ -173,6 +173,53 @@ check at the natural halfway point.
 
 **Approved by**: user
 
+## 2026-08-19 — Operations Dashboard (Product B) work happens on a feature branch, not main
+
+Work for the `operations-dashboard` task (role split into trainer/manager,
+request approval, class management, promotion/certs — see
+`docs/tasks/operations-dashboard/`) happens on a dedicated `operations-dashboard`
+branch, diverging from the earlier "main branch, no feature branches by
+default" git-strategy decision above for this task specifically.
+
+**Why**: User's explicit instruction. This task's owner (the user) is
+personally, individually graded on the Operations Dashboard piece within
+the shared suite repo — an isolated branch keeps that work reviewable and
+revertible independent of whatever else lands on `main` from the rest of
+the suite.
+
+**Approved by**: user
+
+## 2026-08-19 — Phase A implementation paused for a visual-design redirect
+
+Codex handoff for `operations-dashboard` Phase A (`plan.md`, manager-flag
+migration — plan was written and awaiting sign-off) is on hold. User
+surfaced reference screenshots of a "GitFit Yoga" design (gradient accent
+system, richer instructor/class cards, capacity-bar styling, credit/pass
+UI chrome) and wants the live app's visual language to move toward it.
+Source not yet identified — confirmed via grep it is **not**
+`public/appointments-prototype.html` (title reads "Pulse Studio - Member
+Booking," no matching strings, and the live app no longer references that
+file at all). User will locate and provide the actual source (URL or
+file) before any redesign work starts.
+
+Scope, as given: **visual language only** — gradients, card treatments,
+color/typography, capacity-bar styling — applied to the app's current
+structure. Explicitly **not** adopting the credit/class-pass booking model
+shown in the reference (`5/8 credits left`, `Reserve Spot (1 Credit)`) —
+that would be a real schema/booking-logic change, not styling, and was
+turned down for now.
+
+**Why**: User's explicit instruction — this takes priority over Phase A
+until the design direction is sorted out.
+
+**Approved by**: user
+
+**Next step**: resume Phase A approval once the design-redirect work is
+scoped or shelved — plan.md is unchanged and still valid, just not handed
+to Codex yet. **Update**: `operations-dashboard/plan.md`'s proposed
+migration also needs renumbering — `0011` and `0012` are now taken by the
+`members` table work merged from `main` (next entry below).
+
 ## 2026-08-19 — `members` table + outreach retarget (0011, 0012) applied to live Supabase
 
 Ran both migrations directly against the live database (user supplied the
@@ -190,5 +237,40 @@ this session).
 
 **Why**: User asked to run the already-approved shared-member-data schema
 change directly rather than pasting into the SQL Editor.
+
+**Approved by**: user
+
+## 2026-08-20 — Phase A (`is_manager` flag): approved, implemented, then reverted — admin role already covers it
+
+Merged latest `main` into `operations-dashboard` first (admin-role +
+Fitbot capability-expansion work, migrations `0013_members_by_attribute_
+search.sql`/`0014_admin_role.sql`, commit `472ec26`) — zero conflicts.
+That merge took the `0013` slot Phase A's plan had been using.
+
+User approved a boolean `is_manager` flag on `profiles` (with an
+admin-superset fix to `is_manager(uid)`, needed because the plan's
+original version would have excluded admins from access `0014` had just
+granted them). Implemented directly (no `codex` CLI in this environment):
+migration `0015_manager_flag.sql` + `lib/auth/session.ts`
+(`SessionUser.isManager`, `requireManagerOrRedirect`/`Throw`). `npm run
+lint`/`build` both clean. Never applied to the live database.
+
+**Then reverted, same session**: user pointed out the flag was
+redundant — `role = 'admin'` (from `0014`) already *is* the manager tier,
+`role = 'staff'` already *is* the trainer tier. A separate `is_manager`
+boolean would just be a second way to encode the same distinction `0014`
+already made. Deleted `0015_manager_flag.sql`, reverted `lib/auth/
+session.ts` to its post-`0014`-merge state via `git checkout`. Nothing
+had been committed or applied to Supabase, so the revert is total — no
+residue anywhere.
+
+**Where Phase A actually landed**: it's done, via `0014`, already merged.
+Phases B–D's manager-only gates should check `is_admin(uid)` in SQL /
+`session.role === "admin"` in code — see the superseded-plan note at the
+top of `operations-dashboard/plan.md` for detail.
+
+**Why**: Avoid building a second, redundant permission axis when the
+admin-role merge already solved the trainer/manager split the day before
+this was raised.
 
 **Approved by**: user

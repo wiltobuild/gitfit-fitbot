@@ -1,0 +1,10 @@
+# Excluded from the Vercel deploy upload only — none of this is imported
+# by app/ or lib/ at runtime, it's all planning/reference/ops tooling.
+# Everything here still stays tracked in git for team traceability
+# (see docs/agent/decisions.md, "Documentation level: Standard").
+docs/
+supabase/
+gitfit-booking-static-package/
+README.md
+CLAUDE.md
+GitFit Product B - Context for Claude Code.md
