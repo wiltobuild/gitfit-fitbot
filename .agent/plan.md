@@ -48,7 +48,7 @@ reply instead of prompting sign-in.
     new file under lib/chatbot/.
   - Requirement test: tests/agent_requirements/interpret-chat-response.test.ts (GREEN)
 
-- [ ] 2. Add server-side auth gate to app/chat/page.tsx
+- [x] 2. Add server-side auth gate to app/chat/page.tsx
   - Do: Convert app/chat/page.tsx to an async server component that calls
     requireUserOrRedirect() from lib/auth/session.ts before rendering
     ChatExperience, mirroring app/appointments/page.tsx /
@@ -71,7 +71,7 @@ reply instead of prompting sign-in.
     unauthenticated returns 307 to /sign-in, matching /appointments.
     `npm run build` passes.
   - Touches: app/chat/page.tsx.
-  - Requirement test: (set by Author)
+  - Requirement test: tests/agent_requirements/chat-page-auth-gate.test.ts (GREEN)
 
 ## Notes carried from planning
 - Test env is vitest `environment: "node"`, no jsdom/RTL — house style is

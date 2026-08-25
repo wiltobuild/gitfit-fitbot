@@ -46,3 +46,9 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-24 22:24] [ORCHESTRATOR] batch2 step 1 — invoking cas VERIFY
 [2026-08-24 22:25] [CAS] batch2 step 1 verify — PASS, no blocking findings
 [2026-08-24 22:25] [ORCHESTRATOR] batch2 step 1 DONE, checkpointing
+[2026-08-24 22:27] [CAS] batch2 step 2 author — got real behavioral coverage via vi.mock, wrote tests/agent_requirements/chat-page-auth-gate.test.ts, confirmed RED
+[2026-08-24 22:27] [ORCHESTRATOR] batch2 step 2 attempt 1 — invoking dean
+[2026-08-24 22:28] [DEAN] batch2 step 2 attempt 1 — app/chat/page.tsx now async, awaits requireUserOrRedirect; live curl confirms 307
+[2026-08-24 22:28] [ORCHESTRATOR] batch2 step 2 — invoking cas VERIFY
+[2026-08-24 22:30] [CAS] batch2 step 2 verify — PASS, no blocking findings, live curl confirms fix
+[2026-08-24 22:30] [ORCHESTRATOR] batch2 step 2 DONE, checkpointing — batch 2 all steps complete
