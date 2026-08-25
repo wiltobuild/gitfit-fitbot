@@ -61,6 +61,7 @@ export default async function StaffPage() {
   let classLabelById: Record<string, string> = {};
   let isLinkedInstructor = false;
   let trainerName = "Trainer";
+  let trainerMemberId: string | null = null;
   let instructors: InstructorOption[] = [];
   let promoLabelByClassId: Record<string, string> = {};
 
@@ -234,6 +235,7 @@ export default async function StaffPage() {
       isLinkedInstructor = true;
       trainerName = instructorMember.full_name || "Trainer";
       trainerCertTier = instructorMember.cert_tier ?? null;
+      trainerMemberId = instructorMember.id;
       const scheduleEnd = new Date(today); scheduleEnd.setDate(today.getDate() + 13);
 
       try {

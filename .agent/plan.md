@@ -34,7 +34,7 @@ manual reload. Dashboards explicitly out of scope per user decision.
   - Touches: app/staff/page.tsx (manager branch only).
   - Depends on: step 1 (inert without it, but can land in either order).
 
-- [ ] 3. Thread the trainer's member id into the render scope
+- [x] 3. Thread the trainer's member id into the render scope
   - Do: In app/staff/page.tsx trainer (isLinkedInstructor/else) branch,
     make the instructor's own members.id (instructorMember.id) available
     where step 4's RealtimeRefresh filter needs it. If already trivially

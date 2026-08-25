@@ -69,3 +69,7 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-25 11:17] [ORCHESTRATOR] step 2 — invoking cas VERIFY
 [2026-08-25 11:18] [CAS] step 2 verify — PASS; noted migration 0025 must actually be applied to the live DB for this to work end-to-end (check before final live-check)
 [2026-08-25 11:18] [ORCHESTRATOR] step 2 DONE, checkpointing
+[2026-08-25 11:20] [DEAN] step 3 attempt 1 — added trainerMemberId, threading was genuinely needed (instructorMember was block-scoped)
+[2026-08-25 11:20] [ORCHESTRATOR] step 3 — invoking cas VERIFY
+[2026-08-25 11:21] [CAS] step 3 verify — PASS, threading confirmed genuinely required
+[2026-08-25 11:21] [ORCHESTRATOR] step 3 DONE, checkpointing
