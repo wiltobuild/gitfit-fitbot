@@ -1,6 +1,17 @@
+# gitfit-fitbot
+
 This project follows the global defaults in `~/.claude/CLAUDE.md`.
 
-Deviations specific to this project:
+## Commands
+- test: `npm test` (vitest; run in CI/non-watch mode — `npm run test:watch`
+  for local iteration). Framework added 2026-08-24; no test files exist yet,
+  so a fresh checkout will report "no test files found" until the first one
+  is written.
+- build: `npm run build` (Next.js)
+- lint: `npm run lint` (eslint)
+- typecheck: `npx tsc --noEmit`
+
+## Constraints
 - Documentation level: **Standard** — every task gets a full
   `docs/tasks/<slug>/` artifact set (see `docs/tasks/README.md`).
 - Extra approval gate: any change to the shared contract (tool manifest
@@ -9,7 +20,10 @@ Deviations specific to this project:
   and elevated review after, since it breaks teammates' products if changed
   silently.
 - Ship date: Friday, Aug 28, 2026.
+- Secrets (Supabase keys, JWT secret) must never be committed — use
+  gitignored `.env` files.
 
+## Notes
 New tasks: run `/start-task`. See `docs/tasks/README.md` for the per-task
 artifact structure. Full project context: `docs/agent/project-profile.md`
 and `docs/build-doc.md`.
