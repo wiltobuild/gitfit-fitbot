@@ -56,3 +56,6 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-24 22:31] [ORCHESTRATOR] batch 2 STATUS: COMPLETE
 [2026-08-25 10:33] [ORCHESTRATOR] batch3 (manual, no subagent loop) — added boxing/pilates/strength to CLASS_TYPES + 4 scoring regexes; fixed UTC-date bug in 4 files (getMemberWeeklyActivity + recommend-class/my-goals/instructor-classes via exported todayDate/formatDateForQuery); npm test 25/25, build/lint/tsc clean
 [2026-08-25 10:33] [ORCHESTRATOR] batch 3 STATUS: COMPLETE
+[2026-08-25 10:40] [ORCHESTRATOR] batch 4 plan transcribed (1 step, manual), STATUS: ACTIVE
+[2026-08-25 10:41] [ORCHESTRATOR] batch4 (manual) — extracted cohortBoundaries to lib/retention/cohort-boundaries.ts, fixed day-14 overlap (cohort 2 minDays 14->15); npm test 27/27, build/lint clean
+[2026-08-25 10:41] [ORCHESTRATOR] batch 4 STATUS: COMPLETE — all 4 audit batches done
