@@ -1,90 +1,57 @@
 # Plan
 
-STATUS: ACTIVE
-TASK: Fix /chat auth gate — batch 2 of 4 from the full-app audit (2026-08-24).
-/chat is the only protected page with no server-side auth check (no redirect
-to /sign-in unlike every sibling page), and chat-experience.tsx's sendMessage
-never checks response.ok, so a 401 gets rendered as a normal-looking bot
-reply instead of prompting sign-in.
+STATUS: COMPLETE
+TASK: Fix Fitbot class-type + UTC-date bugs — batch 3 of 4 from the
+full-app audit (2026-08-24/25). Implemented directly by the orchestrator
+(no chuck/cas/dean subagent loop this batch, per explicit user instruction
+to conserve session budget after batch 3's planner stalled).
 
 ## Steps
 
-- [x] 1. Extract the /api/chat response interpretation into a testable pure
-      function, and use it in sendMessage
-  - Do: Introduce an exported pure helper (no React, no fetch) that takes
-    the raw Response outcome from a POST /api/chat call and returns the
-    Message object to append (or signals an error). Wire sendMessage so a
-    non-ok response is never rendered as a normal assistant reply. The
-    helper must distinguish a 401 (session lost) from other failures so the
-    client can show a sign-in-appropriate message.
-  - Contract: exported function e.g. `interpretChatResponse({ ok, status,
-    data }): { kind: "reply"; content: string; card?; suggestedChips?;
-    role? } | { kind: "error"; content: string; suggestedChips: ChipId[] }`.
-    - ok:true, data={reply:"hello", role:"client", card, suggestedChips} ->
-      {kind:"reply", content:"hello", role:"client", card, suggestedChips}
-    - ok:true, data={} (no reply) -> {kind:"reply"} with content = existing
-      fallback string "I'm here. Let's take the next step together."
-      (match source literal exactly)
-    - ok:false, status:401, data={error:"Unauthorized"} -> {kind:"error"}
-      with a distinct sign-in-oriented content, NOT the generic snag
-      message and NOT data.reply/data.error text verbatim
-    - ok:false, status: 400|403|500 (any non-401 non-ok) -> {kind:"error"}
-      with content = existing generic snag message "I hit a small snag.
-      Try that again and we'll keep moving." (match source literal)
-    - In every kind:"error" case, content must never equal an error/reply
-      string taken verbatim from data
-    - sendMessage must call this helper and append the returned message;
-      on kind:"error" append an assistant message with the error content
-      rather than data.reply ?? fallback
-  - Done when: vitest test importing the helper passes for all 5 cases
-    (200-with-reply, 200-without-reply, 401, non-401 error e.g. 400, 500),
-    asserting exact content strings and that 401 differs from generic
-    error. `npm run build` passes (authoritative typecheck; ignore
-    .next/types/ noise per GUARDRAILS.md). Reading chat-experience.tsx,
-    sendMessage no longer contains `content: data.reply ?? "..."` as its
-    unconditional success path.
-  - Touches: app/chat/chat-experience.tsx (refactor sendMessage, extract
-    helper — may live in same file or new lib/chatbot/ module), possibly
-    new file under lib/chatbot/.
-  - Requirement test: tests/agent_requirements/interpret-chat-response.test.ts (GREEN)
+- [x] 1. Add missing class types (Boxing, Pilates, Strength) to
+      lib/chatbot/entity-extraction.ts's CLASS_TYPES
+  - Do: CLASS_TYPES only lists yoga/cycling/hiit; real class types also
+    include Boxing, Pilates, Strength (seed data 0004_classes.sql,
+    appointments UI). Add the three missing types so resolveClassType
+    matches them.
+  - Done when: resolveClassType("book me into a pilates class") === "pilates",
+    same for boxing/strength; existing yoga/cycling/hiit matches unaffected.
+    npm test, build, lint clean.
+  - Touches: lib/chatbot/entity-extraction.ts.
 
-- [x] 2. Add server-side auth gate to app/chat/page.tsx
-  - Do: Convert app/chat/page.tsx to an async server component that calls
-    requireUserOrRedirect() from lib/auth/session.ts before rendering
-    ChatExperience, mirroring app/appointments/page.tsx /
-    app/dashboard/page.tsx. No role restriction — any authenticated user
-    may access chat, so use requireUserOrRedirect (not requireRoleOrRedirect).
-  - Contract: page.tsx default export is async, awaits
-    requireUserOrRedirect() before returning any JSX. Unauthenticated:
-    redirect("/sign-in") fires (matches /appointments, /dashboard).
-    Authenticated: renders ChatExperience as before, no behavior change to
-    the chat UI itself. No new role gate — client-role users must still
-    reach chat, not redirected to /dashboard?error=forbidden.
-  - Done when: vitest test importing the page module with
-    @/lib/auth/session stubbed/mocked asserts (a) unauthenticated ->
-    redirect path fires, ChatExperience not returned; (b) authenticated
-    (any role incl. client) -> invokes without redirecting. If mounting
-    the RSC proves impractical in node env, acceptable fallback evidence:
-    test asserts the page module calls requireUserOrRedirect exactly once
-    on invocation, before render. Live cross-check (manual, not
-    necessarily automated): `curl -D - http://localhost:<port>/chat`
-    unauthenticated returns 307 to /sign-in, matching /appointments.
-    `npm run build` passes.
-  - Touches: app/chat/page.tsx.
-  - Requirement test: tests/agent_requirements/chat-page-auth-gate.test.ts (GREEN)
+- [x] 2. Fix UTC-vs-local date bug in getMemberWeeklyActivity
+  - Do: lib/members/queries.ts's getMemberWeeklyActivity used
+    `.toISOString().slice(0,10)` (UTC) for week boundaries instead of the
+    file's own local-date formatDateForQuery() helper (already used
+    correctly by getMemberStreak). Switch to formatDateForQuery.
+  - Done when: build/lint/test clean; code reads local date, matching every
+    other date computation in the file.
+  - Touches: lib/members/queries.ts.
 
-## Notes carried from planning
-- Test env is vitest `environment: "node"`, no jsdom/RTL — house style is
-  hand-rolled DI stubs on imported functions, not mounting React components
-  or driving live HTTP. Step 1's contract is built around an extracted pure
-  interpretation function for exactly this reason.
-- Step 2 testability caveat: RSC auth-gate pages are awkward to unit-test
-  under node (pull in next/navigation, Supabase server client, cookies).
-  No sibling protected page has a unit test for its auth gate today — the
-  convention is trusting requireUserOrRedirect plus manual/curl
-  verification. Fallback: assert the page calls the helper, plus a manual
-  curl check documented in the verify step, rather than burning attempts
-  trying to fully render an RSC under node.
-- No shared-contract approval gate triggered: no tool-manifest/JWT/error-
-  response-shape change — the 401 body `{"error":"Unauthorized"}` is
-  unchanged, only how the client reacts to it changes.
+- [x] 3. Fix UTC-vs-local date bug in recommend-class.ts, my-goals.ts,
+      instructor-classes.ts
+  - Do: same UTC .toISOString() pattern for "today"/date-range boundaries
+    in these three chatbot intent handlers. Replace with local-date
+    construction matching the pattern in app/api/appointments/classes/route.ts
+    / lib/members/queries.ts's todayDate()/formatDateForQuery().
+  - Done when: build/lint/test clean; no remaining `.toISOString().slice(0,10)`
+    (or equivalent UTC-serialization) used for local "today" comparisons in
+    these three files.
+  - Touches: lib/chatbot/intents/recommend-class.ts,
+    lib/chatbot/intents/my-goals.ts, lib/chatbot/intents/instructor-classes.ts.
+
+## Notes
+- No chuck/cas/dean loop this batch — implemented directly, verified by
+  build/lint/test run by the orchestrator. User explicitly authorized this
+  deviation to conserve session budget.
+- Also updated 4 hardcoded yoga|cycling|hiit scoring regexes (class-info.ts,
+  members-by-attribute.ts, book-class.ts, who-is-booked.ts) to include the
+  3 new class types — same root cause as step 1, needed for the fix to be
+  complete end-to-end (these gate intent-routing confidence scores).
+- getMemberWeeklyActivity fixed via reusing formatDateForQuery (already
+  exported/local in the same file). recommend-class.ts/my-goals.ts/
+  instructor-classes.ts fixed by exporting and reusing todayDate() from
+  lib/members/queries.ts instead of duplicating local-date construction.
+- Confirmed via grep: zero remaining `toISOString().slice` UTC-date
+  patterns anywhere in lib/ or app/.
+- Requirement test: tests/agent_requirements/resolve-class-type.test.ts (GREEN)

@@ -52,3 +52,7 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-24 22:28] [ORCHESTRATOR] batch2 step 2 — invoking cas VERIFY
 [2026-08-24 22:30] [CAS] batch2 step 2 verify — PASS, no blocking findings, live curl confirms fix
 [2026-08-24 22:30] [ORCHESTRATOR] batch2 step 2 DONE, checkpointing — batch 2 all steps complete
+[2026-08-24 22:31] [CHUCK] final acceptance — YES, both original bugs closed; noted sendChip has an adjacent (out-of-scope) parity gap for later
+[2026-08-24 22:31] [ORCHESTRATOR] batch 2 STATUS: COMPLETE
+[2026-08-25 10:33] [ORCHESTRATOR] batch3 (manual, no subagent loop) — added boxing/pilates/strength to CLASS_TYPES + 4 scoring regexes; fixed UTC-date bug in 4 files (getMemberWeeklyActivity + recommend-class/my-goals/instructor-classes via exported todayDate/formatDateForQuery); npm test 25/25, build/lint/tsc clean
+[2026-08-25 10:33] [ORCHESTRATOR] batch 3 STATUS: COMPLETE

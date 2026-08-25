@@ -1,4 +1,4 @@
-import { getMemberForUser } from "@/lib/members/queries";
+import { getMemberForUser, todayDate } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Intent, IntentResult } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
@@ -24,7 +24,7 @@ export async function getMemberGoalsSummary(
     .select(
       "name, type, instructor, class_date, start_time, capacity, booked_count"
     )
-    .gte("class_date", new Date().toISOString().slice(0, 10))
+    .gte("class_date", todayDate())
     .order("class_date")
     .order("start_time")
     .limit(3);

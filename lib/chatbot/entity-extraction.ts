@@ -8,7 +8,7 @@ const WEEKDAYS = [
   "saturday"
 ] as const;
 const INSTRUCTORS = ["sofia martinez", "marcus lee", "avery thompson"] as const;
-const CLASS_TYPES = ["yoga", "cycling", "hiit"] as const;
+const CLASS_TYPES = ["yoga", "cycling", "hiit", "boxing", "pilates", "strength"] as const;
 const MONTHS = [
   "january",
   "february",
