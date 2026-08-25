@@ -19,3 +19,23 @@ is gitignored/regenerated, never hand-edit or "fix" files in it.
 **Why it matters:** A verify step could wrongly FAIL/block a working step on
 phantom errors that have nothing to do with the actual change, burning an
 attempt for no reason.
+
+## `npm run build` can transiently fail with ENOTEMPTY on `.next/server`
+
+**Trigger:** Recurred twice during the realtime-booking-updates task (steps
+3 and 4 verify passes) — first `npm run build` invocation fails with
+`ENOTEMPTY` on `.next/server` during an rmdir; a second run immediately
+after succeeds cleanly. Root cause is almost certainly the background dev
+server (`npm run dev`, running continuously on port 3001 across this whole
+session) writing to `.next/` concurrently with the one-off `npm run build`
+verification runs.
+
+**Rule:** If `npm run build` fails with `ENOTEMPTY` (or another filesystem
+race error) touching `.next/`, retry once before treating it as a real
+failure. Do not `rm -rf .next` or otherwise delete/edit `.next/` contents
+(also blocked by tooling guardrails) — it's regenerated automatically and
+manual intervention isn't the fix for a transient concurrent-write race.
+
+**Why it matters:** Same class of problem as the tsc/`.next/types` entry
+above — a flaky, unrelated filesystem error could wrongly burn a retry
+attempt on a step that's actually correct.

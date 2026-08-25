@@ -44,7 +44,7 @@ manual reload. Dashboards explicitly out of scope per user decision.
     scope (source check); npm run build/lint pass.
   - Touches: app/staff/page.tsx (trainer branch only).
 
-- [ ] 4. Wire live refresh into Trainer My Schedule (filtered by instructor)
+- [x] 4. Wire live refresh into Trainer My Schedule (filtered by instructor)
   - Do: In app/staff/page.tsx trainer branch, near existing
     class_change_requests filtered RealtimeRefresh, render
     `<RealtimeRefresh table="classes" filter={`instructor_member_id=eq.${instructorMemberId}`} />`

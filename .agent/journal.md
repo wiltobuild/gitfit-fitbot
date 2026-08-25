@@ -73,3 +73,7 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-25 11:20] [ORCHESTRATOR] step 3 — invoking cas VERIFY
 [2026-08-25 11:21] [CAS] step 3 verify — PASS, threading confirmed genuinely required
 [2026-08-25 11:21] [ORCHESTRATOR] step 3 DONE, checkpointing
+[2026-08-25 11:22] [DEAN] step 4 attempt 1 — added filtered RealtimeRefresh(classes) to trainer branch using trainerMemberId
+[2026-08-25 11:22] [ORCHESTRATOR] step 4 — invoking cas VERIFY
+[2026-08-25 11:24] [CAS] step 4 verify — PASS; added GUARDRAILS entry for transient ENOTEMPTY build race (recurred twice)
+[2026-08-25 11:24] [ORCHESTRATOR] step 4 DONE, checkpointing — staff-side wiring (steps 1-4) complete

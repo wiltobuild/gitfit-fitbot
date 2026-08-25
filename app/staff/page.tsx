@@ -292,6 +292,7 @@ export default async function StaffPage() {
           <RealtimeRefresh table="time_off_requests" filter={`user_id=eq.${user.id}`} />
           {isLinkedInstructor ? <div className="staff-trainer-console">
             <RealtimeRefresh table="class_change_requests" filter={`user_id=eq.${user.id}`} />
+            <RealtimeRefresh table="classes" filter={`instructor_member_id=eq.${trainerMemberId}`} />
             <TrainerProfile name={trainerName} email={user.email ?? ""} certTier={trainerCertTier} />
             <div className="staff-lower-grid">
               <div className="staff-trainer-side-stack">
