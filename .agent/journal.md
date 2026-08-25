@@ -59,3 +59,4 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-25 10:40] [ORCHESTRATOR] batch 4 plan transcribed (1 step, manual), STATUS: ACTIVE
 [2026-08-25 10:41] [ORCHESTRATOR] batch4 (manual) — extracted cohortBoundaries to lib/retention/cohort-boundaries.ts, fixed day-14 overlap (cohort 2 minDays 14->15); npm test 27/27, build/lint clean
 [2026-08-25 10:41] [ORCHESTRATOR] batch 4 STATUS: COMPLETE — all 4 audit batches done
+[2026-08-25 10:56] [ORCHESTRATOR] fixed .staff-activity-text truncation (nowrap+ellipsis -> normal+break-word), align-items center->flex-start; build/lint clean
