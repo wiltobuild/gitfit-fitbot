@@ -1,6 +1,6 @@
 # Plan
 
-STATUS: ACTIVE
+STATUS: COMPLETE
 TASK: Real-time updates across the platform when a member books a class.
 Member (/appointments), staff trainer (My Schedule), and admin (Live
 Register) should all see booking/cancellation changes live, without a
@@ -62,7 +62,7 @@ manual reload. Dashboards explicitly out of scope per user decision.
   - Touches: app/staff/page.tsx (trainer branch only).
   - Depends on: step 1, step 3.
 
-- [ ] 5. Make Member appointments schedule reflect live capacity
+- [x] 5. Make Member appointments schedule reflect live capacity
   - Do: AppointmentsExperience is a client component that fetches classes
     via GET /api/appointments/classes into local useState — it does NOT
     read server-component props for its schedule, so a bare
@@ -93,6 +93,30 @@ manual reload. Dashboards explicitly out of scope per user decision.
     refetch); possibly app/components/realtime-refresh.tsx if generalized.
     No change to app/api/appointments/classes/route.ts.
   - Depends on: step 1.
+
+## Stopped — user interrupted with "stop"
+- Step 5 (final step) is implemented by dean but NOT yet verified by cas
+  and NOT committed. Working tree has uncommitted changes:
+  lib/appointments/merge-refreshed-classes.ts (new),
+  app/appointments/appointments-experience.tsx (modified),
+  tests/agent_requirements/merge-refreshed-classes.test.ts (new, from
+  author phase).
+- What was attempted: cas author found a genuine pure seam
+  (mergeRefreshedClasses) and wrote a confirmed-red test; dean implemented
+  it plus the Realtime subscription wiring in AppointmentsExperience;
+  cas VERIFY was invoked but the user stopped before it ran/reported.
+- No error — user-initiated stop, not a technical blocker.
+- What's needed: user says when to resume. Resuming should re-invoke cas
+  VERIFY on step 5's diff (session-gating, filter-less classes
+  subscription, refetchClasses not router.refresh(), cleanup on unmount,
+  npm test/build/lint), then the still-outstanding manual live-check
+  (two authenticated sessions on /appointments, reserve in one, confirm
+  the other updates live) which dean explicitly did not perform.
+- Also still outstanding regardless of step 5: migration 0025 has not
+  been applied to the live Supabase DB (this project's precedent per
+  docs/agent/decisions.md is a user-supplied Postgres password, transient,
+  for direct application) — nothing in this feature is live until that
+  happens.
 
 ## Notes carried from planning
 - Steps 2 and 4 are pure mechanical wiring, fully testable by source-shape

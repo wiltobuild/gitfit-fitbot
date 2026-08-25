@@ -77,3 +77,9 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-25 11:22] [ORCHESTRATOR] step 4 — invoking cas VERIFY
 [2026-08-25 11:24] [CAS] step 4 verify — PASS; added GUARDRAILS entry for transient ENOTEMPTY build race (recurred twice)
 [2026-08-25 11:24] [ORCHESTRATOR] step 4 DONE, checkpointing — staff-side wiring (steps 1-4) complete
+[2026-08-25 11:26] [CAS] step 5 author — found genuine seam (mergeRefreshedClasses), wrote tests/agent_requirements/merge-refreshed-classes.test.ts, confirmed RED
+[2026-08-25 11:26] [ORCHESTRATOR] step 5 attempt 1 — invoking dean
+[2026-08-25 11:28] [DEAN] step 5 attempt 1 — added mergeRefreshedClasses + wired realtime subscription into AppointmentsExperience
+[2026-08-25 11:28] [ORCHESTRATOR] step 5 — invoking cas VERIFY (final step)
+[2026-08-25 11:29] [ORCHESTRATOR] user interrupted with "stop" — halting before step 5 verify. STATUS: AWAITING_USER. Uncommitted: lib/appointments/merge-refreshed-classes.ts, app/appointments/appointments-experience.tsx, tests/agent_requirements/merge-refreshed-classes.test.ts
+[2026-08-25 11:30] [ORCHESTRATOR] user stopped agent-loop usage; finished step 5 directly (test/build/lint clean), committing

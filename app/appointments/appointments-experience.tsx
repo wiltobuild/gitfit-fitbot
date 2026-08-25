@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCalendar, IconCalendarX, IconShield, IconSparkle, MomentumArc } from "@/app/components/icons";
 import { InstructorAvatar } from "@/app/components/instructor-avatar";
-
-type ClassSession = { id: string; name: string; type: string; instructor: string; class_date: string; start_time: string; duration_minutes: number; capacity: number; booked_count: number; isBookedByCurrentUser: boolean };
+import { mergeRefreshedClasses, type ClassSession } from "@/lib/appointments/merge-refreshed-classes";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 type ApiError = { error?: { message?: string } };
 type Props = { bookedThisWeek: number; userEmail: string };
 const categories = ["All Practice", "Yoga", "Pilates", "Cycling", "HIIT", "Boxing", "Strength"];
@@ -26,7 +26,33 @@ export function AppointmentsExperience({ bookedThisWeek, userEmail }: Props) {
   const [classes, setClasses] = useState<ClassSession[]>([]); const [activeDate, setActiveDate] = useState(""); const [error, setError] = useState(""); const [actionError, setActionError] = useState<{ id: string; message: string } | null>(null); const [loading, setLoading] = useState(true); const [pendingId, setPendingId] = useState<string | null>(null);
   const [query, setQuery] = useState(""); const [category, setCategory] = useState("All Practice"); const [availableOnly, setAvailableOnly] = useState(false); const [myBookingsOnly, setMyBookingsOnly] = useState(false);
   const [scheduleExpanded, setScheduleExpanded] = useState(false);
-  useEffect(() => { void (async () => { try { const response = await fetch("/api/appointments/classes"); const payload = (await response.json()) as { classes?: ClassSession[] } & ApiError; if (!response.ok) throw new Error(payload.error?.message ?? "Unable to load classes."); const loaded = payload.classes ?? []; setClasses(loaded); setActiveDate(loaded[0]?.class_date ?? ""); } catch (caught) { setError(caught instanceof Error ? caught.message : "Unable to load classes."); } finally { setLoading(false); } })(); }, []);
+  const pendingIdRef = useRef<string | null>(pendingId);
+  useEffect(() => { pendingIdRef.current = pendingId; }, [pendingId]);
+  async function refetchClasses(isInitialLoad = false) { try { const response = await fetch("/api/appointments/classes"); const payload = (await response.json()) as { classes?: ClassSession[] } & ApiError; if (!response.ok) throw new Error(payload.error?.message ?? "Unable to load classes."); const loaded = payload.classes ?? []; setClasses((current) => mergeRefreshedClasses(current, loaded, pendingIdRef.current)); if (isInitialLoad) setActiveDate(loaded[0]?.class_date ?? ""); } catch (caught) { setError(caught instanceof Error ? caught.message : "Unable to load classes."); } finally { if (isInitialLoad) setLoading(false); } }
+  useEffect(() => { void refetchClasses(true); }, []);
+  // Realtime push on any classes change (unfiltered -- whole-week capacity is
+  // relevant here) triggers a refetch + merge, not router.refresh(): this
+  // component holds its schedule in client-fetched state, so a bare
+  // server-data refresh (RealtimeRefresh's pattern) would never touch it.
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let cancelled = false;
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
+      if (session) supabase.realtime.setAuth(session.access_token);
+      channel = supabase
+        .channel("appointments-classes")
+        .on("postgres_changes", { event: "*", schema: "public", table: "classes" }, () => void refetchClasses())
+        .subscribe();
+    });
+
+    return () => {
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
+    };
+  }, []);
   const dates = useMemo(() => [...new Set(classes.map((item) => item.class_date))].sort(), [classes]);
   const thisWeekEndKey = useMemo(() => { const end = new Date(); end.setDate(end.getDate() + 6); return `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, "0")}-${String(end.getDate()).padStart(2, "0")}`; }, []);
   const visibleDates = useMemo(() => scheduleExpanded ? dates : dates.filter((date) => date <= thisWeekEndKey), [dates, scheduleExpanded, thisWeekEndKey]);
