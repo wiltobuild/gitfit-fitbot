@@ -108,7 +108,7 @@ also cascades away pending class_change_requests silently.
   - Touches: lib/class-changes/queries.ts (add function) or new file.
   - Requirement test: tests/agent_requirements/deny-pending-requests-on-cancel.test.ts (GREEN)
 
-- [ ] 6. Wire cancellation flow into the delete route (log -> deny -> delete, in order)
+- [x] 6. Wire cancellation flow into the delete route (log -> deny -> delete, in order)
   - Do: Change the delete route so before hard-deleting the class it (a)
     writes the cancellation audit row (step 4) and (b) denies pending
     change requests (step 5), then deletes. Roster/pending requests must be
@@ -132,7 +132,7 @@ also cascades away pending class_change_requests silently.
   - Touches: app/api/staff/classes/[classId]/delete/route.ts,
     lib/classes/queries.ts (deleteClass may become orchestration or route
     composes helpers). Reuses steps 4 and 5.
-  - Requirement test: (set by Author)
+  - Requirement test: tests/agent_requirements/cancel-flow-order.test.ts (GREEN)
 
 - [ ] 7. Surface canceled classes in the manager Activity Log
   - Do: Extend the manager Activity Log so canceled classes appear

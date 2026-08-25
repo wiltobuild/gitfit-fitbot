@@ -25,3 +25,9 @@ Append-only. One line per action. Not read during normal operation.
 [2026-08-24 22:06] [ORCHESTRATOR] step 5 — invoking cas VERIFY
 [2026-08-24 22:08] [CAS] step 5 verify — PASS, no blocking findings
 [2026-08-24 22:08] [ORCHESTRATOR] step 5 DONE, checkpointing
+[2026-08-24 22:09] [CAS] step 6 author — wrote tests/agent_requirements/cancel-flow-order.test.ts, confirmed RED
+[2026-08-24 22:09] [ORCHESTRATOR] step 6 attempt 1 — invoking dean
+[2026-08-24 22:11] [DEAN] step 6 attempt 1 — wired log->deny->delete in deleteClass + route
+[2026-08-24 22:11] [ORCHESTRATOR] step 6 — invoking cas VERIFY
+[2026-08-24 22:12] [CAS] step 6 verify — PASS; noted swallowed-error observability gap (pre-existing pattern, not blocking)
+[2026-08-24 22:12] [ORCHESTRATOR] step 6 DONE, checkpointing

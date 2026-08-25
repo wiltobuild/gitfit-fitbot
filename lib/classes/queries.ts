@@ -1,4 +1,6 @@
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
+import { logClassCancellation } from "@/lib/class-cancellations/queries";
+import { denyPendingRequestsForCanceledClass } from "@/lib/class-changes/queries";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
@@ -254,7 +256,18 @@ export async function updateClass(
   return { ok: true };
 }
 
-export async function deleteClass(supabase: SupabaseServerClient, classId: string) {
+// Orchestrates a class cancellation: the audit row and the pending-request
+// denials must both be captured before the class row is hard-deleted, since
+// the delete cascades away the roster/pending rows they depend on. Sequential
+// awaits (no try/catch) ensure a failure in either prior step aborts the
+// delete and propagates to the caller.
+export async function deleteClass(
+  supabase: SupabaseServerClient,
+  { classId, canceledBy }: { classId: string; canceledBy: string }
+) {
+  await logClassCancellation(supabase, { classId, canceledBy });
+  await denyPendingRequestsForCanceledClass(supabase, { classId, reviewerId: canceledBy });
+
   const { error } = await supabase.from("classes").delete().eq("id", classId);
   if (error) throw error;
 }
