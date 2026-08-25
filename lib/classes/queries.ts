@@ -216,7 +216,27 @@ export async function createClass(supabase: SupabaseServerClient, input: ClassIn
   return id;
 }
 
-export async function updateClass(supabase: SupabaseServerClient, classId: string, input: ClassInput) {
+export type UpdateClassResult =
+  | { ok: true }
+  | { ok: false; code: "capacity_below_booked"; bookedCount: number };
+
+export async function updateClass(
+  supabase: SupabaseServerClient,
+  classId: string,
+  input: ClassInput
+): Promise<UpdateClassResult> {
+  const { data: classRow, error: classError } = await supabase
+    .from("classes")
+    .select("booked_count")
+    .eq("id", classId)
+    .maybeSingle();
+  if (classError) throw classError;
+
+  const bookedCount = classRow?.booked_count ?? 0;
+  if (input.capacity < bookedCount) {
+    return { ok: false, code: "capacity_below_booked", bookedCount };
+  }
+
   const { error } = await supabase
     .from("classes")
     .update({
@@ -231,6 +251,7 @@ export async function updateClass(supabase: SupabaseServerClient, classId: strin
     })
     .eq("id", classId);
   if (error) throw error;
+  return { ok: true };
 }
 
 export async function deleteClass(supabase: SupabaseServerClient, classId: string) {
