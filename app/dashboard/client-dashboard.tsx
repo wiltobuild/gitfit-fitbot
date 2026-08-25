@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { signOut } from "@/app/actions/auth";
 import { IconCalendar, IconSparkle, MomentumArc } from "@/app/components/icons";
 import MomentumRing from "@/app/components/momentum-ring";
+import { RecommendedClasses } from "@/app/dashboard/recommended-classes";
+import type { StudioClass } from "@/lib/classes/queries";
 import type { EncouragingMessageCategory } from "@/lib/dashboard/encouraging-messages";
 import type { ClassRow } from "@/lib/members/queries";
 
@@ -29,7 +31,7 @@ function SessionList({ classes, emptyTitle, emptyCopy }: { classes: ClassRow[]; 
   </li>)}</ul> : <div className="empty-state client-dashboard-empty"><h3>{emptyTitle}</h3><p>{emptyCopy}</p></div>;
 }
 
-export function ClientDashboard({ bookingHistory, currentWeekBooked, encouragingMessage, encouragingMessageCategory, promotions, streakWeeks, upcomingBookings, userEmail }: { bookingHistory: ClassRow[]; currentWeekBooked: boolean; encouragingMessage: string; encouragingMessageCategory: EncouragingMessageCategory; promotions: Promotion[] | null; streakWeeks: number; upcomingBookings: ClassRow[]; userEmail?: string }) {
+export function ClientDashboard({ bookingHistory, currentWeekBooked, encouragingMessage, encouragingMessageCategory, promotions, recommendedClasses, recommendationReason, streakWeeks, upcomingBookings, userEmail }: { bookingHistory: ClassRow[]; currentWeekBooked: boolean; encouragingMessage: string; encouragingMessageCategory: EncouragingMessageCategory; promotions: Promotion[] | null; recommendedClasses: StudioClass[]; recommendationReason: string | null; streakWeeks: number; upcomingBookings: ClassRow[]; userEmail?: string }) {
   return <main className="account-content client-dashboard-content">
     <header className="account-intro animate-fade-up"><p className="eyebrow"><span /> Your home base</p><h1>Ready when you are.</h1><p>Keep your routine moving, see what&apos;s next, or ask FitBot for a little guidance.</p></header>
     <section className="surface-card dashboard-card client-momentum-card animate-fade-up" style={{ animationDelay: ".08s" }}>
@@ -38,6 +40,7 @@ export function ClientDashboard({ bookingHistory, currentWeekBooked, encouraging
       <div className="quick-actions" aria-label="Quick actions"><Link className="quick-action quick-action-fitbot" href="/chat"><MomentumArc className="quick-action-arc" /><span className="quick-action-content"><span className="quick-action-icon"><IconSparkle /></span><span>Chat with FitBot</span></span><span aria-hidden="true">→</span></Link><Link className="quick-action quick-action-appointments" href="/appointments"><span className="quick-action-content"><span className="quick-action-icon"><IconCalendar /></span><span>View appointments</span></span><span aria-hidden="true">→</span></Link></div>
       <div className="account-sign-out"><form action={signOut}><button className="btn btn-outline" type="submit">Sign out</button></form></div>
     </section>
+    <RecommendedClasses classes={recommendedClasses} reasonLabel={recommendationReason} />
     <div className="client-dashboard-grid animate-fade-up" style={{ animationDelay: ".12s" }}>
       <section className="surface-card dashboard-card client-session-card" aria-labelledby="upcoming-bookings-title"><div className="client-section-heading"><div><p className="eyebrow"><span /> On your calendar</p><h2 id="upcoming-bookings-title">Current booked sessions</h2></div><Link href="/appointments">Browse schedule</Link></div><SessionList classes={upcomingBookings} emptyTitle="No upcoming sessions" emptyCopy={<>Browse the <Link href="/appointments">schedule</Link> to book your next class.</>} /></section>
       <section className="surface-card dashboard-card client-session-card" aria-labelledby="recent-sessions-title"><div className="client-section-heading"><div><p className="eyebrow"><span /> Your routine</p><h2 id="recent-sessions-title">Your recent sessions</h2></div><span className="badge badge-neutral">Last {bookingHistory.length}</span></div><SessionList classes={bookingHistory} emptyTitle="No recent sessions yet" emptyCopy="Once you’ve taken a class, your recent booked sessions will appear here." /></section>
