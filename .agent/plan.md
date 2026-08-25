@@ -67,7 +67,7 @@ also cascades away pending class_change_requests silently.
   - Touches: supabase/migrations/0024_class_cancellations.sql (new).
   - Requirement test: N/A (Contract: none — verified by read)
 
-- [ ] 4. Cancellation-logging query helper
+- [x] 4. Cancellation-logging query helper
   - Do: Add lib/class-cancellations/queries.ts with a function that, given
     a class id and canceling admin's user id, gathers the class's label
     fields and current roster (reuse getClassRoster) and inserts one
@@ -85,7 +85,7 @@ also cascades away pending class_change_requests silently.
     roster. `npm test` passes.
   - Touches: lib/class-cancellations/queries.ts (new). Reuses
     lib/classes/roster.ts.
-  - Requirement test: (set by Author)
+  - Requirement test: tests/agent_requirements/log-class-cancellation.test.ts (GREEN)
 
 - [ ] 5. Auto-resolve pending class_change_requests before a class is deleted
   - Do: Add a query helper that, given a class id and reviewer (admin) user
