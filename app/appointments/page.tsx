@@ -1,5 +1,6 @@
 import { requireUserOrRedirect } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getMemberForUser } from "@/lib/members/queries";
 
 import SiteNav from "@/app/components/site-nav";
 
@@ -24,5 +25,14 @@ export default async function AppointmentsPage() {
   } catch (error) {
     console.error("Unable to load this week's bookings for appointments", error);
   }
-  return <main className="appointments-shell"><header className="appointments-header"><SiteNav /></header><AppointmentsExperience bookedThisWeek={bookedThisWeek} userEmail={user.email ?? "member@gitfit.com"} /></main>;
+  let membershipTier: string | null = null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data: member, error } = await getMemberForUser(supabase, user.id);
+    if (error) throw error;
+    membershipTier = member?.membership_tier ?? null;
+  } catch (error) {
+    console.error("Unable to load membership tier for appointments", error);
+  }
+  return <main className="appointments-shell"><header className="appointments-header"><SiteNav /></header><AppointmentsExperience bookedThisWeek={bookedThisWeek} membershipTier={membershipTier} userEmail={user.email ?? "member@gitfit.com"} /></main>;
 }
