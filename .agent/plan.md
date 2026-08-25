@@ -32,7 +32,10 @@ also cascades away pending class_change_requests silently.
     app/api/staff/classes/[classId]/update/route.ts.
   - Requirement test: tests/agent_requirements/update-class-capacity-below-booked.test.ts (GREEN)
 
-- [ ] 2. Client-side guard + error surfacing on the Edit form
+- [x] 2. Client-side guard + error surfacing on the Edit form (no code
+      change needed — cas confirmed submitEdit already correctly surfaces
+      the step-1 400 message; no testable seam exists, verified by
+      build/lint)
   - Do: Confirm/ensure the staff Edit form surfaces the server's 400
     capacity error to the admin. Server (step 1) remains the enforcement;
     this is UI wiring only, additive if a pre-submit check is added.
@@ -45,7 +48,7 @@ also cascades away pending class_change_requests silently.
   - Touches: app/staff/live-register.tsx.
   - Requirement test: N/A (Contract: none — verified by read + build/lint)
 
-- [ ] 3. Add a durable class-cancellation audit table (migration)
+- [x] 3. Add a durable class-cancellation audit table (migration)
   - Do: Add supabase/migrations/0024_class_cancellations.sql creating a
     class_cancellations table recording: class identity + denormalized
     label snapshot (class row is deleted right after, so class_id must be
