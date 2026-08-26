@@ -11,6 +11,7 @@ export default function SignInPage() {
         <Link className="auth-brand" href="/" aria-label="GitFit home">
           <img className="brand-icon" src="/gitfit-icon.gif" alt="" />
           <span className="wordmark">GitFit</span>
+          <span className="brand-org">Pulse Studio</span>
         </Link>
         <div className="auth-heading">
           <p className="eyebrow">
