@@ -1,5 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { listMembersForStaff } from "@/lib/members/queries";
+import { listMembersForStaff, todayDate } from "@/lib/members/queries";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 function escapeRegExp(value: string) {
@@ -53,7 +53,7 @@ export async function getInstructorClasses(message: string) {
       "name, type, instructor, class_date, start_time, capacity, booked_count"
     )
     .ilike("instructor", `%${instructor}%`)
-    .gte("class_date", new Date().toISOString().slice(0, 10))
+    .gte("class_date", todayDate())
     .order("class_date")
     .order("start_time");
   if (error)

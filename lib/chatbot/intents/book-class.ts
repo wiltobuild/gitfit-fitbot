@@ -159,7 +159,7 @@ export const bookClassIntent: Intent = {
         ]) *
         (1 +
           scoreEntity(message, [
-            /\b(yoga|cycling|hiit|today|tomorrow|tonight|sunday|monday|tuesday|wednesday|thursday|friday|saturday|sofia|martinez|marcus|lee|avery|thompson)\b/i
+            /\b(yoga|cycling|hiit|boxing|pilates|strength|today|tomorrow|tonight|sunday|monday|tuesday|wednesday|thursday|friday|saturday|sofia|martinez|marcus|lee|avery|thompson)\b/i
           ]))
       : 0,
   handle: async (message, session, pendingAnswer) => {

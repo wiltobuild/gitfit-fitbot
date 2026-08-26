@@ -7,7 +7,7 @@ import { RequestTimeOff } from "@/app/staff/request-time-off";
 import { RealtimeRefresh } from "@/app/components/realtime-refresh";
 import { StudioPulse, type PulseStat, type TeachingLoadRow } from "@/app/staff/studio-pulse";
 import { AtRiskMembers, type AtRiskMember } from "@/app/staff/at-risk-members";
-import { ActivityLog, type ActivityEntry } from "@/app/staff/activity-log";
+import { ActivityLog, type ActivityEntry, type CancellationEntry } from "@/app/staff/activity-log";
 import { TrainerProfile } from "@/app/staff/trainer-profile";
 import { MySchedule, type ScheduleClass } from "@/app/staff/my-schedule";
 import { ClassChangeStatus, type MyClassChangeRequest } from "@/app/staff/class-change-status";
@@ -15,10 +15,14 @@ import { MyMembersRetention } from "@/app/staff/my-members-retention";
 import { ClassChangeInbox, type PendingClassChangeRequest } from "@/app/staff/class-change-inbox";
 import { InstructorLeaderboard, type LeaderboardRow } from "@/app/staff/instructor-leaderboard";
 import { LiveRegister, type InstructorOption, type RegisterClass } from "@/app/staff/live-register";
+import { ProposeClass } from "@/app/staff/propose-class";
+import { ClassCreationStatus, type MyClassCreationRequest } from "@/app/staff/class-creation-status";
+import { ClassCreationInbox, type PendingClassCreationRequest } from "@/app/staff/class-creation-inbox";
 import { requireRoleOrRedirect } from "@/lib/auth/session";
 import { getMemberForUser, getMemberRetentionForInstructor, listInstructors, listMembersForStaff } from "@/lib/members/queries";
 import { getClassesForInstructorInRange, getInstructorLeaderboard } from "@/lib/classes/queries";
 import { listOwnClassChangeRequests, listPendingClassChangeRequests } from "@/lib/class-changes/queries";
+import { listOwnClassCreationRequests, listPendingClassCreationRequests } from "@/lib/class-creation-requests/queries";
 import { listLatestPromoEvents } from "@/lib/promo-events/queries";
 import { getStudioDayStats } from "@/lib/classes/current-or-next";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -49,17 +53,21 @@ export default async function StaffPage() {
   let atRiskMembers: AtRiskMember[] = [];
   let atRiskMembersTotal = 0;
   let activityEntries: ActivityEntry[] = [];
+  let cancellationEntries: CancellationEntry[] = [];
   let pendingClassChangeRequests: PendingClassChangeRequest[] = [];
+  let pendingClassCreationRequests: PendingClassCreationRequest[] = [];
   let instructorLeaderboard: LeaderboardRow[] = [];
   let trainerCertTier: string | null = null;
   let scheduleClasses: ScheduleClass[] = [];
   let myClassChangeRequests: MyClassChangeRequest[] = [];
+  let myClassCreationRequests: MyClassCreationRequest[] = [];
   let pendingRequestTypeByClassId: Record<string, "swap" | "cancel"> = {};
   let retentionMembers: Awaited<ReturnType<typeof getMemberRetentionForInstructor>>["members"] = [];
   let retentionCounts: Record<string, number> = {};
   let classLabelById: Record<string, string> = {};
   let isLinkedInstructor = false;
   let trainerName = "Trainer";
+  let trainerMemberId: string | null = null;
   let instructors: InstructorOption[] = [];
   let promoLabelByClassId: Record<string, string> = {};
 
@@ -133,6 +141,25 @@ export default async function StaffPage() {
       }));
     } catch (error) { console.error("Unable to load pending class-change requests", error); }
 
+    try {
+      const requests = await listPendingClassCreationRequests(supabase);
+      const userIds = [...new Set(requests.map((request) => request.user_id))];
+      const { data: profilesForNames, error: profilesError } = userIds.length
+        ? await supabase.from("profiles").select("id, full_name").in("id", userIds)
+        : { data: [] as { id: string; full_name: string | null }[], error: null };
+      if (profilesError) throw profilesError;
+      const nameByRequesterId = new Map((profilesForNames ?? []).map((profile) => [profile.id, identify(profile.id, profile.full_name)]));
+      pendingClassCreationRequests = requests.map((request) => ({
+        id: request.id,
+        requester_name: nameByRequesterId.get(request.user_id) ?? identify(request.user_id, null),
+        name: request.name,
+        type: request.type,
+        class_label: `${displayDate(request.class_date)}, ${formatTime(request.start_time)}`,
+        capacity: request.capacity,
+        reason: request.reason,
+      }));
+    } catch (error) { console.error("Unable to load pending class-creation requests", error); }
+
     const mondayOffset = (today.getDay() + 6) % 7;
     const weekMonday = new Date(today); weekMonday.setDate(today.getDate() - mondayOffset); weekMonday.setHours(0, 0, 0, 0);
     const weekSunday = new Date(weekMonday); weekSunday.setDate(weekMonday.getDate() + 6);
@@ -195,6 +222,26 @@ export default async function StaffPage() {
         reviewed_at: row.reviewed_at,
       }));
     } catch (error) { console.error("Unable to load the activity log", error); }
+
+    try {
+      const { data, error } = await supabase.from("class_cancellations").select("id, class_id, class_name, class_date, start_time, canceled_by, booked_count, roster, created_at").order("created_at", { ascending: false }).limit(10);
+      if (error) throw error;
+      const rows = data ?? [];
+      const cancelerIds = [...new Set(rows.map((row) => row.canceled_by))];
+      const nameByCancelerId = new Map<string, string>();
+      if (cancelerIds.length) {
+        const { data: profiles, error: profilesError } = await supabase.from("profiles").select("id, full_name").in("id", cancelerIds);
+        if (profilesError) throw profilesError;
+        for (const profile of profiles ?? []) nameByCancelerId.set(profile.id, identify(profile.id, profile.full_name));
+      }
+      cancellationEntries = rows.map((row) => ({
+        id: row.id,
+        class_label: `${row.class_name} — ${displayDate(row.class_date)}, ${formatTime(row.start_time)}`,
+        canceler_name: nameByCancelerId.get(row.canceled_by) ?? identify(row.canceled_by, null),
+        booked_count: row.booked_count,
+        created_at: row.created_at,
+      }));
+    } catch (error) { console.error("Unable to load canceled class history", error); }
   } else {
     try {
       const { data, error } = await supabase.from("time_off_requests").select("id, requested_date, reason, status").eq("user_id", user.id).order("created_at", { ascending: false });
@@ -213,6 +260,7 @@ export default async function StaffPage() {
       isLinkedInstructor = true;
       trainerName = instructorMember.full_name || "Trainer";
       trainerCertTier = instructorMember.cert_tier ?? null;
+      trainerMemberId = instructorMember.id;
       const scheduleEnd = new Date(today); scheduleEnd.setDate(today.getDate() + 13);
 
       try {
@@ -240,6 +288,11 @@ export default async function StaffPage() {
           for (const classRow of pastClasses ?? []) classLabelById[classRow.id] = `${classRow.name} — ${formatTime(classRow.start_time)}`;
         }
       } catch (error) { console.error("Unable to load this trainer's class-change requests", error); }
+
+      try {
+        const requests = await listOwnClassCreationRequests(supabase, user.id);
+        myClassCreationRequests = requests.map((request) => ({ id: request.id, name: request.name, type: request.type, class_date: request.class_date, start_time: request.start_time, status: request.status }));
+      } catch (error) { console.error("Unable to load this trainer's class-creation requests", error); }
     }
   }
 
@@ -249,9 +302,10 @@ export default async function StaffPage() {
     <SiteNav />
     <main>
       <header className="staff-ops-band"><div className="staff-ops-band-inner"><div><p className="eyebrow"><span /> Studio operations</p><h1>{isManager ? "Manager" : "Trainer"} console</h1><p className="staff-ops-email">{user.email}</p><p>{new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(today)}</p>
-        {isManager && (pendingRequests.length > 0 || pendingClassChangeRequests.length > 0 || atRiskMembersTotal > 0) ? <div className="staff-ops-signals">
+        {isManager && (pendingRequests.length > 0 || pendingClassChangeRequests.length > 0 || pendingClassCreationRequests.length > 0 || atRiskMembersTotal > 0) ? <div className="staff-ops-signals">
           {pendingRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingRequests.length}</b> time-off {pendingRequests.length === 1 ? "request" : "requests"} waiting</span> : null}
           {pendingClassChangeRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingClassChangeRequests.length}</b> swap/cancel {pendingClassChangeRequests.length === 1 ? "request" : "requests"} waiting</span> : null}
+          {pendingClassCreationRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingClassCreationRequests.length}</b> class {pendingClassCreationRequests.length === 1 ? "proposal" : "proposals"} waiting</span> : null}
           {atRiskMembersTotal > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-danger" /><b>{atRiskMembersTotal}</b> at-risk {atRiskMembersTotal === 1 ? "member" : "members"}</span> : null}
         </div> : null}
       </div><div className="staff-capacity-stat">{classes.length ? <><strong>{bookedPercent}%</strong><span>booked today</span><small>{totalBooked}/{totalCapacity} total spots</small></> : <><strong>No classes scheduled today</strong><span>The studio register is clear.</span></>}</div></div></header>
@@ -259,19 +313,25 @@ export default async function StaffPage() {
         {isManager ? <>
           <RealtimeRefresh table="time_off_requests" />
           <RealtimeRefresh table="class_change_requests" />
+          <RealtimeRefresh table="class_creation_requests" />
+          <RealtimeRefresh table="classes" />
           <div className="staff-lower-grid animate-fade-up"><RequestsInbox initialRequests={pendingRequests} /><ClassChangeInbox initialRequests={pendingClassChangeRequests} /></div>
+          <div style={{ marginTop: "20px" }}><ClassCreationInbox initialRequests={pendingClassCreationRequests} /></div>
           <LiveRegister classes={classes} instructors={instructors} currentClassId={currentClass?.id ?? null} nextClassId={nextClass?.id ?? null} today={todayString} promoLabelByClassId={promoLabelByClassId} />
-          <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} /></div>
+          <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "120ms" }}><AtRiskMembers members={atRiskMembers} totalCount={atRiskMembersTotal} /><ActivityLog entries={activityEntries} cancellations={cancellationEntries} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "180ms" }}><StudioPulse stats={pulseStats} teachingLoad={teachingLoad} /><InstructorLeaderboard rows={instructorLeaderboard} /></div>
           <div className="staff-lower-grid animate-fade-up" style={{ animationDelay: "240ms" }}><MemberSearch /><StaffFitBotTiles role={role as "staff" | "admin"} /></div>
         </> : <div className="animate-fade-up">
           <RealtimeRefresh table="time_off_requests" filter={`user_id=eq.${user.id}`} />
           {isLinkedInstructor ? <div className="staff-trainer-console">
             <RealtimeRefresh table="class_change_requests" filter={`user_id=eq.${user.id}`} />
+            <RealtimeRefresh table="class_creation_requests" filter={`user_id=eq.${user.id}`} />
+            <RealtimeRefresh table="classes" filter={`instructor_member_id=eq.${trainerMemberId}`} />
             <TrainerProfile name={trainerName} email={user.email ?? ""} certTier={trainerCertTier} />
             <div className="staff-lower-grid">
               <div className="staff-trainer-side-stack">
                 <MySchedule classes={scheduleClasses} pendingRequestTypeByClassId={pendingRequestTypeByClassId} today={todayString} />
+                <ProposeClass today={todayString} />
                 <RequestTimeOff />
                 <MyRequests requests={myRequests} />
                 <MemberSearch />
@@ -279,6 +339,7 @@ export default async function StaffPage() {
               <div className="staff-trainer-side-stack">
                 <MyMembersRetention members={retentionMembers} lifecycleCounts={retentionCounts} />
                 <ClassChangeStatus requests={myClassChangeRequests} classLabelById={classLabelById} />
+                <ClassCreationStatus requests={myClassCreationRequests} />
                 <StaffFitBotTiles role={role as "staff" | "admin"} />
               </div>
             </div>

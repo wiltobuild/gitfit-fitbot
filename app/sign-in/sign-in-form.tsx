@@ -41,6 +41,9 @@ export function SignInForm() {
           required
           type="password"
         />
+        <Link className="field-hint-link" href="/forgot-password">
+          Forgot password?
+        </Link>
       </div>
       {state.error ? (
         <p aria-live="polite" className="field-error">

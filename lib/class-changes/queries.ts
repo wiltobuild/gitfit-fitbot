@@ -64,3 +64,28 @@ export async function resolveClassChangeRequest(
   }
   return { ok: true };
 }
+
+/**
+ * When a class is deleted, any still-pending swap/cancel requests against it
+ * can never be resolved by a member action -- auto-deny them so they don't
+ * sit forever in the manager queue pointing at a class that no longer exists.
+ */
+export async function denyPendingRequestsForCanceledClass(
+  supabase: SupabaseServerClient,
+  { classId, reviewerId }: { classId: string; reviewerId: string }
+): Promise<number> {
+  const { data, error } = await supabase
+    .from("class_change_requests")
+    .update({
+      status: "denied",
+      reviewed_by: reviewerId,
+      reviewed_at: new Date().toISOString(),
+      reason: "Class was canceled."
+    })
+    .eq("class_id", classId)
+    .eq("status", "pending")
+    .select("id");
+
+  if (error) throw error;
+  return data?.length ?? 0;
+}
