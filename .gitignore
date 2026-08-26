@@ -17,3 +17,8 @@ gitfit-booking-static-package/
 # Local handoff/context doc for the agent working this branch — never
 # existed on main, kept out so merging doesn't introduce it there.
 GitFit Product B - Context for Claude Code.md
+
+# Autonomous-loop orchestration bookkeeping (plan/state/journal for the
+# chuck/dean/cas loop) -- not part of the application, purely local
+# session state, shouldn't be committed/pushed.
+.agent/

@@ -3,11 +3,10 @@ import { requireRoleOrRedirect } from "@/lib/auth/session";
 import { getWeeklyActivityTrend } from "@/lib/classes/activity-trend";
 import { getCohortMembers } from "@/lib/members/queries";
 import type { MemberRow } from "@/lib/members/queries";
+import { cohortBoundaries } from "@/lib/retention/cohort-boundaries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import { RetentionExperience } from "./retention-experience";
-
-const cohortBoundaries = [{ minDays: 7, maxDays: 14 }, { minDays: 14, maxDays: 30 }, { minDays: 31, maxDays: 60 }];
 
 export default async function RetentionPage() {
   const { user, role } = await requireRoleOrRedirect(["staff", "admin"]);

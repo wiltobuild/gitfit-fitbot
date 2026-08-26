@@ -1,5 +1,7 @@
 import { resolveClassType } from "@/lib/chatbot/entity-extraction";
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
+import { logClassCancellation } from "@/lib/class-cancellations/queries";
+import { denyPendingRequestsForCanceledClass } from "@/lib/class-changes/queries";
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
@@ -250,7 +252,27 @@ export async function createClass(supabase: SupabaseServerClient, input: ClassIn
   return id;
 }
 
-export async function updateClass(supabase: SupabaseServerClient, classId: string, input: ClassInput) {
+export type UpdateClassResult =
+  | { ok: true }
+  | { ok: false; code: "capacity_below_booked"; bookedCount: number };
+
+export async function updateClass(
+  supabase: SupabaseServerClient,
+  classId: string,
+  input: ClassInput
+): Promise<UpdateClassResult> {
+  const { data: classRow, error: classError } = await supabase
+    .from("classes")
+    .select("booked_count")
+    .eq("id", classId)
+    .maybeSingle();
+  if (classError) throw classError;
+
+  const bookedCount = classRow?.booked_count ?? 0;
+  if (input.capacity < bookedCount) {
+    return { ok: false, code: "capacity_below_booked", bookedCount };
+  }
+
   const { error } = await supabase
     .from("classes")
     .update({
@@ -265,9 +287,21 @@ export async function updateClass(supabase: SupabaseServerClient, classId: strin
     })
     .eq("id", classId);
   if (error) throw error;
+  return { ok: true };
 }
 
-export async function deleteClass(supabase: SupabaseServerClient, classId: string) {
+// Orchestrates a class cancellation: the audit row and the pending-request
+// denials must both be captured before the class row is hard-deleted, since
+// the delete cascades away the roster/pending rows they depend on. Sequential
+// awaits (no try/catch) ensure a failure in either prior step aborts the
+// delete and propagates to the caller.
+export async function deleteClass(
+  supabase: SupabaseServerClient,
+  { classId, canceledBy }: { classId: string; canceledBy: string }
+) {
+  await logClassCancellation(supabase, { classId, canceledBy });
+  await denyPendingRequestsForCanceledClass(supabase, { classId, reviewerId: canceledBy });
+
   const { error } = await supabase.from("classes").delete().eq("id", classId);
   if (error) throw error;
 }

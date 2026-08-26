@@ -1,8 +1,16 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+async function getBaseUrl() {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
+  return `${protocol}://${host}`;
+}
 
 export type AuthFormState = {
   error: string | null;
@@ -54,6 +62,26 @@ export async function signIn(
   }
 
   redirect("/dashboard");
+}
+
+export async function requestPasswordReset(
+  _previousState: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const supabase = await createSupabaseServerClient();
+  const email = String(formData.get("email") ?? "").trim();
+  const baseUrl = await getBaseUrl();
+
+  // Always return the same message regardless of whether the email matches
+  // an account -- resetPasswordForEmail's own error (if any) isn't surfaced
+  // to the caller, so this page can't be used to enumerate registered
+  // emails.
+  await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${baseUrl}/reset-password` });
+
+  return {
+    error: null,
+    message: "If an account exists for that email, we've sent a link to reset your password.",
+  };
 }
 
 export async function signOut() {

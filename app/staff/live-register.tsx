@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { InstructorAvatar } from "@/app/components/instructor-avatar";
+import { ScheduleRow } from "@/app/components/schedule-row";
 
 export type RegisterClass = {
   id: string;
@@ -23,10 +23,6 @@ export type InstructorOption = { id: string; full_name: string | null };
 function formatTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
   return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
-}
-function fillLevel(booked: number, capacity: number) {
-  const ratio = capacity ? booked / capacity : 0;
-  return ratio >= 1 ? "full" : ratio >= 0.8 ? "filling" : "healthy";
 }
 // "Underbooked" per the shared suite vocabulary: booked ÷ capacity < 45%.
 function isUnderbooked(booked: number, capacity: number) {
@@ -156,7 +152,6 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
       {classes.length ? (
         <ul className="staff-class-list">
           {classes.map((classRow) => {
-            const level = fillLevel(classRow.booked_count, classRow.capacity);
             const isPriority = classRow.id === currentClassId || classRow.id === nextClassId;
             const spots = classRow.capacity - classRow.booked_count;
             const statusText = spots <= 0 ? "Class full" : spots === 1 ? "Only 1 spot left" : `${spots} spots open`;
@@ -179,23 +174,23 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
             }
 
             return (
-              <li className={`staff-class-row staff-fill-${level}${isPriority ? " staff-class-priority" : ""}`} key={classRow.id}>
-                <InstructorAvatar name={classRow.instructor} size={40} />
-                <div className="staff-class-summary">
-                  <strong>{classRow.name}{classRow.promoted ? <span className="badge badge-brand staff-class-promoted-badge">Promoted</span> : null}</strong>
+              <ScheduleRow
+                key={classRow.id}
+                instructor={classRow.instructor}
+                highlighted={isPriority}
+                name={<>{classRow.name}{classRow.promoted ? <span className="badge badge-brand staff-class-promoted-badge">Promoted</span> : null}</>}
+                meta={<>
                   <span>{formatTime(classRow.start_time)} · {classRow.instructor}</span>
                   {classRow.promoted && promoLabelByClassId[classRow.id] ? <small className="staff-class-promo-trace">{promoLabelByClassId[classRow.id]}</small> : null}
-                </div>
-                <div className="staff-fill-unit">
-                  <div className="staff-fill-label"><span className="staff-fill-status">{statusText}</span><strong>{classRow.booked_count}/{classRow.capacity}</strong></div>
-                  <span className="staff-fill-track" aria-label={`${classRow.booked_count} of ${classRow.capacity} spots booked`}><span style={{ width: `${Math.min(100, classRow.capacity ? (classRow.booked_count / classRow.capacity) * 100 : 0)}%` }} /></span>
-                </div>
-                <div className="staff-schedule-actions">
+                </>}
+                capacity={{ booked: classRow.booked_count, capacity: classRow.capacity }}
+                capacityLabel={<><span className="staff-fill-status">{statusText}</span><strong>{classRow.booked_count}/{classRow.capacity}</strong></>}
+                actions={<>
                   {underbooked ? <button className="btn btn-outline btn-sm" type="button" disabled={isPending} onClick={() => void togglePromoted(classRow.id, !classRow.promoted)}>{isPending ? "…" : classRow.promoted ? "Unpromote" : "Promote"}</button> : null}
                   <button className="btn btn-outline btn-sm" type="button" disabled={isPending} onClick={() => setEditingId(classRow.id)}>Edit</button>
                   <button className="btn btn-outline-danger btn-sm" type="button" disabled={isPending} onClick={() => void cancelClass(classRow.id)}>{isPending ? "…" : "Cancel"}</button>
-                </div>
-              </li>
+                </>}
+              />
             );
           })}
         </ul>

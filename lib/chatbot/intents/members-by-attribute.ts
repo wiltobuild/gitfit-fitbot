@@ -14,7 +14,7 @@ export const membersByAttributeIntent: Intent = {
     ]) *
     (1 +
       scoreEntity(message, [
-        /\b(yoga|cycling|hiit|beginner|intermediate|advanced|haven['â€™]?t been|inactive|stale|\d+\s+days?)\b/i
+        /\b(yoga|cycling|hiit|boxing|pilates|strength|beginner|intermediate|advanced|haven['â€™]?t been|inactive|stale|\d+\s+days?)\b/i
       ])),
   handle: async (message, _session, pendingAnswer) => {
     void pendingAnswer;

@@ -24,7 +24,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ cla
   const { classId } = await params;
   const supabase = await createSupabaseServerClient();
   try {
-    await updateClass(supabase, classId, input);
+    const result = await updateClass(supabase, classId, input);
+    if (!result.ok) {
+      return errorResponse(
+        `Capacity can't be set below the current booked count (${result.bookedCount}).`,
+        400
+      );
+    }
     return NextResponse.json({ ok: true });
   } catch {
     return errorResponse("Unable to update this class right now. Please try again.", 500);

@@ -24,7 +24,7 @@ export const classInfoIntent: Intent = {
   roles: ["client", "staff", "admin"],
   match: (message) =>
     scoreTriggerFamily(message, [infoPattern]) *
-    (1 + scoreEntity(message, [/\b(yoga|cycling|hiit)\b/i])),
+    (1 + scoreEntity(message, [/\b(yoga|cycling|hiit|boxing|pilates|strength)\b/i])),
   handle: async (message, _session, pendingAnswer) => {
     const normalized = message.toLowerCase();
     const type =

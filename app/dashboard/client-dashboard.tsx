@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { signOut } from "@/app/actions/auth";
 import { IconCalendar, IconSparkle, MomentumArc } from "@/app/components/icons";
 import MomentumRing from "@/app/components/momentum-ring";
+import { ScheduleRow } from "@/app/components/schedule-row";
 import { RecommendedClasses } from "@/app/dashboard/recommended-classes";
 import type { StudioClass } from "@/lib/classes/queries";
 import type { EncouragingMessageCategory } from "@/lib/dashboard/encouraging-messages";
@@ -25,10 +26,14 @@ const formatPromotionDate = (sentAt: string | null) => {
 const previewPromotion = (body: string) => body.length > 150 ? `${body.slice(0, 147).trimEnd()}...` : body;
 
 function SessionList({ classes, emptyTitle, emptyCopy }: { classes: ClassRow[]; emptyTitle: string; emptyCopy: ReactNode }) {
-  return classes.length ? <ul className="client-session-list">{classes.map((classRow) => <li key={`${classRow.class_date}-${classRow.start_time}-${classRow.name}`}>
-    <div><strong>{classRow.name}</strong><span>{classRow.instructor} · {classRow.type}</span></div>
-    <time dateTime={classRow.class_date}>{formatDate(classRow.class_date)} · {formatTime(classRow.start_time)}</time>
-  </li>)}</ul> : <div className="empty-state client-dashboard-empty"><h3>{emptyTitle}</h3><p>{emptyCopy}</p></div>;
+  return classes.length ? <ul className="staff-class-list">{classes.map((classRow) => (
+    <ScheduleRow
+      key={`${classRow.class_date}-${classRow.start_time}-${classRow.name}`}
+      name={classRow.name}
+      meta={<span>{classRow.instructor} · {classRow.type}</span>}
+      actions={<time dateTime={classRow.class_date}>{formatDate(classRow.class_date)} · {formatTime(classRow.start_time)}</time>}
+    />
+  ))}</ul> : <div className="empty-state client-dashboard-empty"><h3>{emptyTitle}</h3><p>{emptyCopy}</p></div>;
 }
 
 export function ClientDashboard({ bookingHistory, currentWeekBooked, encouragingMessage, encouragingMessageCategory, promotions, recommendedClasses, recommendationReason, streakWeeks, upcomingBookings, userEmail }: { bookingHistory: ClassRow[]; currentWeekBooked: boolean; encouragingMessage: string; encouragingMessageCategory: EncouragingMessageCategory; promotions: Promotion[] | null; recommendedClasses: StudioClass[]; recommendationReason: string | null; streakWeeks: number; upcomingBookings: ClassRow[]; userEmail?: string }) {

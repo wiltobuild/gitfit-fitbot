@@ -128,18 +128,17 @@ export async function getMemberWeeklyActivity(
   monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
-  const date = (value: Date) => value.toISOString().slice(0, 10);
   const { data } = await supabase
     .from("bookings")
     .select("id, classes!inner(class_date)")
     .eq("user_id", userId)
-    .gte("classes.class_date", date(monday))
-    .lte("classes.class_date", date(sunday));
+    .gte("classes.class_date", formatDateForQuery(monday))
+    .lte("classes.class_date", formatDateForQuery(sunday));
 
   return { member: member as unknown as MemberRow, classesThisWeek: data?.length ?? 0 };
 }
 
-function todayDate() {
+export function todayDate() {
   const today = new Date();
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 }
