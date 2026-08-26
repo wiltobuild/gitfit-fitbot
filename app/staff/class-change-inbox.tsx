@@ -65,7 +65,7 @@ export function ClassChangeInbox({ initialRequests }: { initialRequests: Pending
                 <div className="staff-request-summary">
                   <strong>{request.requester_name}</strong>
                   <span>{request.type === "edit" ? "Edit" : "Cancel"} — {request.class_label}</span>
-                  {request.type === "edit" && request.proposed_summary ? <small>Proposed: {request.proposed_summary}</small> : null}
+                  {request.type === "edit" && request.proposed_summary ? <span>Proposed: {request.proposed_summary}</span> : null}
                   {request.reason ? <small>&ldquo;{request.reason}&rdquo;</small> : null}
                 </div>
                 <div className="staff-request-actions">
