@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link"; import { FormEvent, useEffect, useRef, useState } from "react";
-import { IconUser, MomentumArc } from "@/app/components/icons"; import { ChatCard } from "@/app/components/chat-cards"; import { CHIP_LABELS, CHIP_ROLES, type ChipId } from "@/lib/chatbot/chip-labels"; import type { RichCard } from "@/lib/chatbot/types"; import { interpretChatResponse } from "@/lib/chatbot/interpret-chat-response";
+import { IconUser } from "@/app/components/icons"; import { ChatCard } from "@/app/components/chat-cards"; import { CHIP_LABELS, CHIP_ROLES, type ChipId } from "@/lib/chatbot/chip-labels"; import type { RichCard } from "@/lib/chatbot/types"; import { interpretChatResponse } from "@/lib/chatbot/interpret-chat-response";
 type Role = "client" | "staff" | "admin";
 type Message = { role: "assistant" | "user"; content: string; card?: RichCard; suggestedChips?: ChipId[] }; const greetingChips: ChipId[] = ["quick-workout", "plan-my-week", "menu"];
 const greeting: Message = { role: "assistant", content: "Hey, I’m FitBot. Ask me about classes, bookings, your schedule, or your goals — or tap a suggestion below.", suggestedChips: greetingChips };

@@ -29,8 +29,11 @@ const retention: NavLink = { href: "/retention", label: "Retention", icon: IconU
 // studio, they don't book into it as a member, so neither gets a "My
 // stuff" group at all.
 function getLinkGroups(role: string): { myStuff: NavLink[]; runTheStudio: NavLink[] } {
+  // Admins manage classes (instructor, time, capacity, everything) from the
+  // /staff Live register panel already -- a second, thinner "Book a class"
+  // entry point for them would just be a link to a link.
   if (role === "admin") return { myStuff: [], runTheStudio: [dashboard, staffConsole, retention] };
-  if (role === "staff") return { myStuff: [], runTheStudio: [staffConsole, retention] };
+  if (role === "staff") return { myStuff: [bookAClass], runTheStudio: [staffConsole, retention] };
   return { myStuff: [dashboard, bookAClass], runTheStudio: [] };
 }
 

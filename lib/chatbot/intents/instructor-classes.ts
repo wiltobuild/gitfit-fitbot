@@ -1,36 +1,40 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { listMembersForStaff, todayDate } from "@/lib/members/queries";
+import { todayDate } from "@/lib/members/queries";
 import type { Intent } from "@/lib/chatbot/types";
 import { scoreEntity, scoreTriggerFamily } from "@/lib/chatbot/match-scoring";
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
-function matchingInstructors(
-  message: string,
-  members: Awaited<ReturnType<typeof listMembersForStaff>>["data"]
-) {
+function matchingInstructors(message: string, instructors: string[]) {
   const normalized = message.toLowerCase();
-  return members.filter(
-    (member) =>
-      member.is_instructor &&
-      member.full_name &&
-      member.full_name
-        .split(/\s+/)
-        .some((name) =>
-          new RegExp(`\\b${escapeRegExp(name)}\\b`, "i").test(normalized)
-        )
+  return instructors.filter((name) =>
+    name
+      .split(/\s+/)
+      .some((part) => new RegExp(`\\b${escapeRegExp(part)}\\b`, "i").test(normalized))
   );
 }
 export async function getInstructorClasses(message: string) {
   const supabase = await createSupabaseServerClient();
-  const { data: members, error: memberError } =
-    await listMembersForStaff(supabase);
-  if (memberError)
+  // The roster of "who teaches here" only needs the instructor names already
+  // visible on the public class schedule -- not the staff-only member list
+  // (list_members_for_staff hard-fails for non-staff callers), so this stays
+  // usable for the client role the intent is registered for.
+  const { data: classRows, error: classesError } = await supabase
+    .from("classes")
+    .select("instructor");
+  if (classesError)
     return {
       reply:
         "I couldn't retrieve instructors right now. Please try again shortly."
     };
-  const matches = matchingInstructors(message, members);
+  const instructors = [
+    ...new Set(
+      (classRows ?? [])
+        .map((row) => row.instructor)
+        .filter((name): name is string => Boolean(name))
+    )
+  ];
+  const matches = matchingInstructors(message, instructors);
   if (!matches.length)
     return { reply: "Tell me whose schedule you'd like to see." };
   if (matches.length > 1)
@@ -39,14 +43,13 @@ export async function getInstructorClasses(message: string) {
       card: {
         kind: "disambiguation" as const,
         prompt: "Which instructor did you mean?",
-        options: matches.map((member) => ({
-          label: member.full_name || member.email,
-          detail: member.email,
-          sendMessage: `show classes for ${member.full_name}`
+        options: matches.map((name) => ({
+          label: name,
+          sendMessage: `show classes for ${name}`
         }))
       }
     };
-  const instructor = matches[0].full_name || matches[0].email;
+  const instructor = matches[0];
   const { data, error } = await supabase
     .from("classes")
     .select(

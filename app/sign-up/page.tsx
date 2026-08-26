@@ -9,6 +9,7 @@ export default function SignUpPage() {
       <MomentumArc className="auth-momentum-arc" />
       <section className="surface-card auth-card animate-fade-up">
         <Link className="auth-brand" href="/" aria-label="GitFit home">
+          <img className="brand-icon" src="/gitfit-icon.gif" alt="" />
           <span className="wordmark">GitFit</span>
         </Link>
         <div className="auth-heading">
