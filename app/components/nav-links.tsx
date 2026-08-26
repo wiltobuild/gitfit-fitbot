@@ -25,9 +25,12 @@ const retention: NavLink = { href: "/retention", label: "Retention", icon: IconU
 // (operational), and staff doesn't get a separate dashboard entry at all
 // -- /dashboard just redirects them straight to /staff now, so a second
 // nav entry pointing at the same destination would be a link to a link.
+// Booking a class is a client-only action -- staff/admin operate the
+// studio, they don't book into it as a member, so neither gets a "My
+// stuff" group at all.
 function getLinkGroups(role: string): { myStuff: NavLink[]; runTheStudio: NavLink[] } {
-  if (role === "admin") return { myStuff: [bookAClass], runTheStudio: [dashboard, staffConsole, retention] };
-  if (role === "staff") return { myStuff: [bookAClass], runTheStudio: [staffConsole, retention] };
+  if (role === "admin") return { myStuff: [], runTheStudio: [dashboard, staffConsole, retention] };
+  if (role === "staff") return { myStuff: [], runTheStudio: [staffConsole, retention] };
   return { myStuff: [dashboard, bookAClass], runTheStudio: [] };
 }
 
@@ -47,13 +50,9 @@ export default function NavLinks({ role }: NavLinksProps) {
 
   return (
     <div className="nav-links">
-      <div className="nav-link-group" aria-label="My stuff">{myStuff.map(renderLink)}</div>
-      {runTheStudio.length ? (
-        <>
-          <span className="nav-link-divider" aria-hidden="true" />
-          <div className="nav-link-group" aria-label="Run the studio">{runTheStudio.map(renderLink)}</div>
-        </>
-      ) : null}
+      {myStuff.length ? <div className="nav-link-group" aria-label="My stuff">{myStuff.map(renderLink)}</div> : null}
+      {myStuff.length && runTheStudio.length ? <span className="nav-link-divider" aria-hidden="true" /> : null}
+      {runTheStudio.length ? <div className="nav-link-group" aria-label="Run the studio">{runTheStudio.map(renderLink)}</div> : null}
     </div>
   );
 }
