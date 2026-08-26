@@ -150,7 +150,10 @@ function bookingCard(
 export const bookClassIntent: Intent = {
   id: "book-class",
   description: "Books or cancels the current member's class booking.",
-  roles: ["client", "staff", "admin"],
+  // Booking a class is a client-only action -- staff/admin operate the
+  // studio, they don't book into it as a member. Matches the same
+  // restriction now enforced on /appointments and its API routes.
+  roles: ["client"],
   match: (message) =>
     !timeOffShaped.test(message)
       ? scoreTriggerFamily(message, [

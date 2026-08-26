@@ -69,21 +69,21 @@ export async function requireUserOrThrow(): Promise<SessionUser> {
   return session;
 }
 
-export async function requireRoleOrRedirect(role: "staff" | "admin" | Array<"staff" | "admin">): Promise<SessionUser> {
+export async function requireRoleOrRedirect(role: UserRole | UserRole[]): Promise<SessionUser> {
   const session = await requireUserOrRedirect();
 
-  if (Array.isArray(role) ? !role.includes(session.role as "staff" | "admin") : session.role !== role) {
-    // Authenticated users without staff access return to the future dashboard.
+  if (Array.isArray(role) ? !role.includes(session.role) : session.role !== role) {
+    // Authenticated users without the required role return to the dashboard.
     redirect("/dashboard?error=forbidden");
   }
 
   return session;
 }
 
-export async function requireRoleOrThrow(role: "staff" | "admin" | Array<"staff" | "admin">): Promise<SessionUser> {
+export async function requireRoleOrThrow(role: UserRole | UserRole[]): Promise<SessionUser> {
   const session = await requireUserOrThrow();
 
-  if (Array.isArray(role) ? !role.includes(session.role as "staff" | "admin") : session.role !== role) {
+  if (Array.isArray(role) ? !role.includes(session.role) : session.role !== role) {
     throw new UnauthorizedError("wrong-role");
   }
 
