@@ -52,8 +52,8 @@ export function RequestsInbox({ initialRequests }: { initialRequests: PendingReq
     <section className={`surface-card staff-requests-inbox${requests.length ? " staff-panel-flagged staff-panel-flagged-warning" : ""}`} aria-labelledby="requests-inbox-title">
       <div className="staff-panel-heading">
         <div>
-          <p className="eyebrow"><span /> Requests</p>
-          <h2 id="requests-inbox-title">Requests inbox</h2>
+          <p className="eyebrow"><span /> Time off</p>
+          <h2 id="requests-inbox-title">Time-off requests</h2>
         </div>
         <p>{requests.length ? `${requests.length} pending` : "All caught up"}</p>
       </div>
@@ -68,7 +68,7 @@ export function RequestsInbox({ initialRequests }: { initialRequests: PendingReq
               <li className="staff-request-row" key={request.id}>
                 <div className="staff-request-summary">
                   <strong>{request.requester_name}</strong>
-                  <span>Requesting {formatRequestedDate(request.requested_date)}</span>
+                  <span>Time off — {formatRequestedDate(request.requested_date)}</span>
                   {request.reason ? <small>&ldquo;{request.reason}&rdquo;</small> : null}
                 </div>
                 <div className="staff-request-actions">
