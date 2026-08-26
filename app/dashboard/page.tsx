@@ -98,7 +98,7 @@ export default async function DashboardPage() {
 
   // /staff (the Manager/Trainer console) is staff's real dashboard -- it
   // already covers "my upcoming classes" (My Schedule) plus time-off,
-  // swap/cancel requests, and retention, more completely than a second,
+  // edit/cancel requests, and retention, more completely than a second,
   // narrower view here ever did. Redirect instead of maintaining two
   // competing staff surfaces.
   if (role === "staff") redirect("/staff");

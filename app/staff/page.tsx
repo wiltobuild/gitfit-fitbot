@@ -61,7 +61,7 @@ export default async function StaffPage() {
   let scheduleClasses: ScheduleClass[] = [];
   let myClassChangeRequests: MyClassChangeRequest[] = [];
   let myClassCreationRequests: MyClassCreationRequest[] = [];
-  let pendingRequestTypeByClassId: Record<string, "swap" | "cancel"> = {};
+  let pendingRequestTypeByClassId: Record<string, "edit" | "cancel"> = {};
   let retentionMembers: Awaited<ReturnType<typeof getMemberRetentionForInstructor>>["members"] = [];
   let retentionCounts: Record<string, number> = {};
   let classLabelById: Record<string, string> = {};
@@ -137,6 +137,9 @@ export default async function StaffPage() {
         requester_name: nameByRequesterId.get(request.user_id) ?? identify(request.user_id, null),
         class_label: labelByClassId.get(request.class_id) ?? "Class no longer scheduled",
         type: request.type,
+        proposed_summary: request.type === "edit" && request.proposed_name
+          ? `${request.proposed_name} (${request.proposed_type}) — ${displayDate(request.proposed_class_date!)}, ${formatTime(request.proposed_start_time!)} · cap ${request.proposed_capacity}`
+          : null,
         reason: request.reason,
       }));
     } catch (error) { console.error("Unable to load pending class-change requests", error); }
@@ -304,7 +307,7 @@ export default async function StaffPage() {
       <header className="staff-ops-band"><div className="staff-ops-band-inner"><div><p className="eyebrow"><span /> Studio operations</p><h1>{isManager ? "Manager" : "Trainer"} console</h1><p className="staff-ops-email">{user.email}</p><p>{new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(today)}</p>
         {isManager && (pendingRequests.length > 0 || pendingClassChangeRequests.length > 0 || pendingClassCreationRequests.length > 0 || atRiskMembersTotal > 0) ? <div className="staff-ops-signals">
           {pendingRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingRequests.length}</b> time-off {pendingRequests.length === 1 ? "request" : "requests"} waiting</span> : null}
-          {pendingClassChangeRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingClassChangeRequests.length}</b> swap/cancel {pendingClassChangeRequests.length === 1 ? "request" : "requests"} waiting</span> : null}
+          {pendingClassChangeRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingClassChangeRequests.length}</b> edit/cancel {pendingClassChangeRequests.length === 1 ? "request" : "requests"} waiting</span> : null}
           {pendingClassCreationRequests.length > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-warning" /><b>{pendingClassCreationRequests.length}</b> class {pendingClassCreationRequests.length === 1 ? "proposal" : "proposals"} waiting</span> : null}
           {atRiskMembersTotal > 0 ? <span className="staff-ops-signal"><i className="staff-ops-signal-dot staff-ops-signal-dot-danger" /><b>{atRiskMembersTotal}</b> at-risk {atRiskMembersTotal === 1 ? "member" : "members"}</span> : null}
         </div> : null}
