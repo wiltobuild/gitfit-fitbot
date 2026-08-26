@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { ScheduleRow } from "@/app/components/schedule-row";
+import { ClassForm, classFormToPayload, emptyClassForm, type ClassFormValues, type InstructorOption } from "@/app/components/class-form";
 
 export type RegisterClass = {
   id: string;
@@ -18,8 +19,6 @@ export type RegisterClass = {
   promoted: boolean;
 };
 
-export type InstructorOption = { id: string; full_name: string | null };
-
 function formatTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
   return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
@@ -29,52 +28,6 @@ function isUnderbooked(booked: number, capacity: number) {
   return capacity > 0 && booked / capacity < 0.45;
 }
 
-type FormValues = { name: string; type: string; instructorMemberId: string; classDate: string; startTime: string; durationMinutes: string; capacity: string };
-const emptyForm = (defaultDate: string): FormValues => ({ name: "", type: "", instructorMemberId: "", classDate: defaultDate, startTime: "", durationMinutes: "45", capacity: "16" });
-
-function ClassForm({ instructors, initial, submitLabel, onCancel, onSubmit }: { instructors: InstructorOption[]; initial: FormValues; submitLabel: string; onCancel: () => void; onSubmit: (values: FormValues) => Promise<void> }) {
-  const [values, setValues] = useState(initial);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-    try {
-      await onSubmit(values);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Unable to save this class.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <form className="staff-class-form" onSubmit={handleSubmit}>
-      <div className="staff-class-form-grid">
-        <div className="field"><label className="field-label" htmlFor="class-name">Class name</label><input className="field-input" id="class-name" type="text" value={values.name} onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))} required /></div>
-        <div className="field"><label className="field-label" htmlFor="class-type">Type</label><input className="field-input" id="class-type" type="text" list="class-type-options" value={values.type} onChange={(event) => setValues((current) => ({ ...current, type: event.target.value }))} required />
-          <datalist id="class-type-options"><option value="Yoga" /><option value="Cycling" /><option value="HIIT" /><option value="Pilates" /><option value="Boxing" /><option value="Strength" /></datalist>
-        </div>
-        <div className="field"><label className="field-label" htmlFor="class-instructor">Instructor</label><select className="field-input" id="class-instructor" value={values.instructorMemberId} onChange={(event) => setValues((current) => ({ ...current, instructorMemberId: event.target.value }))} required>
-          <option value="" disabled>Choose an instructor</option>
-          {instructors.map((instructor) => <option key={instructor.id} value={instructor.id}>{instructor.full_name ?? "Unnamed instructor"}</option>)}
-        </select></div>
-        <div className="field"><label className="field-label" htmlFor="class-date">Date</label><input className="field-input" id="class-date" type="date" value={values.classDate} onChange={(event) => setValues((current) => ({ ...current, classDate: event.target.value }))} required /></div>
-        <div className="field"><label className="field-label" htmlFor="class-time">Start time</label><input className="field-input" id="class-time" type="time" value={values.startTime} onChange={(event) => setValues((current) => ({ ...current, startTime: event.target.value }))} required /></div>
-        <div className="field"><label className="field-label" htmlFor="class-duration">Duration (min)</label><input className="field-input" id="class-duration" type="number" min={1} value={values.durationMinutes} onChange={(event) => setValues((current) => ({ ...current, durationMinutes: event.target.value }))} required /></div>
-        <div className="field"><label className="field-label" htmlFor="class-capacity">Capacity</label><input className="field-input" id="class-capacity" type="number" min={1} value={values.capacity} onChange={(event) => setValues((current) => ({ ...current, capacity: event.target.value }))} required /></div>
-      </div>
-      {error ? <p className="field-error" aria-live="polite">{error}</p> : null}
-      <div className="staff-class-form-actions">
-        <button className="btn btn-outline btn-sm" type="button" onClick={onCancel} disabled={isSubmitting}>Cancel</button>
-        <button className="btn btn-primary btn-sm" type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving…" : submitLabel}</button>
-      </div>
-    </form>
-  );
-}
-
 export function LiveRegister({ classes, instructors, currentClassId, nextClassId, today, promoLabelByClassId }: { classes: RegisterClass[]; instructors: InstructorOption[]; currentClassId: string | null; nextClassId: string | null; today: string; promoLabelByClassId: Record<string, string> }) {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
@@ -82,11 +35,11 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState("");
 
-  async function submitCreate(values: FormValues) {
+  async function submitCreate(values: ClassFormValues) {
     const response = await fetch("/api/staff/classes/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toPayload(values, instructors)),
+      body: JSON.stringify(classFormToPayload(values, instructors)),
     });
     const payload = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
     if (!response.ok) throw new Error(payload.error?.message ?? "Unable to create this class.");
@@ -94,11 +47,11 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
     router.refresh();
   }
 
-  async function submitEdit(classId: string, values: FormValues) {
+  async function submitEdit(classId: string, values: ClassFormValues) {
     const response = await fetch(`/api/staff/classes/${classId}/update`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toPayload(values, instructors)),
+      body: JSON.stringify(classFormToPayload(values, instructors)),
     });
     const payload = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
     if (!response.ok) throw new Error(payload.error?.message ?? "Unable to update this class.");
@@ -148,7 +101,7 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
         {isCreating ? null : <button className="btn btn-primary btn-sm" type="button" onClick={() => setIsCreating(true)}>Create class</button>}
       </div>
       {error ? <p className="staff-search-error" aria-live="polite">{error}</p> : null}
-      {isCreating ? <ClassForm instructors={instructors} initial={emptyForm(today)} submitLabel="Create class" onCancel={() => setIsCreating(false)} onSubmit={submitCreate} /> : null}
+      {isCreating ? <ClassForm instructors={instructors} initial={emptyClassForm(today)} submitLabel="Create class" onCancel={() => setIsCreating(false)} onSubmit={submitCreate} /> : null}
       {classes.length ? (
         <ul className="staff-class-list">
           {classes.map((classRow) => {
@@ -199,18 +152,4 @@ export function LiveRegister({ classes, instructors, currentClassId, nextClassId
       )}
     </section>
   );
-}
-
-function toPayload(values: FormValues, instructors: InstructorOption[]) {
-  const instructor = instructors.find((option) => option.id === values.instructorMemberId);
-  return {
-    name: values.name,
-    type: values.type,
-    instructorMemberId: values.instructorMemberId,
-    instructorName: instructor?.full_name ?? "",
-    classDate: values.classDate,
-    startTime: values.startTime,
-    durationMinutes: Number(values.durationMinutes),
-    capacity: Number(values.capacity),
-  };
 }

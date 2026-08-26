@@ -14,12 +14,12 @@ import { ClassChangeStatus, type MyClassChangeRequest } from "@/app/staff/class-
 import { MyMembersRetention } from "@/app/staff/my-members-retention";
 import { ClassChangeInbox, type PendingClassChangeRequest } from "@/app/staff/class-change-inbox";
 import { InstructorLeaderboard, type LeaderboardRow } from "@/app/staff/instructor-leaderboard";
-import { LiveRegister, type InstructorOption, type RegisterClass } from "@/app/staff/live-register";
+import { LiveRegister, type RegisterClass } from "@/app/staff/live-register";
 import { ProposeClass } from "@/app/staff/propose-class";
 import { ClassCreationStatus, type MyClassCreationRequest } from "@/app/staff/class-creation-status";
 import { ClassCreationInbox, type PendingClassCreationRequest } from "@/app/staff/class-creation-inbox";
 import { requireRoleOrRedirect } from "@/lib/auth/session";
-import { getMemberForUser, getMemberRetentionForInstructor, listInstructors, listMembersForStaff } from "@/lib/members/queries";
+import { getMemberForUser, getMemberRetentionForInstructor, listInstructors, listMembersForStaff, type InstructorOption } from "@/lib/members/queries";
 import { getClassesForInstructorInRange, getInstructorLeaderboard } from "@/lib/classes/queries";
 import { listOwnClassChangeRequests, listPendingClassChangeRequests } from "@/lib/class-changes/queries";
 import { listOwnClassCreationRequests, listPendingClassCreationRequests } from "@/lib/class-creation-requests/queries";
