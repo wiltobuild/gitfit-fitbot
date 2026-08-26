@@ -266,8 +266,18 @@ export async function routeMessage(
     };
   }
 
+  // Nothing matched, not even a fragment (see the near-miss branch above) --
+  // this is the true "I don't understand you" case, not a vague-but-real
+  // goal statement. Say so plainly and name real capabilities instead of
+  // treating unparseable input as if it were a goal worth coaching.
   return {
-    reply: `That’s a strong place to start. You said: “${message}” — what would make that feel like a win this week?`,
+    reply: "I couldn't quite match that to something I can help with.",
+    card: {
+      kind: "notice",
+      tone: "info",
+      title: "Here's what I can help with",
+      body: "Try asking about classes, bookings, your schedule, or a fitness goal — or tap a suggestion below."
+    },
     suggestedChips:
       session.role === "client"
         ? ["todays-schedule", "my-goals", "recommend-class", "menu"]

@@ -12,6 +12,18 @@ async function getBaseUrl() {
   return `${protocol}://${host}`;
 }
 
+// Most Supabase auth error messages ("Invalid login credentials", "Password
+// should be at least 6 characters") already read fine to an end user as-is.
+// Rate-limit errors are the exception -- they surface as internal-sounding
+// text ("email rate limit exceeded") with no indication of what to actually
+// do, so that's the one case worth translating rather than passing through.
+function friendlyAuthErrorMessage(message: string): string {
+  if (message.toLowerCase().includes("rate limit")) {
+    return "Too many attempts right now. Please wait a few minutes and try again.";
+  }
+  return message;
+}
+
 export type AuthFormState = {
   error: string | null;
   message?: string | null;
@@ -30,7 +42,7 @@ export async function signUp(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: friendlyAuthErrorMessage(error.message) };
   }
 
   // With email confirmation enabled (this project's default), signUp()
@@ -58,7 +70,7 @@ export async function signIn(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: friendlyAuthErrorMessage(error.message) };
   }
 
   redirect("/dashboard");
