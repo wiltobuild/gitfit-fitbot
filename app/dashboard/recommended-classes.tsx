@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import { ScheduleRow } from "@/app/components/schedule-row";
 import type { StudioClass } from "@/lib/classes/queries";
 
 type ApiError = { error?: { message?: string } };
@@ -43,23 +44,26 @@ export function RecommendedClasses({ classes: initialClasses, reasonLabel }: { c
       <Link href="/appointments">Browse schedule</Link>
     </div>
     {reasonLabel ? <p className="client-recommendation-reason">{reasonLabel}</p> : null}
-    <ul className="client-recommendation-list">
+    <ul className="staff-class-list">
       {classes.map((classRow) => {
         const isBooked = bookedIds.has(classRow.id);
         const isFull = classRow.booked_count >= classRow.capacity && !isBooked;
         const isPending = pendingId === classRow.id;
-        return <li key={classRow.id}>
-          <div className="client-recommendation-summary">
-            <strong>{classRow.name}</strong>
-            <span>{classRow.instructor} · {formatDate(classRow.class_date)} · {formatTime(classRow.start_time)}</span>
-            {errorById[classRow.id] ? <small className="card-error">{errorById[classRow.id]}</small> : null}
-          </div>
-          {isBooked
-            ? <span className="badge badge-success booking-confirmed">Booked</span>
-            : <button className="btn btn-primary btn-sm" disabled={isPending || isFull} onClick={() => void book(classRow.id)} type="button">
-                {isPending ? "Booking..." : isFull ? "Full" : "Book"}
-              </button>}
-        </li>;
+        return (
+          <ScheduleRow
+            key={classRow.id}
+            name={classRow.name}
+            meta={<>
+              <span>{classRow.instructor} · {formatDate(classRow.class_date)} · {formatTime(classRow.start_time)}</span>
+              {errorById[classRow.id] ? <small className="card-error">{errorById[classRow.id]}</small> : null}
+            </>}
+            actions={isBooked
+              ? <span className="badge badge-success booking-confirmed">Booked</span>
+              : <button className="btn btn-primary btn-sm" disabled={isPending || isFull} onClick={() => void book(classRow.id)} type="button">
+                  {isPending ? "Booking..." : isFull ? "Full" : "Book"}
+                </button>}
+          />
+        );
       })}
     </ul>
   </section>;

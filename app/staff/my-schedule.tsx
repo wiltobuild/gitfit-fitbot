@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { fillLevel } from "@/lib/classes/fill-level";
+import { ScheduleRow } from "@/app/components/schedule-row";
 
 export type ScheduleAttendee = { userId: string; name: string | null; email: string | null };
 export type ScheduleClass = {
@@ -112,43 +112,35 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
       ) : (
         <ul className="staff-class-list">
           {classesForDay.map((classRow) => {
-            const level = fillLevel(classRow.booked_count, classRow.capacity);
             const isExpanded = expandedId === classRow.id;
             const roster = rosterByClassId[classRow.id];
             const requestedType = submitted[classRow.id] ?? pendingRequestTypeByClassId[classRow.id];
             const isActing = actionState?.id === classRow.id;
             return (
               <li className="staff-schedule-class-group" key={classRow.id}>
-                <div className={`staff-class-row staff-fill-${level}`}>
-                  <div className="staff-class-summary">
-                    <strong>{classRow.name}</strong>
-                    <span>{formatTime(classRow.start_time)} · {classRow.type}</span>
-                  </div>
-                  <div className="staff-fill-unit">
-                    <div className="staff-fill-label">
-                      <button type="button" className="staff-fitbot-text" onClick={() => void toggleRoster(classRow.id)}>
-                        {classRow.booked_count}/{classRow.capacity} booked
+                <ScheduleRow
+                  as="div"
+                  name={classRow.name}
+                  meta={<span>{formatTime(classRow.start_time)} · {classRow.type}</span>}
+                  capacity={{ booked: classRow.booked_count, capacity: classRow.capacity }}
+                  capacityLabel={
+                    <button type="button" className="staff-fitbot-text" onClick={() => void toggleRoster(classRow.id)}>
+                      {classRow.booked_count}/{classRow.capacity} booked
+                    </button>
+                  }
+                  actions={requestedType ? (
+                    <span className="badge badge-neutral">{requestedType} requested</span>
+                  ) : (
+                    <>
+                      <button className="btn btn-outline-danger btn-sm" disabled={isActing} onClick={() => void requestChange(classRow.id, "cancel")} type="button">
+                        {isActing && actionState.type === "cancel" ? "…" : "Cancel"}
                       </button>
-                    </div>
-                    <span className="staff-fill-track" aria-label={`${classRow.booked_count} of ${classRow.capacity} spots booked`}>
-                      <span style={{ width: `${Math.min(100, classRow.capacity ? (classRow.booked_count / classRow.capacity) * 100 : 0)}%` }} />
-                    </span>
-                  </div>
-                  <div className="staff-schedule-actions">
-                    {requestedType ? (
-                      <span className="badge badge-neutral">{requestedType} requested</span>
-                    ) : (
-                      <>
-                        <button className="btn btn-outline-danger btn-sm" disabled={isActing} onClick={() => void requestChange(classRow.id, "cancel")} type="button">
-                          {isActing && actionState.type === "cancel" ? "…" : "Cancel"}
-                        </button>
-                        <button className="btn btn-outline btn-sm" disabled={isActing} onClick={() => void requestChange(classRow.id, "swap")} type="button">
-                          {isActing && actionState.type === "swap" ? "…" : "Swap"}
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
+                      <button className="btn btn-outline btn-sm" disabled={isActing} onClick={() => void requestChange(classRow.id, "swap")} type="button">
+                        {isActing && actionState.type === "swap" ? "…" : "Swap"}
+                      </button>
+                    </>
+                  )}
+                />
                 {isExpanded ? (
                   <div className="staff-schedule-roster" aria-label={`Attendees for ${classRow.name}`}>
                     {!roster || roster.status === "loading" ? (
