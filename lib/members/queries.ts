@@ -87,6 +87,22 @@ export async function getRetentionCandidates(supabase: SupabaseServerClient) {
 
 export type InstructorMemberRow = { id: string; full_name: string | null; email: string; lifecycle_status: string; last_visit_date: string | null };
 
+// Shared by every "scoped to a trainer's own students" query: the auth
+// user ids of members who've booked at least one of their classes.
+export async function getStudentAuthUserIdsForInstructor(
+  supabase: SupabaseServerClient,
+  instructorMemberId: string
+): Promise<Set<string>> {
+  const { data: classes, error: classError } = await supabase.from("classes").select("id").eq("instructor_member_id", instructorMemberId);
+  if (classError) throw classError;
+  const classIds = (classes ?? []).map((classRow) => classRow.id);
+  if (!classIds.length) return new Set();
+
+  const { data: bookings, error: bookingError } = await supabase.from("bookings").select("user_id").in("class_id", classIds);
+  if (bookingError) throw bookingError;
+  return new Set((bookings ?? []).map((booking) => booking.user_id));
+}
+
 // Retention scoped to a trainer's own world: members who've booked at least
 // one of their classes, bucketed by lifecycle status. Distinct from
 // getMemberLifecycleBreakdown, which is suite-wide (manager-only today).
@@ -94,14 +110,7 @@ export async function getMemberRetentionForInstructor(
   supabase: SupabaseServerClient,
   instructorMemberId: string
 ): Promise<{ members: InstructorMemberRow[]; lifecycleCounts: Record<string, number> }> {
-  const { data: classes, error: classError } = await supabase.from("classes").select("id").eq("instructor_member_id", instructorMemberId);
-  if (classError) throw classError;
-  const classIds = (classes ?? []).map((classRow) => classRow.id);
-  if (!classIds.length) return { members: [], lifecycleCounts: {} };
-
-  const { data: bookings, error: bookingError } = await supabase.from("bookings").select("user_id").in("class_id", classIds);
-  if (bookingError) throw bookingError;
-  const userIds = [...new Set((bookings ?? []).map((booking) => booking.user_id))];
+  const userIds = [...(await getStudentAuthUserIdsForInstructor(supabase, instructorMemberId))];
   if (!userIds.length) return { members: [], lifecycleCounts: {} };
 
   const { data: members, error: memberError } = await supabase
@@ -115,6 +124,22 @@ export async function getMemberRetentionForInstructor(
   for (const member of rows) lifecycleCounts[member.lifecycle_status] = (lifecycleCounts[member.lifecycle_status] ?? 0) + 1;
 
   return { members: rows, lifecycleCounts };
+}
+
+// Same staleness cohorts as getCohortMembers, but intersected with a
+// specific trainer's own students -- used to scope the /retention page for
+// staff (admin keeps the studio-wide version).
+export async function getCohortMembersForInstructor(
+  supabase: SupabaseServerClient,
+  instructorMemberId: string,
+  { minDays, maxDays }: { minDays: number; maxDays: number }
+) {
+  const studentAuthUserIds = await getStudentAuthUserIdsForInstructor(supabase, instructorMemberId);
+  if (!studentAuthUserIds.size) return { data: [] as MemberRow[], error: null };
+
+  const { data, error } = await getCohortMembers(supabase, { minDays, maxDays });
+  if (error) return { data: null, error };
+  return { data: (data ?? []).filter((member) => member.auth_user_id && studentAuthUserIds.has(member.auth_user_id)), error: null };
 }
 
 export async function getMemberWeeklyActivity(
