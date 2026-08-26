@@ -372,6 +372,8 @@
 .appointments-shell .skeleton-title { width:63%; height:28px; margin-top:24px; }
 .appointments-shell .skeleton-instructor { width:43%; height:14px; margin-top:9px; }
 .appointments-shell .skeleton-detail { width:70px; height:14px; }
+.appointments-shell .day-tabs-loading { pointer-events:none; }
+.appointments-shell .skeleton-day-tab { min-height:114px; border-radius:14px; }
 .appointments-shell .skeleton-detail.short { width:45px; }
 .appointments-shell .skeleton-reserved { width:89px; height:23px; border-radius:var(--radius-sm); }
 .appointments-shell .skeleton-button { width:78px; height:36px; border-radius:var(--radius-sm); }
