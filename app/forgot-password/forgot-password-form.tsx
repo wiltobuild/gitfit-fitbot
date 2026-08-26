@@ -3,16 +3,31 @@
 import Link from "next/link";
 import { useActionState } from "react";
 
-import { signIn, type AuthFormState } from "@/app/actions/auth";
+import { requestPasswordReset, type AuthFormState } from "@/app/actions/auth";
 import { IconSpinner } from "@/app/components/icons";
 
 const initialAuthFormState: AuthFormState = { error: null };
 
-export function SignInForm() {
+export function ForgotPasswordForm() {
   const [state, formAction, isPending] = useActionState(
-    signIn,
+    requestPasswordReset,
     initialAuthFormState
   );
+
+  if (state.message) {
+    return (
+      <div className="auth-form">
+        <p aria-live="polite" className="form-success">
+          {state.message}
+        </p>
+        <p className="auth-form-footer">
+          <Link className="auth-link" href="/sign-in">
+            Back to sign in
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form action={formAction} className="auth-form">
@@ -29,22 +44,6 @@ export function SignInForm() {
           type="email"
         />
       </div>
-      <div className="field">
-        <label className="field-label" htmlFor="password">
-          Password
-        </label>
-        <input
-          autoComplete="current-password"
-          className="field-input"
-          id="password"
-          name="password"
-          required
-          type="password"
-        />
-        <Link className="field-hint-link" href="/forgot-password">
-          Forgot password?
-        </Link>
-      </div>
       {state.error ? (
         <p aria-live="polite" className="field-error">
           {state.error}
@@ -53,16 +52,16 @@ export function SignInForm() {
       <button className="btn btn-primary" disabled={isPending} type="submit">
         {isPending ? (
           <>
-            <IconSpinner className="btn-spinner" /> Signing in...
+            <IconSpinner className="btn-spinner" /> Sending...
           </>
         ) : (
-          "Sign in"
+          "Send reset link"
         )}
       </button>
       <p className="auth-form-footer">
-        Need an account?{" "}
-        <Link className="auth-link" href="/sign-up">
-          Sign up
+        Remember your password?{" "}
+        <Link className="auth-link" href="/sign-in">
+          Sign in
         </Link>
       </p>
     </form>
