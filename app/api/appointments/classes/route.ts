@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 
-import { UnauthorizedError, requireUserOrThrow } from "@/lib/auth/session";
+import { UnauthorizedError, requireRoleOrThrow } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function GET() {
   let session;
   try {
-    session = await requireUserOrThrow();
+    // Booking a class is a client-only action -- staff/admin operate the
+    // studio, they don't book into it as a member.
+    session = await requireRoleOrThrow("client");
   } catch (error) {
-    if (error instanceof UnauthorizedError) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: error.reason === "unauthenticated" ? 401 : 403 });
+    }
     throw error;
   }
 

@@ -1,5 +1,6 @@
 import { UnauthorizedError, requireRoleOrThrow } from "@/lib/auth/session";
 import { createBulkOutreachDrafts } from "@/lib/outreach/queries";
+import { getMemberForUser, getStudentAuthUserIdsForInstructor } from "@/lib/members/queries";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type LaunchMember = { id: string; auth_user_id: string | null };
@@ -60,6 +61,23 @@ export async function POST(request: Request) {
     );
   try {
     const supabase = await createSupabaseServerClient();
+
+    // A trainer's audience is scoped to their own students on the /retention
+    // page, but this route is the real enforcement point -- a tampered
+    // request could otherwise submit any memberIds regardless of what the
+    // UI offered. Admin keeps studio-wide reach.
+    if (session.role === "staff") {
+      const { data: instructorMember, error: memberError } = await getMemberForUser(supabase, session.user.id);
+      if (memberError) throw memberError;
+      const studentAuthUserIds = instructorMember?.is_instructor
+        ? await getStudentAuthUserIdsForInstructor(supabase, instructorMember.id)
+        : new Set<string>();
+      const hasNonStudent = members.some((member) => !member.auth_user_id || !studentAuthUserIds.has(member.auth_user_id));
+      if (hasNonStudent) {
+        return Response.json({ error: "You can only send outreach to members who've booked one of your classes." }, { status: 403 });
+      }
+    }
+
     const { data, error } = await createBulkOutreachDrafts(supabase, {
       memberIds,
       subject,

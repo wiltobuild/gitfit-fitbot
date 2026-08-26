@@ -6,7 +6,8 @@ export type PendingClassChangeRequest = {
   id: string;
   requester_name: string;
   class_label: string;
-  type: "swap" | "cancel";
+  type: "edit" | "cancel";
+  proposed_summary: string | null;
   reason: string | null;
 };
 
@@ -48,13 +49,13 @@ export function ClassChangeInbox({ initialRequests }: { initialRequests: Pending
       <div className="staff-panel-heading">
         <div>
           <p className="eyebrow"><span /> Schedule changes</p>
-          <h2 id="class-change-inbox-title">Swap &amp; cancel requests</h2>
+          <h2 id="class-change-inbox-title">Edit &amp; cancel requests</h2>
         </div>
         <p>{requests.length ? `${requests.length} pending` : "All caught up"}</p>
       </div>
       {error ? <p className="staff-search-error" aria-live="polite">{error}</p> : null}
       {requests.length === 0 ? (
-        <div className="empty-state"><h3>No pending requests</h3><p>Swap and cancel requests from trainers will show up here.</p></div>
+        <div className="empty-state"><h3>No pending requests</h3><p>Edit and cancel requests from trainers will show up here.</p></div>
       ) : (
         <ul className="staff-request-list" aria-label="Pending schedule-change requests">
           {requests.map((request) => {
@@ -63,7 +64,8 @@ export function ClassChangeInbox({ initialRequests }: { initialRequests: Pending
               <li className="staff-request-row" key={request.id}>
                 <div className="staff-request-summary">
                   <strong>{request.requester_name}</strong>
-                  <span>{request.type === "swap" ? "Swap" : "Cancel"} — {request.class_label}</span>
+                  <span>{request.type === "edit" ? "Edit" : "Cancel"} — {request.class_label}</span>
+                  {request.type === "edit" && request.proposed_summary ? <span>Proposed: {request.proposed_summary}</span> : null}
                   {request.reason ? <small>&ldquo;{request.reason}&rdquo;</small> : null}
                 </div>
                 <div className="staff-request-actions">

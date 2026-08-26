@@ -173,10 +173,12 @@ function ActivityTrend({ points }: { points: TrendPoint[] }) {
 }
 
 export function RetentionExperience({
+  audienceScope,
   initialCohorts,
   initialTrend,
   staffUserId
 }: {
+  audienceScope: "all" | "students";
   initialCohorts: Cohort[];
   initialTrend: TrendPoint[];
   staffUserId: string;
@@ -271,12 +273,13 @@ export function RetentionExperience({
         <div className="retention-header-inner">
           <div>
             <p className="eyebrow">
-              <span /> Staff outreach
+              <span /> {audienceScope === "students" ? "My students" : "Staff outreach"}
             </p>
             <h1>Retention Campaigns</h1>
             <p>
-              Build thoughtful re-engagement campaigns from live member
-              activity.
+              {audienceScope === "students"
+                ? "Build thoughtful re-engagement campaigns for members who've booked your classes."
+                : "Build thoughtful re-engagement campaigns from live member activity."}
             </p>
           </div>
           <span className="badge badge-brand">Campaign workspace</span>
@@ -285,7 +288,7 @@ export function RetentionExperience({
       <div className="retention-layout">
         <section className="surface-card retention-panel">
           <p className="retention-panel-kicker">Audience</p>
-          <h2>Audience cohorts</h2>
+          <h2>{audienceScope === "students" ? "My students, by cohort" : "Audience cohorts"}</h2>
           <ul className="retention-cohort-list">
             {initialCohorts.map((item, index) => (
               <li key={`${item.minDays}-${item.maxDays}`}>

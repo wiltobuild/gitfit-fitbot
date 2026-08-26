@@ -25,6 +25,9 @@ const retention: NavLink = { href: "/retention", label: "Retention", icon: IconU
 // (operational), and staff doesn't get a separate dashboard entry at all
 // -- /dashboard just redirects them straight to /staff now, so a second
 // nav entry pointing at the same destination would be a link to a link.
+// Booking a class is a client-only action -- staff/admin operate the
+// studio, they don't book into it as a member, so neither gets a "My
+// stuff" group at all.
 function getLinkGroups(role: string): { myStuff: NavLink[]; runTheStudio: NavLink[] } {
   // Admins manage classes (instructor, time, capacity, everything) from the
   // /staff Live register panel already -- a second, thinner "Book a class"
