@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { ScheduleRow } from "@/app/components/schedule-row";
 
 export type ScheduleAttendee = { userId: string; name: string | null; email: string | null };
@@ -11,10 +11,12 @@ export type ScheduleClass = {
   type: string;
   class_date: string;
   start_time: string;
+  duration_minutes: number;
   capacity: number;
   booked_count: number;
 };
 type RosterState = { status: "loading" } | { status: "loaded"; attendees: ScheduleAttendee[] } | { status: "error" };
+type EditFormValues = { name: string; type: string; classDate: string; startTime: string; durationMinutes: string; capacity: string };
 
 function formatDayShort(date: string) {
   return new Intl.DateTimeFormat("en-US", { weekday: "short" }).format(new Date(`${date}T12:00:00`));
@@ -35,16 +37,17 @@ function addDays(date: string, days: number) {
   return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
 }
 
-export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { classes: ScheduleClass[]; pendingRequestTypeByClassId: Record<string, "swap" | "cancel">; today: string }) {
+export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { classes: ScheduleClass[]; pendingRequestTypeByClassId: Record<string, "edit" | "cancel">; today: string }) {
   const router = useRouter();
   const dates = useMemo(() => Array.from({ length: 14 }, (_, index) => addDays(today, index)), [today]);
   const [showSecondWeek, setShowSecondWeek] = useState(false);
   const [activeDate, setActiveDate] = useState(today);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [rosterByClassId, setRosterByClassId] = useState<Record<string, RosterState>>({});
-  const [actionState, setActionState] = useState<{ id: string; type: "swap" | "cancel" } | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [actionState, setActionState] = useState<{ id: string; type: "edit" | "cancel" } | null>(null);
   const [error, setError] = useState("");
-  const [submitted, setSubmitted] = useState<Record<string, "swap" | "cancel">>({});
+  const [submitted, setSubmitted] = useState<Record<string, "edit" | "cancel">>({});
 
   const visibleDates = showSecondWeek ? dates : dates.slice(0, 7);
   const classesForDay = classes.filter((classRow) => classRow.class_date === activeDate);
@@ -64,24 +67,48 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
     }
   }
 
-  async function requestChange(classId: string, type: "swap" | "cancel") {
-    setActionState({ id: classId, type });
+  async function requestCancel(classId: string) {
+    setActionState({ id: classId, type: "cancel" });
     setError("");
     try {
       const response = await fetch("/api/staff/class-changes/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ classId, type }),
+        body: JSON.stringify({ classId, requestType: "cancel" }),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
       if (!response.ok) throw new Error(payload.error?.message ?? "Unable to submit this request.");
-      setSubmitted((current) => ({ ...current, [classId]: type }));
+      setSubmitted((current) => ({ ...current, [classId]: "cancel" }));
       router.refresh();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to submit this request.");
     } finally {
       setActionState(null);
     }
+  }
+
+  async function submitEdit(classId: string, values: EditFormValues) {
+    const response = await fetch("/api/staff/class-changes/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        classId,
+        requestType: "edit",
+        proposedClass: {
+          name: values.name,
+          type: values.type,
+          classDate: values.classDate,
+          startTime: values.startTime,
+          durationMinutes: Number(values.durationMinutes),
+          capacity: Number(values.capacity),
+        },
+      }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
+    if (!response.ok) throw new Error(payload.error?.message ?? "Unable to submit this edit.");
+    setSubmitted((current) => ({ ...current, [classId]: "edit" }));
+    setEditingId(null);
+    router.refresh();
   }
 
   return (
@@ -113,35 +140,44 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
         <ul className="staff-class-list">
           {classesForDay.map((classRow) => {
             const isExpanded = expandedId === classRow.id;
+            const isEditing = editingId === classRow.id;
             const roster = rosterByClassId[classRow.id];
             const requestedType = submitted[classRow.id] ?? pendingRequestTypeByClassId[classRow.id];
             const isActing = actionState?.id === classRow.id;
             return (
               <li className="staff-schedule-class-group" key={classRow.id}>
-                <ScheduleRow
-                  as="div"
-                  name={classRow.name}
-                  meta={<span>{formatTime(classRow.start_time)} · {classRow.type}</span>}
-                  capacity={{ booked: classRow.booked_count, capacity: classRow.capacity }}
-                  capacityLabel={
-                    <button type="button" className="staff-fitbot-text" onClick={() => void toggleRoster(classRow.id)}>
-                      {classRow.booked_count}/{classRow.capacity} booked
-                    </button>
-                  }
-                  actions={requestedType ? (
-                    <span className="badge badge-neutral">{requestedType} requested</span>
-                  ) : (
-                    <>
-                      <button className="btn btn-outline-danger btn-sm" disabled={isActing} onClick={() => void requestChange(classRow.id, "cancel")} type="button">
-                        {isActing && actionState.type === "cancel" ? "…" : "Cancel"}
+                {isEditing ? (
+                  <EditClassForm
+                    initial={{ name: classRow.name, type: classRow.type, classDate: classRow.class_date, startTime: classRow.start_time.slice(0, 5), durationMinutes: String(classRow.duration_minutes), capacity: String(classRow.capacity) }}
+                    onCancel={() => setEditingId(null)}
+                    onSubmit={(values) => submitEdit(classRow.id, values)}
+                  />
+                ) : (
+                  <ScheduleRow
+                    as="div"
+                    name={classRow.name}
+                    meta={<span>{formatTime(classRow.start_time)} · {classRow.type}</span>}
+                    capacity={{ booked: classRow.booked_count, capacity: classRow.capacity }}
+                    capacityLabel={
+                      <button type="button" className="staff-fitbot-text" onClick={() => void toggleRoster(classRow.id)}>
+                        {classRow.booked_count}/{classRow.capacity} booked
                       </button>
-                      <button className="btn btn-outline btn-sm" disabled={isActing} onClick={() => void requestChange(classRow.id, "swap")} type="button">
-                        {isActing && actionState.type === "swap" ? "…" : "Swap"}
-                      </button>
-                    </>
-                  )}
-                />
-                {isExpanded ? (
+                    }
+                    actions={requestedType ? (
+                      <span className="badge badge-neutral">{requestedType} requested</span>
+                    ) : (
+                      <>
+                        <button className="btn btn-outline-danger btn-sm" disabled={isActing} onClick={() => void requestCancel(classRow.id)} type="button">
+                          {isActing && actionState.type === "cancel" ? "…" : "Cancel"}
+                        </button>
+                        <button className="btn btn-outline btn-sm" disabled={isActing} onClick={() => setEditingId(classRow.id)} type="button">
+                          Edit
+                        </button>
+                      </>
+                    )}
+                  />
+                )}
+                {isExpanded && !isEditing ? (
                   <div className="staff-schedule-roster" aria-label={`Attendees for ${classRow.name}`}>
                     {!roster || roster.status === "loading" ? (
                       <p>Loading attendees…</p>
@@ -166,5 +202,45 @@ export function MySchedule({ classes, pendingRequestTypeByClassId, today }: { cl
         </ul>
       )}
     </section>
+  );
+}
+
+function EditClassForm({ initial, onCancel, onSubmit }: { initial: EditFormValues; onCancel: () => void; onSubmit: (values: EditFormValues) => Promise<void> }) {
+  const [values, setValues] = useState(initial);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setError("");
+    try {
+      await onSubmit(values);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to submit this edit.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <form className="staff-class-form" onSubmit={handleSubmit}>
+      <div className="staff-class-form-grid">
+        <div className="field"><label className="field-label" htmlFor="edit-class-name">Class name</label><input className="field-input" id="edit-class-name" type="text" value={values.name} onChange={(event) => setValues((current) => ({ ...current, name: event.target.value }))} required /></div>
+        <div className="field"><label className="field-label" htmlFor="edit-class-type">Type</label><input className="field-input" id="edit-class-type" type="text" list="edit-class-type-options" value={values.type} onChange={(event) => setValues((current) => ({ ...current, type: event.target.value }))} required />
+          <datalist id="edit-class-type-options"><option value="Yoga" /><option value="Cycling" /><option value="HIIT" /><option value="Pilates" /><option value="Boxing" /><option value="Strength" /></datalist>
+        </div>
+        <div className="field"><label className="field-label" htmlFor="edit-class-date">Date</label><input className="field-input" id="edit-class-date" type="date" value={values.classDate} onChange={(event) => setValues((current) => ({ ...current, classDate: event.target.value }))} required /></div>
+        <div className="field"><label className="field-label" htmlFor="edit-class-time">Start time</label><input className="field-input" id="edit-class-time" type="time" value={values.startTime} onChange={(event) => setValues((current) => ({ ...current, startTime: event.target.value }))} required /></div>
+        <div className="field"><label className="field-label" htmlFor="edit-class-duration">Duration (min)</label><input className="field-input" id="edit-class-duration" type="number" min={1} value={values.durationMinutes} onChange={(event) => setValues((current) => ({ ...current, durationMinutes: event.target.value }))} required /></div>
+        <div className="field"><label className="field-label" htmlFor="edit-class-capacity">Capacity</label><input className="field-input" id="edit-class-capacity" type="number" min={1} value={values.capacity} onChange={(event) => setValues((current) => ({ ...current, capacity: event.target.value }))} required /></div>
+      </div>
+      {error ? <p className="field-error" aria-live="polite">{error}</p> : null}
+      <p className="field-hint">This goes to your manager for approval before it takes effect.</p>
+      <div className="staff-class-form-actions">
+        <button className="btn btn-outline btn-sm" type="button" onClick={onCancel} disabled={isSubmitting}>Cancel</button>
+        <button className="btn btn-primary btn-sm" type="submit" disabled={isSubmitting}>{isSubmitting ? "Submitting…" : "Submit for approval"}</button>
+      </div>
+    </form>
   );
 }

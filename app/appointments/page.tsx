@@ -1,4 +1,4 @@
-import { requireUserOrRedirect } from "@/lib/auth/session";
+import { requireRoleOrRedirect } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getMemberForUser } from "@/lib/members/queries";
 
@@ -7,7 +7,9 @@ import SiteNav from "@/app/components/site-nav";
 import { AppointmentsExperience } from "./appointments-experience";
 
 export default async function AppointmentsPage() {
-  const { user } = await requireUserOrRedirect();
+  // Booking a class is a client-only action -- staff/admin operate the
+  // studio, they don't book into it as a member.
+  const { user } = await requireRoleOrRedirect("client");
   const today = new Date();
   const mondayOffset = (today.getDay() + 6) % 7;
   const weekMonday = new Date(today);

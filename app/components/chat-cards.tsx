@@ -9,13 +9,15 @@ function formatTime(time: string) { const [hours, minutes] = time.split(":").map
 function formatDate(date: string) { const [year, month, day] = date.split("-").map(Number); return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(year, month - 1, day)); }
 function typeRule(type: string) { return ({ yoga: "class-type-yoga", cycling: "class-type-cycling", hiit: "class-type-hiit" }[type.toLowerCase()] ?? "class-type-default"); }
 
-export function ChatCard({ card, onSelectOption }: { card: RichCard; onSelectOption?: (message: string) => void }) {
+export function ChatCard({ card, onSelectOption, canBookClass = true }: { card: RichCard; onSelectOption?: (message: string) => void; canBookClass?: boolean }) {
   switch (card.kind) {
     case "schedule": {
       const classes = card.classes.slice(0, 3); const remaining = card.classes.length - classes.length;
       return <section className="chat-card chat-schedule-card" aria-label="Schedule results"><h2 className="sr-only">Schedule results</h2>
         {classes.map((classRow) => { const isFull = classRow.bookedCount >= classRow.capacity; return <div className={`chat-schedule-row ${typeRule(classRow.type)}`} key={`${classRow.title}-${classRow.date}-${classRow.time}`}><InstructorAvatar name={classRow.instructor} size={32} /><div className="chat-schedule-summary"><strong>{classRow.title}<small>{formatTime(classRow.time)}</small></strong><span>{classRow.instructor}</span></div><span className={`badge ${isFull ? "badge-danger" : "badge-success"}`}>{isFull ? "Full" : "Open"}</span></div>; })}
-        {remaining > 0 ? <Link className="chat-card-link" href="/appointments">+{remaining} more {"\u2014"} view full schedule</Link> : null}
+        {/* Booking is client-only (see /appointments' own role gate) -- the
+           "view full schedule" teaser would just be a dead link for staff/admin. */}
+        {remaining > 0 && canBookClass ? <Link className="chat-card-link" href="/appointments">+{remaining} more {"\u2014"} view full schedule</Link> : null}
       </section>;
     }
     case "members": { const title = card.title ?? "Member results"; return <section className="chat-card chat-members-card" aria-label={title}><h2 className="sr-only">{title}</h2>{card.members.map((member) => <div className="chat-member-row" key={member.email}><span className="member-initials" aria-hidden="true">{initials(member.name)}</span><div><strong>{member.name}</strong><span>{member.email}</span>{member.reason ? <small>{member.reason}</small> : null}</div><span className="badge badge-neutral">{member.status}</span></div>)}</section>; }

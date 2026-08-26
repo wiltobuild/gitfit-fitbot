@@ -27,5 +27,5 @@ export async function POST(request: Request) {
   const supabase = await createSupabaseServerClient();
   const result = await resolveClassChangeRequest(supabase, { requestId, decision, reviewerId: session.user.id });
   if (result.ok) return NextResponse.json({ ok: true });
-  return errorResponse(result.message, 404);
+  return errorResponse(result.message, result.code === "capacity_below_booked" ? 400 : 404);
 }
