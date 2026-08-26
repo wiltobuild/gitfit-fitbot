@@ -1,9 +1,10 @@
+import { redirect } from "next/navigation";
+
 import { AdminDashboard } from "@/app/dashboard/admin-dashboard";
 import { ClientDashboard } from "@/app/dashboard/client-dashboard";
-import { StaffDashboard, StaffDashboardNotLinked } from "@/app/dashboard/staff-dashboard";
 import SiteNav from "@/app/components/site-nav";
 import { requireUserOrRedirect } from "@/lib/auth/session";
-import { getClassesForInstructor, getClassesForMonth, getInstructorBookingRateTrend, getUpcomingClasses, type StudioClass } from "@/lib/classes/queries";
+import { getClassesForMonth, getRecommendedClassesForMember, getUpcomingClasses, type StudioClass } from "@/lib/classes/queries";
 import { getEncouragingMessage } from "@/lib/dashboard/encouraging-messages";
 import { getBookingHistoryForUser, getMemberForUser, getMemberLifecycleBreakdown, getMemberStreak, getRetentionCandidates, getUpcomingBookingsForUser, type ClassRow } from "@/lib/members/queries";
 import { getMemberPromotions, personalizeOutreachBody } from "@/lib/outreach/queries";
@@ -95,38 +96,12 @@ export default async function DashboardPage() {
     /></div>;
   }
 
-  if (role === "staff") {
-    let instructorMember: Awaited<ReturnType<typeof getMemberForUser>>["data"] = null;
-    try {
-      const supabase = await createSupabaseServerClient();
-      const { data, error } = await getMemberForUser(supabase, user.id);
-      if (error) throw error;
-      instructorMember = data;
-    } catch (error) {
-      console.error("Unable to resolve instructor profile for staff dashboard", error);
-    }
-
-    if (!instructorMember || !instructorMember.is_instructor) {
-      return <div className="staff-dashboard-shell"><SiteNav /><StaffDashboardNotLinked /></div>;
-    }
-
-    let classes: StudioClass[] = [];
-    let bookingRateTrend = { thisWeekFillPercent: 0, lastWeekFillPercent: 0 };
-    try {
-      const supabase = await createSupabaseServerClient();
-      classes = await getClassesForInstructor(supabase, instructorMember.id);
-    } catch (error) {
-      console.error("Unable to load instructor classes for staff dashboard", error);
-    }
-    try {
-      const supabase = await createSupabaseServerClient();
-      bookingRateTrend = await getInstructorBookingRateTrend(supabase, instructorMember.id);
-    } catch (error) {
-      console.error("Unable to load instructor booking-rate trend for staff dashboard", error);
-    }
-
-    return <div className="staff-dashboard-shell"><SiteNav /><StaffDashboard bookingRateTrend={bookingRateTrend} classes={classes} instructorName={instructorMember.full_name} /></div>;
-  }
+  // /staff (the Manager/Trainer console) is staff's real dashboard -- it
+  // already covers "my upcoming classes" (My Schedule) plus time-off,
+  // swap/cancel requests, and retention, more completely than a second,
+  // narrower view here ever did. Redirect instead of maintaining two
+  // competing staff surfaces.
+  if (role === "staff") redirect("/staff");
 
   let upcomingBookings: ClassRow[] = [];
   let bookingHistory: ClassRow[] = [];
@@ -151,6 +126,8 @@ export default async function DashboardPage() {
     console.error("Unable to load member streak for dashboard", error);
   }
 
+  let recommendedClasses: StudioClass[] = [];
+  let recommendationReason: string | null = null;
   try {
     const supabase = await createSupabaseServerClient();
     const { data: member, error: memberError } = await getMemberForUser(supabase, user.id);
@@ -159,9 +136,16 @@ export default async function DashboardPage() {
       const { data, error } = await getMemberPromotions(supabase, member.id);
       if (error) throw error;
       promotions = (data ?? []).map((promotion) => ({ ...promotion, body: personalizeOutreachBody(promotion.body, member.full_name) }));
+
+      const { preferredTypes, classes } = await getRecommendedClassesForMember(supabase, member);
+      recommendedClasses = classes;
+      if (preferredTypes.length) {
+        const goal = member.goals?.split(";")[0]?.trim();
+        recommendationReason = `Since you're into ${preferredTypes.join(" and ")}${goal ? ` and working on ${goal}` : ""}, here's what's coming up.`;
+      }
     }
   } catch (error) {
-    console.error("Unable to load promotions for dashboard", error);
+    console.error("Unable to load promotions/recommendations for dashboard", error);
   }
 
   const todayString = formatDate(today);
@@ -173,6 +157,8 @@ export default async function DashboardPage() {
     encouragingMessage={encouragingMessage.message}
     encouragingMessageCategory={encouragingMessage.category}
     promotions={promotions}
+    recommendedClasses={recommendedClasses}
+    recommendationReason={recommendationReason}
     streakWeeks={streak.streakWeeks}
     upcomingBookings={upcomingBookings}
     userEmail={user.email}

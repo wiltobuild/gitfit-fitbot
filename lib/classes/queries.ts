@@ -1,3 +1,4 @@
+import { resolveClassType } from "@/lib/chatbot/entity-extraction";
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
 import { logClassCancellation } from "@/lib/class-cancellations/queries";
 import { denyPendingRequestsForCanceledClass } from "@/lib/class-changes/queries";
@@ -188,6 +189,39 @@ export async function getInstructorBookingRateTrend(
     thisWeekFillPercent: fillPercent(thisWeekMonday, thisWeekSunday),
     lastWeekFillPercent: fillPercent(lastWeekMonday, lastWeekSunday)
   };
+}
+
+// Shared with lib/chatbot/intents/recommend-class.ts, which called this
+// query inline before it was extracted here -- same real "classes matching
+// this member's preferred_class_types" source of truth for both the
+// chatbot's "what should I book?" reply and the client dashboard's
+// recommendations, instead of two copies of the same matching logic.
+export async function getRecommendedClassesForMember(
+  supabase: SupabaseServerClient,
+  member: { preferred_class_types?: string | null }
+): Promise<{ preferredTypes: Array<"yoga" | "cycling" | "hiit">; classes: StudioClass[] }> {
+  const preferredTypes = [
+    ...new Set(
+      (member.preferred_class_types ?? "")
+        .split(";")
+        .map((value) => resolveClassType(value.trim()))
+        .filter((type): type is "yoga" | "cycling" | "hiit" => Boolean(type))
+    )
+  ];
+  if (!preferredTypes.length) return { preferredTypes: [], classes: [] };
+
+  const classTypes = preferredTypes.map((type) => (type === "hiit" ? "HIIT" : `${type[0].toUpperCase()}${type.slice(1)}`));
+  const today = new Date();
+  const { data, error } = await supabase
+    .from("classes")
+    .select(classSelect)
+    .gte("class_date", formatDate(today))
+    .in("type", classTypes)
+    .order("class_date")
+    .order("start_time")
+    .limit(5);
+  if (error) throw error;
+  return { preferredTypes, classes: (data ?? []) as StudioClass[] };
 }
 
 export type ClassInput = {
