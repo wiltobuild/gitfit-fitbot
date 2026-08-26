@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { signOut } from "@/app/actions/auth";
-import { IconCalendar, IconSparkle, MomentumArc } from "@/app/components/icons";
+import { IconCalendar, IconSparkle } from "@/app/components/icons";
 import MomentumRing from "@/app/components/momentum-ring";
 import { RecommendedClasses } from "@/app/dashboard/recommended-classes";
 import type { StudioClass } from "@/lib/classes/queries";
@@ -37,7 +37,7 @@ export function ClientDashboard({ bookingHistory, currentWeekBooked, encouraging
     <section className="surface-card dashboard-card client-momentum-card animate-fade-up" style={{ animationDelay: ".08s" }}>
       <div className="dashboard-card-top"><div><h2>Your momentum</h2><p className="dashboard-email">Signed in as {userEmail}</p></div><span className="badge badge-neutral">Member</span></div>
       <div className="dashboard-momentum client-streak"><MomentumRing target={8} value={streakWeeks} /><div><h3>{streakWeeks === 1 ? "1 completed week in your streak" : `${streakWeeks} completed weeks in your streak`}</h3><p className={`client-streak-message client-streak-tone-${encouragingMessageCategory}`}>{encouragingMessage}</p><span className={`client-week-status ${currentWeekBooked ? "is-booked" : ""}`}>This week: {currentWeekBooked ? "booked" : "not yet booked"}</span></div></div>
-      <div className="quick-actions" aria-label="Quick actions"><Link className="quick-action quick-action-fitbot" href="/chat"><MomentumArc className="quick-action-arc" /><span className="quick-action-content"><span className="quick-action-icon"><IconSparkle /></span><span>Chat with FitBot</span></span><span aria-hidden="true">→</span></Link><Link className="quick-action quick-action-appointments" href="/appointments"><span className="quick-action-content"><span className="quick-action-icon"><IconCalendar /></span><span>View appointments</span></span><span aria-hidden="true">→</span></Link></div>
+      <div className="quick-actions" aria-label="Quick actions"><Link className="quick-action quick-action-fitbot" href="/chat"><img className="quick-action-arc" src="/gitfit-icon.gif" alt="" /><span className="quick-action-content"><span className="quick-action-icon"><IconSparkle /></span><span>Chat with FitBot</span></span><span aria-hidden="true">→</span></Link><Link className="quick-action quick-action-appointments" href="/appointments"><span className="quick-action-content"><span className="quick-action-icon"><IconCalendar /></span><span>View appointments</span></span><span aria-hidden="true">→</span></Link></div>
       <div className="account-sign-out"><form action={signOut}><button className="btn btn-outline" type="submit">Sign out</button></form></div>
     </section>
     <RecommendedClasses classes={recommendedClasses} reasonLabel={recommendationReason} />

@@ -10,6 +10,7 @@ export default async function SiteNav() {
   return (
     <nav className="nav" aria-label="Main navigation">
       <Link className="brand" href="/" aria-label="GitFit home">
+        <img className="brand-icon" src="/gitfit-icon.gif" alt="" />
         <span className="wordmark">GitFit</span>
       </Link>
       {session ? <NavLinks role={session.role} /> : null}
