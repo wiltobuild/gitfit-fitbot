@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { fillLevel } from "@/lib/classes/fill-level";
 
 export type ScheduleAttendee = { userId: string; name: string | null; email: string | null };
 export type ScheduleClass = {
@@ -27,10 +28,6 @@ function formatDayFull(date: string) {
 function formatTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
   return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
-}
-function fillLevel(booked: number, capacity: number) {
-  const ratio = capacity ? booked / capacity : 0;
-  return ratio >= 1 ? "full" : ratio >= 0.8 ? "filling" : "healthy";
 }
 function addDays(date: string, days: number) {
   const next = new Date(`${date}T12:00:00`);

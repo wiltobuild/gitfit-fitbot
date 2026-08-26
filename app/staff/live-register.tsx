@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { InstructorAvatar } from "@/app/components/instructor-avatar";
+import { fillLevel } from "@/lib/classes/fill-level";
 
 export type RegisterClass = {
   id: string;
@@ -23,10 +24,6 @@ export type InstructorOption = { id: string; full_name: string | null };
 function formatTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
   return `${hours % 12 || 12}:${String(minutes).padStart(2, "0")} ${hours >= 12 ? "PM" : "AM"}`;
-}
-function fillLevel(booked: number, capacity: number) {
-  const ratio = capacity ? booked / capacity : 0;
-  return ratio >= 1 ? "full" : ratio >= 0.8 ? "filling" : "healthy";
 }
 // "Underbooked" per the shared suite vocabulary: booked ÷ capacity < 45%.
 function isUnderbooked(booked: number, capacity: number) {
