@@ -1,13 +1,20 @@
 "use client";
 
-import Link from "next/link"; import { FormEvent, useRef, useState } from "react";
+import Link from "next/link"; import { FormEvent, useEffect, useRef, useState } from "react";
 import { IconUser, MomentumArc } from "@/app/components/icons"; import { ChatCard } from "@/app/components/chat-cards"; import { CHIP_LABELS, CHIP_ROLES, type ChipId } from "@/lib/chatbot/chip-labels"; import type { RichCard } from "@/lib/chatbot/types"; import { interpretChatResponse } from "@/lib/chatbot/interpret-chat-response";
 type Role = "client" | "staff" | "admin";
 type Message = { role: "assistant" | "user"; content: string; card?: RichCard; suggestedChips?: ChipId[] }; const greetingChips: ChipId[] = ["quick-workout", "plan-my-week", "menu"];
+const greeting: Message = { role: "assistant", content: "Hey, I’m FitBot. Ask me about classes, bookings, your schedule, or your goals — or tap a suggestion below.", suggestedChips: greetingChips };
 const TYPING_MIN_VISIBLE_MS = 550;
 async function runWithTypingFloor<T>(action: () => Promise<T>): Promise<T> { const startedAt = Date.now(); try { return await action(); } finally { const elapsed = Date.now() - startedAt; if (elapsed < TYPING_MIN_VISIBLE_MS) await new Promise((resolve) => setTimeout(resolve, TYPING_MIN_VISIBLE_MS - elapsed)); } }
 export function ChatExperience() {
-  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "Hey, I’m FitBot. Ask me about classes, bookings, your schedule, or your goals — or tap a suggestion below.", suggestedChips: greetingChips }]); const [input, setInput] = useState(""); const [isSending, setIsSending] = useState(false); const [callerRole, setCallerRole] = useState<Role | null>(null); const inputRef = useRef<HTMLInputElement>(null);
+  const [messages, setMessages] = useState<Message[]>([greeting]); const [input, setInput] = useState(""); const [isSending, setIsSending] = useState(false); const [callerRole, setCallerRole] = useState<Role | null>(null); const inputRef = useRef<HTMLInputElement>(null);
+  // The floating launcher (ChatbotOverlay) loads this same persisted history
+  // on mount -- this page didn't, so opening full chat looked like it erased
+  // whatever conversation was already going. Same /api/chat GET, same
+  // fallback-to-greeting-if-empty behavior, so both surfaces show one
+  // continuous conversation instead of two disconnected ones.
+  useEffect(() => { let isMounted = true; async function loadHistory() { try { const response = await fetch("/api/chat"); if (!response.ok) throw new Error("Unable to load chat history"); const data = (await response.json()) as { messages?: Message[]; role?: Role }; if (!isMounted) return; setMessages(data.messages?.length ? data.messages : [greeting]); if (data.role) setCallerRole(data.role); } catch { if (isMounted) setMessages([greeting]); } } void loadHistory(); return () => { isMounted = false; }; }, []);
   // Server-computed suggestedChips are already the real security boundary (recomputed fresh
   // from the live session role on every request); this client-side CHIP_ROLES filter is a
   // cheap defense-in-depth pass so a stale/mismatched chip array can never render a button
