@@ -227,7 +227,7 @@
 .staff-schedule-day-tab.active small,.staff-schedule-day-tab.active strong,.staff-schedule-day-tab.active span { color:#fff; }
 .staff-schedule-expand-toggle { margin-bottom:18px; }
 .staff-schedule-class-group { display:grid; gap:8px; }
-.staff-schedule-actions { display:flex; flex:0 0 auto; gap:8px; }
+.staff-schedule-actions { display:flex; flex:0 0 auto; align-items:center; gap:8px; }.staff-schedule-actions time { flex:0 0 auto; color:var(--color-muted); font-size:11px; font-weight:700; line-height:1.3; text-align:right; white-space:nowrap; }
 .staff-schedule-roster { padding:13px 15px; border:1px solid var(--color-border); border-radius:var(--radius-sm); background:var(--color-surface-subtle); }
 .staff-schedule-roster ul { display:grid; gap:6px; margin:0; padding:0; list-style:none; }
 .staff-schedule-roster li { color:var(--color-ink-soft); font-size:12px; font-weight:600; }
