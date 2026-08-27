@@ -62,16 +62,14 @@ export const outreachDraftIntent: Intent = {
     const name = memberLabel(member);
     const subject = "We miss you at GitFit!";
     const body = `Hi ${name}, it's been a while since we've seen you at GitFit — we'd love to have you back. Check the schedule and book a class that feels right for you. Let us know if there's anything we can do to help you get back on track.`;
-    const { data: draft, error: insertError } = await supabase
+    const { error: insertError } = await supabase
       .from("outreach_messages")
       .insert({
         target_member_id: member.id,
         staff_user_id: session.user.id,
         subject,
         body
-      })
-      .select("id")
-      .single();
+      });
     if (insertError) {
       console.error("Unable to create outreach draft", insertError);
       return {
@@ -83,7 +81,6 @@ export const outreachDraftIntent: Intent = {
       reply: `Subject: ${subject}\n\n${body}\n\nThis is only a draft — nothing has been sent. Say 'send outreach to ${name}' to send it.`,
       card: {
         kind: "outreach",
-        id: draft.id,
         memberName: name,
         message: `${subject}\n\n${body}`,
         sent: false

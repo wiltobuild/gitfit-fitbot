@@ -100,7 +100,6 @@ export const outreachSendIntent: Intent = {
         reply: `Marked the outreach to ${name} as sent. (This member doesn't have an account yet, so they won't see it in FitBot.)`,
         card: {
           kind: "outreach",
-          id: draft.id,
           memberName: name,
           message: personalizedBody,
           sent: true,
@@ -121,7 +120,6 @@ export const outreachSendIntent: Intent = {
         reply: `Marked the outreach to ${name} as sent, but in-app delivery could not be confirmed.`,
         card: {
           kind: "outreach",
-          id: draft.id,
           memberName: name,
           message: personalizedBody,
           sent: true,
@@ -133,7 +131,6 @@ export const outreachSendIntent: Intent = {
       reply: `Marked the outreach to ${name} as sent.`,
       card: {
         kind: "outreach",
-        id: draft.id,
         memberName: name,
         message: personalizedBody,
         sent: true,

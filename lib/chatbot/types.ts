@@ -41,7 +41,6 @@ export type RichCard =
     }
   | {
       kind: "outreach";
-      id: string;
       memberName: string;
       message: string;
       sent: boolean;
