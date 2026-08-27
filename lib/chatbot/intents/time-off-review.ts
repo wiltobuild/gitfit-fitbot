@@ -141,10 +141,6 @@ export const timeOffReviewIntent: Intent = {
       };
     return {
       reply: `Marked ${profileName(profile)}'s time-off request for ${formatDate(pending[0].requested_date)} as ${status}.`,
-      card: {
-        kind: "time-off",
-        requests: [{ date: pending[0].requested_date, status }]
-      }
     };
   }
 };

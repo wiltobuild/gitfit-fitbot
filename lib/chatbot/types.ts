@@ -33,8 +33,10 @@ export type RichCard =
   | {
       kind: "time-off";
       requests: Array<{
+        id: string;
+        name: string;
+        reason: string | null;
         date: string;
-        status: "pending" | "approved" | "denied";
       }>;
     }
   | {

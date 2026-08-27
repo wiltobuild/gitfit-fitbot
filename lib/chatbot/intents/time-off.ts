@@ -110,13 +110,6 @@ export const timeOffIntent: Intent = {
               `${formatDate(request.requested_date)} — ${request.status}.`
           )
           .join("\n")}`,
-        card: {
-          kind: "time-off",
-          requests: requests.map((request) => ({
-            date: request.requested_date,
-            status: request.status
-          }))
-        }
       };
     }
 
