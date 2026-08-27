@@ -1,6 +1,7 @@
 import type { ChipId } from "@/lib/chatbot/chip-labels";
 
 export const INTENT_CHIP_MAP: Partial<Record<string, ChipId>> = {
+  "my-goals": "my-goals",
   "my-activity": "my-activity",
   "roster-summary": "roster-summary",
   "instructor-classes": "instructor-classes",
