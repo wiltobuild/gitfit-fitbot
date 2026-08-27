@@ -505,6 +505,34 @@ h1,h2 { font-family:var(--font-baloo-2), ui-rounded, sans-serif; letter-spacing:
 /* Light brand hues stay out of small text on paper; they remain available for fills, icons, and gradients. */
 .starter-card b { color:var(--color-ink-soft); }
 footer span { color:var(--color-violet-dark); }
+
+/* GitFit suite landing page */
+.hero-brand-visual { position:relative; z-index:1; display:grid; min-height:360px; gap:16px; place-items:center; }
+.hero-lockup-card { display:grid; width:min(100%,330px); gap:12px; padding:20px 20px 16px; border:1px solid rgba(255,255,255,.24); border-radius:var(--radius-xl); background:rgba(248,247,245,.98); box-shadow:0 26px 60px rgba(0,0,0,.28); transform:rotate(3deg); }
+.hero-lockup-card img { display:block; width:100%; height:auto; border-radius:var(--radius-md); }
+.hero-lockup-card p { margin:0; color:var(--color-ink-soft); font-size:11px; font-weight:800; letter-spacing:.5px; text-align:center; text-transform:uppercase; }
+.hero-visual-note { display:inline-flex; align-items:center; gap:9px; padding:11px 14px; border:1px solid rgba(255,255,255,.18); border-radius:999px; background:rgba(20,27,60,.8); box-shadow:var(--shadow-md); color:rgba(255,255,255,.9); font-size:11px; font-weight:800; }
+.hero-visual-note svg { width:17px; height:17px; color:var(--color-teal); }
+.suite-section { padding:78px 6% 56px; }
+.suite-heading { display:grid; grid-template-columns:minmax(0,.85fr) minmax(300px,1.15fr); gap:18px 62px; align-items:end; margin-bottom:30px; }
+.suite-heading .eyebrow { grid-column:1 / -1; margin-bottom:0; }
+.suite-heading h2 { max-width:480px; font-size:clamp(34px,4vw,48px); }
+.suite-heading>p:last-child { max-width:530px; margin:0; color:var(--color-muted); font-size:15px; line-height:1.65; }
+.suite-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.suite-card { display:flex; min-height:316px; flex-direction:column; padding:24px; border:1px solid var(--color-border); border-radius:var(--radius-lg); background:var(--color-surface); box-shadow:var(--shadow-sm); transition:transform .2s var(--ease-out),box-shadow .2s var(--ease-out),border-color .2s var(--ease-out); }
+.suite-card:hover { transform:translateY(-4px); border-color:var(--color-border-strong); box-shadow:var(--shadow-lg); }
+.suite-card:focus-visible { outline:2px solid var(--color-violet); outline-offset:3px; }
+.suite-card-icon { display:grid; width:46px; height:46px; place-items:center; border-radius:var(--radius-md); background:var(--color-teal-subtle); color:var(--color-teal-dark); }
+.suite-card:nth-child(2) .suite-card-icon { background:var(--color-violet-subtle); color:var(--color-violet); }
+.suite-card:nth-child(3) .suite-card-icon { background:var(--color-magenta-subtle); color:var(--color-magenta); }
+.suite-card-icon svg { width:23px; height:23px; }
+.suite-card-audience { margin:24px 0 8px; color:var(--color-violet-dark); font-size:11px; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; }
+.suite-card h3 { margin:0; color:var(--color-ink); font:700 27px/1.05 var(--font-display); letter-spacing:-.7px; }
+.suite-card>p:not(.suite-card-audience) { margin:13px 0 22px; color:var(--color-muted); font-size:14px; line-height:1.55; }
+.suite-card-link { display:inline-flex; align-items:center; gap:8px; margin-top:auto; color:var(--color-ink-soft); font-size:13px; font-weight:800; }
+.suite-card-link b { color:var(--color-violet); font-size:19px; line-height:1; }
+@media (max-width:800px) { .hero-brand-visual { grid-row:1; min-height:0; max-width:360px; justify-self:center; }.hero-copy { grid-row:2; }.suite-section { padding:56px 2% 42px; }.suite-heading { grid-template-columns:1fr; gap:15px; }.suite-heading .eyebrow { grid-column:auto; }.suite-grid { grid-template-columns:1fr; }.suite-card { min-height:0; } }
+@media (max-width:520px) { .hero-lockup-card { width:min(100%,250px); padding:14px 14px 12px; }.hero-lockup-card p { font-size:9px; }.hero-visual-note { max-width:205px; font-size:10px; }.suite-section { padding-top:42px; }.suite-heading h2 { font-size:36px; }.suite-card { padding:21px; } }
 .chat-starters button span { color:var(--color-violet-dark); }
 @media (max-width:640px) { .dashboard-momentum { align-items:flex-start; gap:18px; }.momentum-ring { width:144px !important; height:144px !important; }.momentum-ring-value { font-size:54px; }.dashboard-momentum h3 { font-size:21px; } }
 /* Nav destination names are always visible, not just above 761px -- an

@@ -1,11 +1,41 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { MomentumArc } from "@/app/components/icons";
+import {
+  IconCalendar,
+  IconDashboard,
+  IconSend,
+  IconUsers
+} from "@/app/components/icons";
 import SiteNav from "@/app/components/site-nav";
 import { getSession } from "@/lib/auth/session";
 
-const quickStarts = ["Build a better routine", "Find my next workout", "Keep the momentum"];
+const suiteAreas = [
+  {
+    audience: "For members",
+    title: "A routine that stays in motion.",
+    description: "Book classes, see what is next, and keep your streak and studio updates in one clear home.",
+    href: "/sign-up",
+    cta: "Explore member tools",
+    icon: IconCalendar
+  },
+  {
+    audience: "For staff & studio leads",
+    title: "The studio, in sync.",
+    description: "Run schedules, manage member moments, and keep retention and day-to-day operations moving together.",
+    href: "/sign-up",
+    cta: "Explore studio tools",
+    icon: IconUsers
+  },
+  {
+    audience: "Meet Fitbot",
+    title: "A helpful next step, on demand.",
+    description: "Ask about classes, bookings, your schedule, or your goals and get moving with a guided answer.",
+    href: "/chat",
+    cta: "Talk to Fitbot",
+    icon: IconSend
+  }
+];
 
 export default async function Home() {
   const session = await getSession();
@@ -21,38 +51,47 @@ export default async function Home() {
 
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow"><span /> Your team is ready</p>
-          <h1>Make your next move your strongest one.</h1>
-          <p className="hero-description">Fitbot turns &ldquo;I should probably&rdquo; into a real plan. Tell it what you need, and it will help your fitness team get you moving.</p>
+          <p className="eyebrow"><span /> GitFit at Pulse Studio</p>
+          <h1>Everything your studio needs to keep moving.</h1>
+          <p className="hero-description">GitFit is Pulse Studio&apos;s shared platform for clients and staff: plan a workout, book a class, follow your momentum, and run a stronger studio together.</p>
           <div className="hero-actions">
-            <Link className="btn btn-primary" href="/chat">Talk to Fitbot <span aria-hidden="true">&rarr;</span></Link>
-            <a className="btn btn-outline-on-dark" href="#how-it-works">How it works</a>
+            <Link className="btn btn-primary" href="/sign-up">Get started with GitFit <span aria-hidden="true">&rarr;</span></Link>
+            <Link className="btn btn-outline-on-dark" href="/chat">Talk to Fitbot</Link>
           </div>
         </div>
 
-        <div className="hero-momentum" aria-label="Fitness planning momentum">
-          <MomentumArc />
-          <span>Move forward</span>
+        <div className="hero-brand-visual">
+          <div className="hero-lockup-card">
+            <img src="/gitfit-lockup.gif" alt="GitFit" />
+            <p>Pulse Studio&apos;s connected fitness platform</p>
+          </div>
+          <div className="hero-visual-note">
+            <IconDashboard />
+            <span>One place for every next move</span>
+          </div>
         </div>
       </section>
 
-      <section className="starter-section" id="how-it-works">
-        <div>
-          <p className="eyebrow"><span /> Start where you are</p>
-          <h2>A good first question is all it takes.</h2>
+      <section className="suite-section" id="suite">
+        <div className="suite-heading">
+          <p className="eyebrow"><span /> One connected suite</p>
+          <h2>Built around the people who make Pulse Studio go.</h2>
+          <p>Whether you&apos;re showing up for your next class or making the day run smoothly behind the scenes, GitFit keeps the important things close.</p>
         </div>
-        <div className="starter-list">
-          {quickStarts.map((item, index) => (
-            <Link href="/chat" className="starter-card" key={item}>
-              <span>0{index + 1}</span>
-              {item}
-              <b>&rarr;</b>
+        <div className="suite-grid">
+          {suiteAreas.map(({ audience, title, description, href, cta, icon: Icon }) => (
+            <Link href={href} className="suite-card" key={audience}>
+              <div className="suite-card-icon"><Icon /></div>
+              <p className="suite-card-audience">{audience}</p>
+              <h3>{title}</h3>
+              <p>{description}</p>
+              <span className="suite-card-link">{cta} <b aria-hidden="true">&rarr;</b></span>
             </Link>
           ))}
         </div>
       </section>
 
-      <footer>GitFit <span>&bull;</span> Move with purpose.</footer>
+      <footer>GitFit for Pulse Studio <span>&bull;</span> Move with purpose.</footer>
     </main>
   );
 }
