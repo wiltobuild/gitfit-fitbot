@@ -280,7 +280,7 @@ export async function routeMessage(
     },
     suggestedChips:
       session.role === "client"
-        ? ["todays-schedule", "my-goals", "recommend-class", "menu"]
+        ? ["todays-schedule", "recommend-class", "menu"]
         : ["todays-schedule", "studio-capacity", "member-lookup", "menu"],
     intentId: "fallback"
   };

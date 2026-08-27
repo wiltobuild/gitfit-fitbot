@@ -109,7 +109,6 @@ export default async function DashboardPage() {
   let streak = { streakWeeks: 0, currentWeekBooked: false };
   let promotions: Array<{ id: string; subject: string; body: string; sent_at: string | null }> | null = null;
   let memberFirstName: string | null = null;
-  let memberGoals: string | null = null;
   let membershipTier: string | null = null;
   try {
     const supabase = await createSupabaseServerClient();
@@ -146,7 +145,6 @@ export default async function DashboardPage() {
     if (memberError) throw memberError;
     if (member) {
       memberFirstName = member.full_name?.trim().split(/\s+/)[0] ?? null;
-      memberGoals = member.goals ?? null;
       membershipTier = member.membership_tier ?? null;
       const { data, error } = await getMemberPromotions(supabase, member.id);
       if (error) throw error;
@@ -173,7 +171,6 @@ export default async function DashboardPage() {
     encouragingMessage={encouragingMessage.message}
     encouragingMessageCategory={encouragingMessage.category}
     memberFirstName={memberFirstName}
-    memberGoals={memberGoals}
     membershipTier={membershipTier}
     promotions={promotions}
     recommendedClasses={recommendedClasses}
