@@ -105,8 +105,20 @@ export default async function DashboardPage() {
 
   let upcomingBookings: ClassRow[] = [];
   let bookingHistory: ClassRow[] = [];
+  let bookedThisWeek = 0;
   let streak = { streakWeeks: 0, currentWeekBooked: false };
   let promotions: Array<{ id: string; subject: string; body: string; sent_at: string | null }> | null = null;
+  let memberFirstName: string | null = null;
+  let memberGoals: string | null = null;
+  let membershipTier: string | null = null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.from("bookings").select("id, classes!inner(class_date)").eq("user_id", user.id).gte("classes.class_date", formatDate(weekMonday)).lte("classes.class_date", formatDate(weekSunday));
+    if (error) throw error;
+    bookedThisWeek = data?.length ?? 0;
+  } catch (error) {
+    console.error("Unable to load this week's bookings for dashboard", error);
+  }
   try {
     const supabase = await createSupabaseServerClient();
     upcomingBookings = await getUpcomingBookingsForUser(supabase, user.id);
@@ -133,6 +145,9 @@ export default async function DashboardPage() {
     const { data: member, error: memberError } = await getMemberForUser(supabase, user.id);
     if (memberError) throw memberError;
     if (member) {
+      memberFirstName = member.full_name?.trim().split(/\s+/)[0] ?? null;
+      memberGoals = member.goals ?? null;
+      membershipTier = member.membership_tier ?? null;
       const { data, error } = await getMemberPromotions(supabase, member.id);
       if (error) throw error;
       promotions = (data ?? []).map((promotion) => ({ ...promotion, body: personalizeOutreachBody(promotion.body, member.full_name) }));
@@ -152,10 +167,14 @@ export default async function DashboardPage() {
   const hasAnyHistory = bookingHistory.length > 0 || upcomingBookings.length > 0 || streak.streakWeeks > 0 || streak.currentWeekBooked;
   const encouragingMessage = getEncouragingMessage({ ...streak, hasAnyHistory, userId: user.id, today: todayString });
   return <div className="account-shell"><SiteNav /><ClientDashboard
+    bookedThisWeek={bookedThisWeek}
     bookingHistory={bookingHistory}
     currentWeekBooked={streak.currentWeekBooked}
     encouragingMessage={encouragingMessage.message}
     encouragingMessageCategory={encouragingMessage.category}
+    memberFirstName={memberFirstName}
+    memberGoals={memberGoals}
+    membershipTier={membershipTier}
     promotions={promotions}
     recommendedClasses={recommendedClasses}
     recommendationReason={recommendationReason}
