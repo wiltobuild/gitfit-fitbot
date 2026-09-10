@@ -31,7 +31,7 @@ export default async function SignInPage({
           <h1>Welcome back</h1>
           <p>
             {demo
-              ? "Every feature is open. The Admin login is prefilled below, or jump straight into any role."
+              ? "The Admin login is prefilled below. Use the Dev login for all-access across every page and role, or jump straight into a single role."
               : "Sign in to continue building a routine that works for you."}
           </p>
         </div>

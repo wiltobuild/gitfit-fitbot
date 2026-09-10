@@ -7,6 +7,7 @@ import { IconCalendar, IconDashboard, IconShield, IconUsers } from "@/app/compon
 
 type NavLinksProps = {
   role: string;
+  dev?: boolean;
 };
 
 type NavLink = { href: string; label: string; icon: typeof IconCalendar };
@@ -16,6 +17,7 @@ type NavLink = { href: string; label: string; icon: typeof IconCalendar };
 // redundant with it, so it's not listed here.
 const bookAClass: NavLink = { href: "/appointments", label: "Book a class", icon: IconCalendar };
 const dashboard: NavLink = { href: "/dashboard", label: "Dashboard", icon: IconDashboard };
+const memberDashboard: NavLink = { href: "/dashboard?view=client", label: "Member dashboard", icon: IconDashboard };
 const staffConsole: NavLink = { href: "/staff", label: "Staff", icon: IconShield };
 const retention: NavLink = { href: "/retention", label: "Retention", icon: IconUsers };
 
@@ -28,7 +30,9 @@ const retention: NavLink = { href: "/retention", label: "Retention", icon: IconU
 // Booking a class is a client-only action -- staff/admin operate the
 // studio, they don't book into it as a member, so neither gets a "My
 // stuff" group at all.
-function getLinkGroups(role: string): { myStuff: NavLink[]; runTheStudio: NavLink[] } {
+function getLinkGroups(role: string, dev?: boolean): { myStuff: NavLink[]; runTheStudio: NavLink[] } {
+  // Dev view: every surface is one click away.
+  if (dev) return { myStuff: [dashboard, memberDashboard, bookAClass], runTheStudio: [staffConsole, retention] };
   // Admins manage classes (instructor, time, capacity, everything) from the
   // /staff Live register panel already -- a second, thinner "Book a class"
   // entry point for them would just be a link to a link.
@@ -37,12 +41,12 @@ function getLinkGroups(role: string): { myStuff: NavLink[]; runTheStudio: NavLin
   return { myStuff: [dashboard, bookAClass], runTheStudio: [] };
 }
 
-export default function NavLinks({ role }: NavLinksProps) {
+export default function NavLinks({ role, dev }: NavLinksProps) {
   const pathname = usePathname();
-  const { myStuff, runTheStudio } = getLinkGroups(role);
+  const { myStuff, runTheStudio } = getLinkGroups(role, dev);
 
   const renderLink = ({ href, label, icon: Icon }: NavLink) => {
-    const isActive = pathname === href;
+    const isActive = href.includes("?") ? false : pathname === href;
     return (
       <Link className={`nav-link${isActive ? " active" : ""}`} href={href} aria-current={isActive ? "page" : undefined} key={href}>
         <Icon />

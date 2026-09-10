@@ -100,7 +100,7 @@ function scoreIntents(message: string, session: SessionUser) {
   let matchedIntent: (typeof intents)[number] | undefined;
   let highestScore = 0;
   for (const intent of intents) {
-    if (!intent.roles.includes(session.role)) continue;
+    if (!session.dev && !intent.roles.includes(session.role)) continue;
     const score = intent.match(message, session);
     if (score > highestScore) {
       matchedIntent = intent;
@@ -148,7 +148,7 @@ function findNearMissChips(message: string, session: SessionUser): ChipId[] {
 
   for (const intent of intents) {
     const chip = INTENT_CHIP_MAP[intent.id];
-    if (!chip || !intent.roles.includes(session.role)) continue;
+    if (!chip || (!session.dev && !intent.roles.includes(session.role))) continue;
 
     const score = Math.max(
       ...fragments.map((fragment) => intent.match(fragment, session))
@@ -196,7 +196,7 @@ export async function routeMessage(
     const pendingIntent = intents.find(
       (intent) => intent.id === activePending.intent_id
     );
-    if (pendingIntent && pendingIntent.roles.includes(session.role)) {
+    if (pendingIntent && (session.dev || pendingIntent.roles.includes(session.role))) {
       const result = await pendingIntent.handle(message, session, {
         partialArgs: activePending.partial_args,
         missingSlot: activePending.missing_slot

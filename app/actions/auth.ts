@@ -1,10 +1,21 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getDemoAccount, isDemoMode, type DemoRole } from "@/lib/demo/accounts";
+import { DEV_COOKIE, getDemoAccount, isDemoMode, type DemoRole } from "@/lib/demo/accounts";
+
+// The dev quick-login sets this; every other sign-in path clears it so an
+// ordinary login is never silently stuck in all-access mode.
+async function setDevCookie(on: boolean) {
+  const cookieStore = await cookies();
+  if (on) {
+    cookieStore.set(DEV_COOKIE, "1", { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 12 });
+  } else {
+    cookieStore.delete(DEV_COOKIE);
+  }
+}
 
 async function getBaseUrl() {
   const requestHeaders = await headers();
@@ -74,6 +85,7 @@ export async function signIn(
     return { error: friendlyAuthErrorMessage(error.message) };
   }
 
+  await setDevCookie(false);
   redirect("/dashboard");
 }
 
@@ -97,6 +109,7 @@ export async function signInAsDemo(role: DemoRole): Promise<void> {
     redirect("/sign-in?error=" + encodeURIComponent(friendlyAuthErrorMessage(error.message)));
   }
 
+  await setDevCookie(role === "dev");
   redirect("/dashboard");
 }
 
@@ -123,5 +136,6 @@ export async function requestPasswordReset(
 export async function signOut() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
+  await setDevCookie(false);
   redirect("/sign-in");
 }

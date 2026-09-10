@@ -11,7 +11,12 @@
 // prefix) so they are only ever used inside the sign-in Server Action, never
 // shipped in the client bundle.
 
-export type DemoRole = "admin" | "staff" | "client";
+// "dev" is not a real Supabase role. The dev quick-login authenticates as the
+// admin account (so RLS grants full data access) and additionally sets a
+// short-lived cookie that lib/auth/session.ts reads to flip on an all-access
+// bypass: every role gate passes, every page renders, every Fitbot shortcut is
+// available. See DEV_COOKIE below and requireRole* in lib/auth/session.ts.
+export type DemoRole = "admin" | "staff" | "client" | "dev";
 
 export type DemoAccount = {
   role: DemoRole;
@@ -20,6 +25,10 @@ export type DemoAccount = {
   email: string;
   password: string;
 };
+
+// Cookie that marks a session as the all-access dev view. Cleared by every
+// non-dev sign-in and by sign-out.
+export const DEV_COOKIE = "gitfit_demo_dev";
 
 export function isDemoMode(): boolean {
   return process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -41,17 +50,29 @@ const DEFAULTS: Record<DemoRole, { label: string; blurb: string; email: string }
     blurb: "Personal dashboard, class booking, Fitbot",
     email: "casimir.hilpert@gitfit.demo",
   },
+  dev: {
+    label: "Dev",
+    blurb: "All-access: every page and every feature, all role gates off",
+    // Runs on the admin account so database access is unrestricted; the dev
+    // bypass is layered on top in lib/auth/session.ts.
+    email: "wil.sheppard@pursuit.org",
+  },
 };
 
 const DEFAULT_PASSWORD = "Welcome!";
 
 function accountFor(role: DemoRole): DemoAccount {
   const upper = role.toUpperCase();
+  // dev has no dedicated credentials — fall back to the admin account's.
+  const fallbackEmail =
+    process.env[`DEMO_${upper}_EMAIL`] ??
+    (role === "dev" ? process.env.DEMO_ADMIN_EMAIL : undefined) ??
+    DEFAULTS[role].email;
   return {
     role,
     label: DEFAULTS[role].label,
     blurb: DEFAULTS[role].blurb,
-    email: process.env[`DEMO_${upper}_EMAIL`] ?? DEFAULTS[role].email,
+    email: fallbackEmail,
     password: process.env[`DEMO_${upper}_PASSWORD`] ?? process.env.DEMO_PASSWORD ?? DEFAULT_PASSWORD,
   };
 }
@@ -61,5 +82,5 @@ export function getDemoAccount(role: DemoRole): DemoAccount {
 }
 
 export function getDemoAccounts(): DemoAccount[] {
-  return (["admin", "staff", "client"] as const).map(accountFor);
+  return (["dev", "admin", "staff", "client"] as const).map(accountFor);
 }

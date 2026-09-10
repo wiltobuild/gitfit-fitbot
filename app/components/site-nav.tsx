@@ -14,7 +14,7 @@ export default async function SiteNav() {
         <span className="wordmark">GitFit</span>
         <span className="brand-org">Pulse Studio</span>
       </Link>
-      {session ? <NavLinks role={session.role} /> : null}
+      {session ? <NavLinks role={session.role} dev={session.dev} /> : null}
       <div className="nav-actions">
         {session ? (
           <>

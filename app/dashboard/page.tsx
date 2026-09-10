@@ -18,8 +18,16 @@ function formatDate(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
-export default async function DashboardPage() {
-  const { user, role } = await requireUserOrRedirect();
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>;
+}) {
+  const { user, role, dev } = await requireUserOrRedirect();
+  const { view } = await searchParams;
+  // The dev view lands on the admin dashboard by default; ?view=client lets it
+  // also inspect the member-facing dashboard render.
+  const devWantsClientView = dev === true && view === "client";
   const today = new Date();
   const mondayOffset = (today.getDay() + 6) % 7;
   const weekMonday = new Date(today);
@@ -28,7 +36,7 @@ export default async function DashboardPage() {
   const weekSunday = new Date(weekMonday);
   weekSunday.setDate(weekMonday.getDate() + 6);
 
-  if (role === "admin") {
+  if (role === "admin" && !devWantsClientView) {
     const upcomingEnd = new Date(today);
     upcomingEnd.setDate(today.getDate() + 7);
     const agendaStart = new Date(today);

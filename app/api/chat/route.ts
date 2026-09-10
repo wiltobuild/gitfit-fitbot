@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       : undefined;
   if (chipId && !Object.prototype.hasOwnProperty.call(chips, chipId))
     return Response.json({ error: "Unknown chipId." }, { status: 400 });
-  if (chipId && !CHIP_ROLES[chipId as ChipId].includes(session.role))
+  if (chipId && !session.dev && !CHIP_ROLES[chipId as ChipId].includes(session.role))
     return Response.json({ error: "Forbidden." }, { status: 403 });
   if (!chipId && !message)
     return Response.json({ error: "A message is required." }, { status: 400 });
