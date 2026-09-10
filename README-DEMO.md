@@ -1,7 +1,8 @@
 # GitFit — Demo build
 
-This is a demo-configured fork of `wiltobuild/gitfit-fitbot`. It runs the full
-application against the existing shared Supabase project, with a few changes that
+Demo mode ships in this repo (`wiltobuild/gitfit-fitbot`) behind a single env
+flag, `NEXT_PUBLIC_DEMO_MODE`. Set it to `true` on a deployment and the app runs
+the full product against the shared Supabase project, plus a few changes that
 make it walk-up friendly:
 
 1. **The sign-in page is prefilled** with the demo Admin credentials on every
@@ -99,21 +100,18 @@ The `DEMO_*` account overrides are optional — the defaults in
 `lib/demo/accounts.ts` already point at the accounts in the table above, and
 `DEMO_DEV_EMAIL` defaults to `DEMO_ADMIN_EMAIL`.
 
-## Deploy to Vercel
+## Turn demo mode on for the live deployment
 
-1. Push this repo to GitHub (`wiltobuild/gitfit-demo`).
-2. In Vercel → **Add New… → Project** → import `wiltobuild/gitfit-demo`.
-   Framework preset auto-detects as **Next.js**; leave build/output settings at
-   their defaults.
-3. Add **Environment Variables** (Production + Preview):
+The Vercel project (`gitfit`, team `pursuit6`, serving
+`https://gitfit-pursuit6.vercel.app`) already has the Supabase env vars. To make
+it the demo, add one Production env var and redeploy:
 
-   | Name | Value |
-   | ---- | ----- |
-   | `NEXT_PUBLIC_SUPABASE_URL` | `https://eranyjhyplfebfgjywmc.supabase.co` |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | the anon (publishable) JWT |
-   | `NEXT_PUBLIC_DEMO_MODE` | `true` |
+1. Vercel → project **gitfit** → **Settings → Environment Variables**.
+2. Add `NEXT_PUBLIC_DEMO_MODE` = `true`, environment **Production** (and
+   **Preview** if you want branch previews in demo mode too).
+3. **Deployments** → latest Production → **Redeploy** (or just push to `main`).
 
-   Do **not** add the service-role key — the running app never uses it.
-4. Deploy. Once the URL is live, add it to Supabase → **Authentication → URL
-   Configuration → Redirect URLs** (for the password-reset flow to bounce back
-   correctly): `https://<your-vercel-url>/reset-password`.
+To take demo mode back off, delete that variable and redeploy — no code change.
+The Supabase redirect URL for the password-reset flow
+(`https://gitfit-pursuit6.vercel.app/reset-password`) is already configured for
+this deployment.
