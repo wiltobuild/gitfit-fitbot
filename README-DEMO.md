@@ -34,8 +34,9 @@ GitFit routes by role, and the surfaces genuinely don't overlap:
 
 ### How Dev works (no schema change)
 
-"dev" is **not** a Supabase role. The Dev button authenticates as the **admin**
-account (so row-level security grants full data access) and additionally sets a
+"dev" is **not** a Supabase role. The Dev button authenticates as an **admin
+account** (a different one from the Admin button, so the two logins are visibly
+distinct — either way RLS grants full data access) and additionally sets a
 short-lived `httpOnly` cookie, `gitfit_demo_dev`. `lib/auth/session.ts` reads
 that cookie and, only when `NEXT_PUBLIC_DEMO_MODE=true`, returns
 `{ role: "admin", dev: true }`; `requireRoleOrRedirect` / `requireRoleOrThrow`
@@ -55,7 +56,7 @@ All use password `Welcome!` (seeded accounts on the shared project).
 
 | Button | Email                         | Underlying role |
 | ------ | ----------------------------- | --------------- |
-| Dev    | `wil.sheppard@pursuit.org`    | admin + all-access bypass |
+| Dev    | `riarusso@pursuit.org`        | admin + all-access bypass |
 | Admin  | `wil.sheppard@pursuit.org`    | admin |
 | Staff  | `sofia.martinez@gitfit.demo`  | staff |
 | Member | `casimir.hilpert@gitfit.demo` | client |
@@ -97,8 +98,7 @@ NEXT_PUBLIC_DEMO_MODE=true
 ```
 
 The `DEMO_*` account overrides are optional — the defaults in
-`lib/demo/accounts.ts` already point at the accounts in the table above, and
-`DEMO_DEV_EMAIL` defaults to `DEMO_ADMIN_EMAIL`.
+`lib/demo/accounts.ts` already point at the accounts in the table above.
 
 ## Turn demo mode on for the live deployment
 
