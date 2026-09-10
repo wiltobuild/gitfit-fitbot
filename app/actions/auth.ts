@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getDemoAccount, isDemoMode, type DemoRole } from "@/lib/demo/accounts";
 
 async function getBaseUrl() {
   const requestHeaders = await headers();
@@ -71,6 +72,29 @@ export async function signIn(
 
   if (error) {
     return { error: friendlyAuthErrorMessage(error.message) };
+  }
+
+  redirect("/dashboard");
+}
+
+// Demo mode only: sign in as a preconfigured role account. Bound to a role and
+// used as a <form action> on the sign-in page's quick-access buttons. On
+// success it redirects to the dashboard; on failure it bounces back to the
+// sign-in page with an error query param the page renders.
+export async function signInAsDemo(role: DemoRole): Promise<void> {
+  if (!isDemoMode()) {
+    redirect("/sign-in?error=" + encodeURIComponent("Demo mode is not enabled."));
+  }
+
+  const account = getDemoAccount(role);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email: account.email,
+    password: account.password,
+  });
+
+  if (error) {
+    redirect("/sign-in?error=" + encodeURIComponent(friendlyAuthErrorMessage(error.message)));
   }
 
   redirect("/dashboard");

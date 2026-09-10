@@ -8,7 +8,11 @@ import { IconSpinner } from "@/app/components/icons";
 
 const initialAuthFormState: AuthFormState = { error: null };
 
-export function SignInForm() {
+type SignInFormProps = {
+  prefill?: { email: string; password: string };
+};
+
+export function SignInForm({ prefill }: SignInFormProps = {}) {
   const [state, formAction, isPending] = useActionState(
     signIn,
     initialAuthFormState
@@ -23,6 +27,7 @@ export function SignInForm() {
         <input
           autoComplete="email"
           className="field-input"
+          defaultValue={prefill?.email}
           id="email"
           name="email"
           required
@@ -36,6 +41,7 @@ export function SignInForm() {
         <input
           autoComplete="current-password"
           className="field-input"
+          defaultValue={prefill?.password}
           id="password"
           name="password"
           required

@@ -9,13 +9,18 @@ import {
 } from "@/app/components/icons";
 import SiteNav from "@/app/components/site-nav";
 import { getSession } from "@/lib/auth/session";
+import { isDemoMode } from "@/lib/demo/accounts";
+
+// In demo mode there is no real sign-up (email confirmation is on) -- every
+// entry point routes to the prefilled sign-in page instead.
+const START_HREF = isDemoMode() ? "/sign-in" : "/sign-up";
 
 const suiteAreas = [
   {
     audience: "For members",
     title: "A routine that stays in motion.",
     description: "Book classes, see what is next, and keep your streak and studio updates in one clear home.",
-    href: "/sign-up",
+    href: START_HREF,
     cta: "Explore member tools",
     icon: IconCalendar
   },
@@ -23,7 +28,7 @@ const suiteAreas = [
     audience: "For staff & studio leads",
     title: "The studio, in sync.",
     description: "Run schedules, manage member moments, and keep retention and day-to-day operations moving together.",
-    href: "/sign-up",
+    href: START_HREF,
     cta: "Explore studio tools",
     icon: IconUsers
   },
@@ -55,7 +60,7 @@ export default async function Home() {
           <h1>Everything your studio needs to keep moving.</h1>
           <p className="hero-description">GitFit is Pulse Studio&apos;s shared platform for clients and staff: plan a workout, book a class, follow your momentum, and run a stronger studio together.</p>
           <div className="hero-actions">
-            <Link className="btn btn-primary" href="/sign-up">Get started with GitFit <span aria-hidden="true">&rarr;</span></Link>
+            <Link className="btn btn-primary" href={START_HREF}>Get started with GitFit <span aria-hidden="true">&rarr;</span></Link>
             <Link className="btn btn-outline-on-dark" href="/chat">Talk to Fitbot</Link>
           </div>
         </div>
