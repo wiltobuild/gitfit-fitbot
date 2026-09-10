@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { IconCalendar, IconDashboard, IconShield, IconUsers } from "@/app/components/icons";
 
@@ -43,10 +43,18 @@ function getLinkGroups(role: string, dev?: boolean): { myStuff: NavLink[]; runTh
 
 export default function NavLinks({ role, dev }: NavLinksProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { myStuff, runTheStudio } = getLinkGroups(role, dev);
 
+  // /dashboard and /dashboard?view=client are two nav entries pointing at the
+  // same path -- disambiguate the active one on the ?view param.
+  const currentHref =
+    pathname === "/dashboard" && searchParams.get("view") === "client"
+      ? "/dashboard?view=client"
+      : pathname;
+
   const renderLink = ({ href, label, icon: Icon }: NavLink) => {
-    const isActive = href.includes("?") ? false : pathname === href;
+    const isActive = href === currentHref;
     return (
       <Link className={`nav-link${isActive ? " active" : ""}`} href={href} aria-current={isActive ? "page" : undefined} key={href}>
         <Icon />

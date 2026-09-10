@@ -174,7 +174,7 @@ export default async function DashboardPage({
   const todayString = formatDate(today);
   const hasAnyHistory = bookingHistory.length > 0 || upcomingBookings.length > 0 || streak.streakWeeks > 0 || streak.currentWeekBooked;
   const encouragingMessage = getEncouragingMessage({ ...streak, hasAnyHistory, userId: user.id, today: todayString });
-  return <div className="account-shell"><SiteNav /><ClientDashboard
+  return <div className={devWantsClientView ? "account-shell account-shell-dev" : "account-shell"}><SiteNav /><ClientDashboard
     bookedThisWeek={bookedThisWeek}
     bookingHistory={bookingHistory}
     currentWeekBooked={streak.currentWeekBooked}
